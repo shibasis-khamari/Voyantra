@@ -4,8 +4,8 @@ from .place import Place, AgeGroupEnum, DietaryOptionEnum, BudgetTierEnum
 
 class ItinerarySlot(BaseModel):
     place_name: str
-    activity_note: str
-    est_time: str
+    activity_note: str = ""
+    est_time: str = ""
 
 class ItineraryDay(BaseModel):
     day_number: int
