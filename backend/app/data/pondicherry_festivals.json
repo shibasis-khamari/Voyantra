@@ -1,0 +1,42 @@
+[
+  {
+    "id": "fest-01",
+    "city_id": "pondicherry",
+    "name": "Masi Magam Beach Festival",
+    "month_day_start": "02-25",
+    "month_day_end": "03-02",
+    "affected_areas": ["Promenade Beach", "Vaithikuppam", "Beach Road"],
+    "advisory_level": "High Crowd & Road Closures",
+    "description": "Deities from dozens of regional temples are carried in grand holy procession to the shore for ceremonial sea immersion. Heavy pedestrian footfalls and vehicular diversions around Goubert Avenue."
+  },
+  {
+    "id": "fest-02",
+    "city_id": "pondicherry",
+    "name": "Sri Aurobindo Birth Anniversary & Darshan",
+    "month_day_start": "08-15",
+    "month_day_end": "08-16",
+    "affected_areas": ["Sri Aurobindo Ashram", "Manakula Vinayagar St", "White Town"],
+    "advisory_level": "Medium Crowd & Quiet Zone",
+    "description": "Thousands of international and domestic disciples visit the Ashram room and Samadhi. Surrounding streets are reserved strictly for pedestrian queues."
+  },
+  {
+    "id": "fest-03",
+    "city_id": "pondicherry",
+    "name": "Bastille Day (French National Day)",
+    "month_day_start": "07-14",
+    "month_day_end": "07-14",
+    "affected_areas": ["French Consulate", "Goubert Avenue", "Joan of Arc Park"],
+    "advisory_level": "Evening Parade & Traffic Diversion",
+    "description": "Franco-Indian military parade and ceremonial wreath laying along Goubert Avenue, followed by cultural celebrations in White Town."
+  },
+  {
+    "id": "fest-04",
+    "city_id": "pondicherry",
+    "name": "Christmas & New Year Celebrations",
+    "month_day_start": "12-24",
+    "month_day_end": "01-02",
+    "affected_areas": ["Sacred Heart Basilica", "Eglise de Notre Dame", "Promenade Beach"],
+    "advisory_level": "Peak Peak Tourist Crowd",
+    "description": "Midnight mass and year-end celebrations. Massive tourist influx; hotel rates peak and Promenade Beach is pedestrian-only."
+  }
+]

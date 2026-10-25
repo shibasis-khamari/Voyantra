@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pondicherry",
+    "name": "Pondicherry (Puducherry)",
+    "state": "Puducherry",
+    "country": "India",
+    "coordinates": {
+      "lat": 11.9416,
+      "lng": 79.8083
+    },
+    "description": "The French Riviera of the East, famous for French colonial heritage, serene beaches, bohemian cafes, and spiritual sanctuaries.",
+    "is_pilot": true
+  },
+  {
+    "id": "chennai",
+    "name": "Chennai (Madras)",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "coordinates": {
+      "lat": 13.0827,
+      "lng": 80.2707
+    },
+    "description": "The Gateway to South India, famous for historic Dravidian temples, Marina Beach, colonial fortresses, and classical arts.",
+    "is_pilot": false
+  }
+]

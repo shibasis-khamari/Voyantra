@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "generated_at": "2026-10-24T19:34:17.752783+00:00",
+    "generator_script": "backend/scripts/extract_seasonality.py",
+    "chennai": {
+      "source": "Tamil Nadu Tourism Department (District 3302 Official Statistics)",
+      "district_code": "3302",
+      "years_analyzed": [
+        2022,
+        2023,
+        2024
+      ],
+      "provenance_label": "Tamil Nadu Tourism Dept (2022–2024 District 3302 Records)"
+    },
+    "pondicherry": {
+      "source": "Ministry of Tourism (MoT) 2014 Comprehensive Tourism Survey",
+      "provenance_label": "2014 survey data, rough prior"
+    }
+  },
+  "cities": {
+    "chennai": {
+      "provenance_label": "Tamil Nadu Tourism Dept (2022–2024 District 3302 Records)",
+      "annual_mean_monthly_arrivals": 1761111,
+      "months": {
+        "1": {
+          "month": 1,
+          "name": "January",
+          "three_year_average_arrivals": 2016667,
+          "multiplier": 1.145,
+          "seasonal_point_adjustment": 5,
+          "season_category": "High",
+          "drivers": "Pongal festival, Margazhi music season finale"
+        },
+        "2": {
+          "month": 2,
+          "name": "February",
+          "three_year_average_arrivals": 1666667,
+          "multiplier": 0.946,
+          "seasonal_point_adjustment": -2,
+          "season_category": "Moderate",
+          "drivers": "Pleasant weather, business conventions"
+        },
+        "3": {
+          "month": 3,
+          "name": "March",
+          "three_year_average_arrivals": 1383333,
+          "multiplier": 0.785,
+          "seasonal_point_adjustment": -8,
+          "season_category": "Low",
+          "drivers": "Pre-summer, academic examination period"
+        },
+        "4": {
+          "month": 4,
+          "name": "April",
+          "three_year_average_arrivals": 1483333,
+          "multiplier": 0.842,
+          "seasonal_point_adjustment": -6,
+          "season_category": "Low",
+          "drivers": "Tamil New Year (Puthandu), start of summer"
+        },
+        "5": {
+          "month": 5,
+          "name": "May",
+          "three_year_average_arrivals": 1950000,
+          "multiplier": 1.107,
+          "seasonal_point_adjustment": 4,
+          "season_category": "High",
+          "drivers": "School summer holidays, Marina & Besant Nagar beach peak"
+        },
+        "6": {
+          "month": 6,
+          "name": "June",
+          "three_year_average_arrivals": 1483333,
+          "multiplier": 0.842,
+          "seasonal_point_adjustment": -6,
+          "season_category": "Low",
+          "drivers": "Schools reopen, shoulder season"
+        },
+        "7": {
+          "month": 7,
+          "name": "July",
+          "three_year_average_arrivals": 1590000,
+          "multiplier": 0.903,
+          "seasonal_point_adjustment": -3,
+          "season_category": "Moderate",
+          "drivers": "South-West monsoon spillover, corporate travel"
+        },
+        "8": {
+          "month": 8,
+          "name": "August",
+          "three_year_average_arrivals": 1720000,
+          "multiplier": 0.977,
+          "seasonal_point_adjustment": -1,
+          "season_category": "Moderate",
+          "drivers": "Independence Day, Kapaleeshwarar & temple celebrations"
+        },
+        "9": {
+          "month": 9,
+          "name": "September",
+          "three_year_average_arrivals": 1626667,
+          "multiplier": 0.924,
+          "seasonal_point_adjustment": -3,
+          "season_category": "Moderate",
+          "drivers": "Vinayaka Chaturthi, pre-festival shoulder"
+        },
+        "10": {
+          "month": 10,
+          "name": "October",
+          "three_year_average_arrivals": 1833333,
+          "multiplier": 1.041,
+          "seasonal_point_adjustment": 1,
+          "season_category": "Moderate",
+          "drivers": "Navratri, Ayudha Pooja, Deepavali vacation travel"
+        },
+        "11": {
+          "month": 11,
+          "name": "November",
+          "three_year_average_arrivals": 2040000,
+          "multiplier": 1.158,
+          "seasonal_point_adjustment": 6,
+          "season_category": "High",
+          "drivers": "Start of Chennai December Music Season & pleasant winter"
+        },
+        "12": {
+          "month": 12,
+          "name": "December",
+          "three_year_average_arrivals": 2340000,
+          "multiplier": 1.329,
+          "seasonal_point_adjustment": 12,
+          "season_category": "Peak",
+          "drivers": "Peak Margazhi Season, Christmas, New Year & diaspora influx"
+        }
+      }
+    },
+    "pondicherry": {
+      "provenance_label": "2014 survey data, rough prior",
+      "months": {
+        "1": {
+          "month": 1,
+          "name": "January",
+          "multiplier": 1.219,
+          "seasonal_point_adjustment": 8,
+          "season_category": "Peak",
+          "drivers": "New Year continuation, pleasant coastal weather"
+        },
+        "2": {
+          "month": 2,
+          "name": "February",
+          "multiplier": 1.031,
+          "seasonal_point_adjustment": 1,
+          "season_category": "Moderate",
+          "drivers": "Auroville anniversary, moderate tourist flow"
+        },
+        "3": {
+          "month": 3,
+          "name": "March",
+          "multiplier": 0.797,
+          "seasonal_point_adjustment": -7,
+          "season_category": "Low",
+          "drivers": "Academic exams, shoulder period"
+        },
+        "4": {
+          "month": 4,
+          "name": "April",
+          "multiplier": 0.844,
+          "seasonal_point_adjustment": -5,
+          "season_category": "Low",
+          "drivers": "Warm coastal weather, Tamil New Year"
+        },
+        "5": {
+          "month": 5,
+          "name": "May",
+          "multiplier": 1.078,
+          "seasonal_point_adjustment": 3,
+          "season_category": "High",
+          "drivers": "Summer school vacation family arrivals"
+        },
+        "6": {
+          "month": 6,
+          "name": "June",
+          "multiplier": 0.75,
+          "seasonal_point_adjustment": -9,
+          "season_category": "Low",
+          "drivers": "Pre-monsoon dip, schools reopen"
+        },
+        "7": {
+          "month": 7,
+          "name": "July",
+          "multiplier": 0.984,
+          "seasonal_point_adjustment": -1,
+          "season_category": "Moderate",
+          "drivers": "French National Day (Bastille Day, July 14)"
+        },
+        "8": {
+          "month": 8,
+          "name": "August",
+          "multiplier": 1.172,
+          "seasonal_point_adjustment": 6,
+          "season_category": "High",
+          "drivers": "Sri Aurobindo birth anniversary (Aug 15) & French summer holiday season"
+        },
+        "9": {
+          "month": 9,
+          "name": "September",
+          "multiplier": 0.75,
+          "seasonal_point_adjustment": -9,
+          "season_category": "Low",
+          "drivers": "Post-monsoon low season"
+        },
+        "10": {
+          "month": 10,
+          "name": "October",
+          "multiplier": 0.984,
+          "seasonal_point_adjustment": -1,
+          "season_category": "Moderate",
+          "drivers": "Ayudha Pooja, Dussehra holiday weekends"
+        },
+        "11": {
+          "month": 11,
+          "name": "November",
+          "multiplier": 1.031,
+          "seasonal_point_adjustment": 1,
+          "season_category": "Moderate",
+          "drivers": "Deepavali holidays, coastal wellness visitors"
+        },
+        "12": {
+          "month": 12,
+          "name": "December",
+          "multiplier": 1.359,
+          "seasonal_point_adjustment": 13,
+          "season_category": "Peak",
+          "drivers": "Christmas, French Quarter cultural carnival, New Year festival surge"
+        }
+      }
+    }
+  }
+}

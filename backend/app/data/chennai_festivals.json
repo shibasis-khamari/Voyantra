@@ -1,0 +1,42 @@
+[
+  {
+    "id": "fest-chennai-01",
+    "city_id": "chennai",
+    "name": "Margazhi Music Festival & Dance Season",
+    "month_day_start": "12-15",
+    "month_day_end": "01-15",
+    "affected_areas": ["Mylapore", "Kapaleeshwarar Temple", "Music Academy", "T. Nagar"],
+    "advisory_level": "High Cultural Footfall & Parking Constraints",
+    "description": "World-famous Carnatic music and Classical Bharatanatyam festival held across sabhas in Mylapore and T. Nagar. Heavy footfalls and parking congestion during evening performances (4 PM - 9 PM)."
+  },
+  {
+    "id": "fest-chennai-02",
+    "city_id": "chennai",
+    "name": "Pongal Harvest Festival & Marina Beach Gathering",
+    "month_day_start": "01-14",
+    "month_day_end": "01-17",
+    "affected_areas": ["Marina Beach", "Elliot's Beach", "Mylapore", "Guindy National Park"],
+    "advisory_level": "Peak Tourist Crowd & Road Closures",
+    "description": "Kaanum Pongal mass gatherings on Marina Beach and Elliot's Beach. Over 100,000 visitors; Kamarajar Salai (Beach Road) converted to pedestrian-only with heavy police traffic diversions."
+  },
+  {
+    "id": "fest-chennai-03",
+    "city_id": "chennai",
+    "name": "Kapaleeshwarar Panguni Peruvizha & Arubathimoovar Procession",
+    "month_day_start": "03-20",
+    "month_day_end": "03-29",
+    "affected_areas": ["Mylapore", "Kapaleeshwarar Temple", "Luz Corner"],
+    "advisory_level": "Peak Procession & Total Road Closures",
+    "description": "Grand 63 Nayanmars chariot procession around Mylapore temple tank streets. Massive spiritual crowds; traffic strictly diverted from Luz Church Road and Kutchery Road."
+  },
+  {
+    "id": "fest-chennai-04",
+    "city_id": "chennai",
+    "name": "Velankanni Church Festival (Besant Nagar)",
+    "month_day_start": "08-29",
+    "month_day_end": "09-08",
+    "affected_areas": ["Besant Nagar", "Elliot's Beach", "Annai Velankanni Shrine"],
+    "advisory_level": "High Devotional Footfall & Beach Traffic",
+    "description": "Annual feast of Our Lady of Good Health shrine at Besant Nagar. Heavy vehicular traffic along Besant Avenue and Elliot's Beach promenade."
+  }
+]
