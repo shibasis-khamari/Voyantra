@@ -28,8 +28,10 @@ veg_violations = []
 for d in days:
     print(f"Day {d.get('day_number')}: {d.get('theme')}")
     for slot in ['morning', 'afternoon', 'evening']:
-        s_data = d.get(slot, {})
+        s_data = d.get(slot) or {}
         p_name = s_data.get('place_name')
+        if not p_name:
+            continue
         places_scheduled.append(p_name)
         print(f"  {slot}: {p_name} | {s_data.get('activity_note')}")
         # Check against catalog

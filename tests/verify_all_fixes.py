@@ -240,9 +240,9 @@ def run_all_verifications():
     day1_after = itin_ref.get("days", [])[0] if itin_ref.get("days") else {}
     day2_after = itin_ref.get("days", [])[1] if len(itin_ref.get("days")) > 1 else {}
 
-    day1_identical = (day1_before.get("morning", {}).get("place_name") == day1_after.get("morning", {}).get("place_name") and
-                      day1_before.get("afternoon", {}).get("place_name") == day1_after.get("afternoon", {}).get("place_name") and
-                      day1_before.get("evening", {}).get("place_name") == day1_after.get("evening", {}).get("place_name"))
+    day1_identical = ((day1_before.get("morning") or {}).get("place_name") == (day1_after.get("morning") or {}).get("place_name") and
+                      (day1_before.get("afternoon") or {}).get("place_name") == (day1_after.get("afternoon") or {}).get("place_name") and
+                      (day1_before.get("evening") or {}).get("place_name") == (day1_after.get("evening") or {}).get("place_name"))
     pass_2_5 = (day1_identical and "relaxed" in day2_after.get("theme", "").lower())
     results['2.5_refinement_day1_immutability'] = (
         "PASS" if pass_2_5 else "FAIL",

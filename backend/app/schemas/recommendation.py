@@ -10,9 +10,9 @@ class ItinerarySlot(BaseModel):
 class ItineraryDay(BaseModel):
     day_number: int
     theme: str
-    morning: ItinerarySlot
-    afternoon: ItinerarySlot
-    evening: ItinerarySlot
+    morning: Optional[ItinerarySlot] = None
+    afternoon: Optional[ItinerarySlot] = None
+    evening: Optional[ItinerarySlot] = None
 
 class ItineraryResponse(BaseModel):
     itinerary_title: str

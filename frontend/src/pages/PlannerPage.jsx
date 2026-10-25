@@ -232,7 +232,11 @@ export function PlannerPage() {
     setBackendError(null);
 
     try {
-      const slotKeys = Object.keys(day).filter(k => !['day_number', 'theme'].includes(k));
+      const slotKeys = Object.keys(day).filter(k => !['day_number', 'theme'].includes(k) && !!day[k]);
+      if (slotKeys.length === 0) {
+        setBackendError("No places to optimize for this day.");
+        return;
+      }
       const slots = slotKeys.map((k) => {
         const rawSlot = day[k];
         const name = typeof rawSlot === 'string' ? rawSlot : (rawSlot.place_name || 'Destination');

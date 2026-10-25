@@ -472,7 +472,7 @@ class GeminiService:
         if existing_days and is_day2_refinement and len(existing_days) > 0:
             day1_obj = existing_days[0]
             for slot_key in ["morning", "afternoon", "evening"]:
-                slot = day1_obj.get(slot_key, {})
+                slot = day1_obj.get(slot_key) or {}
                 pname = slot.get("place_name")
                 if pname:
                     used_places.add(normalize_place_name(pname))
@@ -518,7 +518,7 @@ class GeminiService:
                 theme = f"Leisure Exploration Day {d_num}"
 
             # Fallbacks if slots are None (catalog completely exhausted)
-            # Use safest available or omit rather than inventing fake names
+            # Omit exhausted slots (leave as None) rather than inventing non-catalog places
             slots = {}
             for s_key, p_obj, time_str, note_prefix in [
                 ("morning", m_place, "8:30 AM - 11:00 AM", "Morning visit and exploration at"),
@@ -533,19 +533,14 @@ class GeminiService:
                         "est_time": time_str
                     }
                 else:
-                    # Catalog exhausted: reference general leisure without invented place
-                    slots[s_key] = {
-                        "place_name": "Open Leisure & Local Walk",
-                        "activity_note": "Self-guided walk and relaxation in the local area.",
-                        "est_time": time_str
-                    }
+                    slots[s_key] = None
 
             days.append({
                 "day_number": d_num,
                 "theme": theme,
-                "morning": slots["morning"],
-                "afternoon": slots["afternoon"],
-                "evening": slots["evening"]
+                "morning": slots.get("morning"),
+                "afternoon": slots.get("afternoon"),
+                "evening": slots.get("evening")
             })
 
         total_cost = sum(p.estimated_cost_inr for p in scheduled_places)
