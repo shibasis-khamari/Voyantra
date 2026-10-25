@@ -32,14 +32,15 @@ def test_throttle_and_maxwait_direct():
         "city_id": "pondicherry"
     }
 
+    run_offset = round((time.time() * 1000) % 500 * 0.0001, 6)
     def execute_route_call(idx):
         t0 = time.time()
-        # Use distinct coordinates per request to test throttle queue without cache collision
+        # Use distinct, uncached coordinates per run to test throttle queue without cache collision
         res = routing_service.get_route(
-            origin_lat=round(11.9320 + idx * 0.0003, 6),
-            origin_lng=round(79.8300 + idx * 0.0003, 6),
-            dest_lat=round(11.9340 + idx * 0.0003, 6),
-            dest_lng=round(79.8340 + idx * 0.0003, 6),
+            origin_lat=round(11.9320 + run_offset + idx * 0.0003, 6),
+            origin_lng=round(79.8300 + run_offset + idx * 0.0003, 6),
+            dest_lat=round(11.9340 + run_offset + idx * 0.0003, 6),
+            dest_lng=round(79.8340 + run_offset + idx * 0.0003, 6),
             mode=req_data["mode"],
             city_id=req_data["city_id"]
         )

@@ -537,8 +537,8 @@ class CrowdService:
             weighted_sum += weight * density
             total_weight += weight
 
-            # Anomaly check: if report is >= 20% above baseline, or reports overcrowded (95%)
-            if (density - rule_baseline_pct >= 20.0 or (density >= 95 and rule_baseline_pct < 85)) and delta_min <= 60.0:
+            # Anomaly check: if report is >= 20% above baseline, or reports overcrowded (>= 90%)
+            if (density - rule_baseline_pct >= 20.0 or density >= 90) and delta_min <= 60.0:
                 surge_candidates += 1
 
         if total_weight > 0.0:
