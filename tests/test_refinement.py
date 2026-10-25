@@ -35,8 +35,8 @@ print("\nRefined Day 1:", day1_ref)
 print("Refined Day 2:", day2_ref)
 
 # Compare Day 1
-day1_unchanged = (day1_init.get('morning', {}).get('place_name') == day1_ref.get('morning', {}).get('place_name') and
-                  day1_init.get('afternoon', {}).get('place_name') == day1_ref.get('afternoon', {}).get('place_name') and
-                  day1_init.get('evening', {}).get('place_name') == day1_ref.get('evening', {}).get('place_name'))
+day1_unchanged = ((day1_init.get('morning') or {}).get('place_name') == (day1_ref.get('morning') or {}).get('place_name') and
+                  (day1_init.get('afternoon') or {}).get('place_name') == (day1_ref.get('afternoon') or {}).get('place_name') and
+                  (day1_init.get('evening') or {}).get('place_name') == (day1_ref.get('evening') or {}).get('place_name'))
 
 print("\nDay 1 unchanged?:", day1_unchanged)

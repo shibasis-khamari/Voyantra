@@ -35,7 +35,10 @@ def test_e2e_2_chennai():
     print("  Feasibility status:", itin.get('feasibility_status'))
     print("  Tips:", itin.get('travel_tips'))
     for d in itin.get('days', []):
-        print(f"  Day {d.get('day_number')}: Morning={d.get('morning', {}).get('place_name')}, Afternoon={d.get('afternoon', {}).get('place_name')}, Evening={d.get('evening', {}).get('place_name')}")
+        m = (d.get('morning') or {}).get('place_name')
+        a = (d.get('afternoon') or {}).get('place_name')
+        e = (d.get('evening') or {}).get('place_name')
+        print(f"  Day {d.get('day_number')}: Morning={m}, Afternoon={a}, Evening={e}")
 
 if __name__ == '__main__':
     test_e2e_2_chennai()

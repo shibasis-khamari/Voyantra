@@ -11,6 +11,8 @@ if sys.platform == "win32":
     sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, "replace")
 
 SUITES = [
+    ("test_ingestion_safety.py", "Phase 1 (T1): Place Catalog Ingestion Safety & Pollution Guardrails"),
+    ("test_fallback_itinerary.py", "Phase 2 (T3): Fallback Itinerary Math, Strict Diet & Slot Omission"),
     ("test_phase3_5.py", "Phase 3.5: Dual-Corridor Geodesic Operating Bounds & UI Detection"),
     ("test_route_validations_and_limits.py", "Phase 4 (P4-T1/T2): Route Validations, 70km Bounds & 30 req/min Rate Limiting"),
     ("test_throttle_and_maxwait.py", "Phase 4 (P4-T2): Global 1 req/s Outbound Throttle & Max-Wait Fallback"),

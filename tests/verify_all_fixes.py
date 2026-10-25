@@ -83,6 +83,19 @@ def run_all_verifications():
     )
 
     # ---------------------------------------------------------
+    # 1.6b: Ingestion Unsupported City Rejection (HTTP 400)
+    # ---------------------------------------------------------
+    r_unsupported = requests.post(
+        f"{BASE_URL}/places/fetch-from-internet?city_name=Goa",
+        headers={"Authorization": f"Bearer {admin_token}"}
+    )
+    pass_1_6b = (r_unsupported.status_code == 400 and "strictly supports Pondicherry and Chennai" in r_unsupported.text)
+    results['1.6b_ingestion_unsupported_city_400'] = (
+        "PASS" if pass_1_6b else "FAIL",
+        f"Status: {r_unsupported.status_code} (Exp 400), Response: {r_unsupported.text[:80]}"
+    )
+
+    # ---------------------------------------------------------
     # 1.7: Query Alias city=Chennai and city=Pondicherry
     # ---------------------------------------------------------
     r_pondy = requests.get(f"{BASE_URL}/places?city=Pondicherry")
