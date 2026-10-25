@@ -126,9 +126,15 @@ def test_planner_null_slots():
         assert opt_btn.is_visible(), "Optimize button not visible on Day 1"
         opt_btn.click()
 
-        # Wait for optimization response to complete
-        page.wait_for_selector("text=Optimized Sequence:", timeout=30000)
-        print("-> Optimization completed without crashing.")
+        # Wait for either optimization result or error banner
+        page.locator("text=Optimized Sequence:").or_(page.locator(".bg-rose-50")).first.wait_for(state="visible", timeout=30000)
+
+        # Assertions: 'Optimized Sequence:' must be visible and no 'Optimization failed' text appears
+        opt_seq = page.locator("text=Optimized Sequence:").first
+        assert opt_seq.is_visible(), "Expected 'Optimized Sequence:' to be visible after optimization"
+        assert not page.locator("text=Optimization failed").is_visible(), "Unexpected 'Optimization failed' text appeared"
+        assert not page.locator(".bg-rose-50").is_visible(), "Unexpected error banner appeared"
+        print("-> Optimization completed with 'Optimized Sequence:' visible and no failure text.")
 
         # Step 5: Assert no page errors
         print("\n[Step 5] Verifying console and page errors...")
