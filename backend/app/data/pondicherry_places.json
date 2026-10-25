@@ -1,36 +1,93 @@
 [
   {
-    "id": "pondicherry-live-1",
+    "id": "pondy-01",
     "city_id": "pondicherry",
-    "name": "Immaculate Conception Cathedral, Pondicherry",
-    "category": "spiritual",
-    "sub_category": "Spiritual Shrine & Historic Temple",
-    "description": "building in India",
+    "name": "Promenade Beach (Rock Beach)",
+    "category": "beach",
+    "sub_category": "Scenic Promenade & Sea Walk",
+    "description": "A 1.5 km scenic oceanfront promenade lined with heritage monuments, French cafes, and sea rocks. Closed to motorized traffic in evenings for peaceful pedestrian walks.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Spiritual Shrine & Historic Temple experience",
-      "Directly navigable on OpenStreetMap"
+      "Pedestrian-only evening walkway",
+      "Gandhi Statue & French War Memorial",
+      "Seafront sunset and ocean breeze"
     ],
     "budget_tier": "budget",
     "estimated_cost_inr": 0,
-    "duration_minutes": 60,
+    "duration_minutes": 90,
     "coordinates": {
-      "lat": 11.93299,
-      "lng": 79.83055
+      "lat": 11.9338,
+      "lng": 79.8358
     },
-    "address": "Immaculate Conception Cathedral, Pondicherry, Pondicherry",
-    "image_url": "http://commons.wikimedia.org/wiki/Special:FilePath/Puducherry%20Immaculate%20Conception%20Cathedral%202.jpg",
-    "best_time_to_visit": "Morning or Evening",
+    "address": "Goubert Avenue, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Early morning (5:30 AM - 7:30 AM) or Evening (5:00 PM - 9:00 PM)",
     "crowd_tendency": "high",
     "recommended_age_groups": [
-      "senior",
+      "young_adult",
+      "adult",
       "family",
-      "adult"
+      "senior",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "niche_interests": [],
+    "weird_query_matches": [],
+    "dress_code_advisory": "Casual walking attire. No specific dress restrictions.",
+    "accessibility_rating": 5,
+    "tags": [
+      "beach",
+      "walk",
+      "sunset",
+      "heritage",
+      "free"
+    ],
+    "rating": 4.7,
+    "review_count": 3200
+  },
+  {
+    "id": "pondy-02",
+    "city_id": "pondicherry",
+    "name": "Auroville & Matrimandir",
+    "category": "spiritual",
+    "sub_category": "Universal Township & Meditation Centre",
+    "description": "An experimental township dedicated to human unity and peaceful coexistence. The iconic golden sphere (Matrimandir) stands in the center surrounded by tranquility gardens.",
+    "highlights": [
+      "Golden Dome of Matrimandir",
+      "Auroville Visitors Centre & organic cafes",
+      "Artisan boutiques and sustainable living workshops"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 150,
+    "duration_minutes": 180,
+    "coordinates": {
+      "lat": 12.0068,
+      "lng": 79.8105
+    },
+    "address": "Auroville International Township, Villupuram District, 605101",
+    "image_url": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (9:00 AM - 1:00 PM) to avoid afternoon heat",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "adult",
+      "young_adult",
+      "family",
+      "senior",
+      "all"
     ],
     "dietary_options": [
       "all",
       "vegetarian",
-      "pure_veg_jain"
+      "vegan"
     ],
     "belief_affiliation": "secular",
     "etiquette_rules": {
@@ -42,92 +99,46 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
+    "dress_code_advisory": "Modest clothing requested inside Matrimandir viewing points.",
+    "accessibility_rating": 4,
     "tags": [
       "spiritual",
-      "live-ingested",
-      "pondicherry"
+      "meditation",
+      "nature",
+      "architecture",
+      "eco-friendly"
     ],
-    "rating": 4.2,
-    "review_count": 1061
+    "rating": 4.6,
+    "review_count": 2840
   },
   {
-    "id": "pondicherry-live-2",
+    "id": "pondy-03",
     "city_id": "pondicherry",
-    "name": "Aayi Mandapam",
+    "name": "White Town (French Quarter Heritage Walk)",
     "category": "heritage",
-    "sub_category": "Heritage Fort & Historical Monument",
-    "description": "park monument",
+    "sub_category": "Colonial French Architecture & Boutiques",
+    "description": "A picturesque neighborhood marked by mustard-yellow colonial mansions, bougainvillea-draped archways, French street names (Rues), and chic artisan boutiques.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Heritage Fort & Historical Monument experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "moderate",
-    "estimated_cost_inr": 150,
-    "duration_minutes": 90,
-    "coordinates": {
-      "lat": 11.9331,
-      "lng": 79.8342
-    },
-    "address": "Aayi Mandapam, Pondicherry",
-    "image_url": "http://commons.wikimedia.org/wiki/Special:FilePath/Puducherry-Bharathi%20Park-Aayi%20Mandapam-WUS02289.jpg",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "medium",
-    "recommended_age_groups": [
-      "adult",
-      "family",
-      "young_adult",
-      "senior"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
-    "tags": [
-      "heritage",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.7,
-    "review_count": 1277
-  },
-  {
-    "id": "pondicherry-live-3",
-    "city_id": "pondicherry",
-    "name": "French War Memorial",
-    "category": "heritage",
-    "sub_category": "Tourist Landmark",
-    "description": "war memorial in Pondicherry, India",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Tourist Landmark experience",
-      "Directly navigable on OpenStreetMap"
+      "Mustard yellow French colonial facades",
+      "Bougainvillea floral streets",
+      "Charming art galleries & souvenir shops"
     ],
     "budget_tier": "budget",
-    "estimated_cost_inr": 50,
-    "duration_minutes": 60,
+    "estimated_cost_inr": 0,
+    "duration_minutes": 120,
     "coordinates": {
-      "lat": 11.931916666,
-      "lng": 79.835388888
+      "lat": 11.9318,
+      "lng": 79.8335
     },
-    "address": "French War Memorial, Pondicherry",
-    "image_url": "http://commons.wikimedia.org/wiki/Special:FilePath/French%20War%20memorial.JPG",
-    "best_time_to_visit": "Morning or Evening",
+    "address": "White Town (French Grid), Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Late afternoon (3:30 PM - 6:30 PM)",
     "crowd_tendency": "medium",
     "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "family",
+      "senior",
       "all"
     ],
     "dietary_options": [
@@ -143,44 +154,100 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
+    "dress_code_advisory": "Comfortable walking shoes and casual breathable clothes.",
     "accessibility_rating": 4,
     "tags": [
       "heritage",
-      "live-ingested",
-      "pondicherry"
+      "photography",
+      "architecture",
+      "french",
+      "walk"
     ],
-    "rating": 4.6,
-    "review_count": 823
+    "rating": 4.8,
+    "review_count": 1950
   },
   {
-    "id": "pondicherry-live-4",
+    "id": "pondy-04",
     "city_id": "pondicherry",
-    "name": "Puducherry Museum",
-    "category": "heritage",
-    "sub_category": "Heritage Fort & Historical Monument",
-    "description": "museum",
+    "name": "Sri Aurobindo Ashram",
+    "category": "spiritual",
+    "sub_category": "Spiritual Sanctuary & Samadhi",
+    "description": "Founded in 1926 by Sri Aurobindo and The Mother. A serene sanctuary where visitors experience profound stillness and pay respects at the flower-adorned marble Samadhi.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Heritage Fort & Historical Monument experience",
-      "Directly navigable on OpenStreetMap"
+      "Floral Samadhi courtyard",
+      "Library and spiritual bookstore",
+      "Quiet reflective atmosphere"
     ],
-    "budget_tier": "moderate",
-    "estimated_cost_inr": 150,
-    "duration_minutes": 90,
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
     "coordinates": {
-      "lat": 11.9344173,
-      "lng": 79.8349324
+      "lat": 11.9366,
+      "lng": 79.8347
     },
-    "address": "Puducherry Museum, Pondicherry",
-    "image_url": "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=800&q=80",
-    "best_time_to_visit": "Morning or Evening",
+    "address": "No. 9, Marine Street, White Town, Puducherry 605002",
+    "image_url": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "8:00 AM - 11:30 AM or 2:00 PM - 6:00 PM",
     "crowd_tendency": "medium",
     "recommended_age_groups": [
+      "senior",
       "adult",
       "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "niche_interests": [],
+    "weird_query_matches": [],
+    "dress_code_advisory": "Strict silence required. Modest, respectful attire (shoulders and knees covered).",
+    "accessibility_rating": 4,
+    "tags": [
+      "spiritual",
+      "ashram",
+      "quiet",
+      "peace",
+      "heritage"
+    ],
+    "rating": 4.7,
+    "review_count": 2100
+  },
+  {
+    "id": "pondy-05",
+    "city_id": "pondicherry",
+    "name": "Paradise Beach & Chunnambar Boat House",
+    "category": "beach",
+    "sub_category": "Island Beach & Water Sports",
+    "description": "An isolated, pristine golden sand beach accessible via a 15-minute scenic ferry ride across the Chunnambar backwaters through mangrove trees.",
+    "highlights": [
+      "Scenic backwater ferry ride",
+      "Golden clean sand & ocean waves",
+      "Water sports (jet ski, kayaking) and beach shacks"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 350,
+    "duration_minutes": 180,
+    "coordinates": {
+      "lat": 11.8727,
+      "lng": 79.8187
+    },
+    "address": "Chunnambar Boat House, Nonankuppam, Puducherry 605007",
+    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (9:00 AM - 12:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
       "young_adult",
-      "senior"
+      "adult",
+      "family"
     ],
     "dietary_options": [
       "all"
@@ -195,46 +262,161 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
+    "dress_code_advisory": "Beachwear and swimwear permitted on the beach.",
     "accessibility_rating": 3,
     "tags": [
-      "heritage",
-      "live-ingested",
-      "pondicherry"
+      "beach",
+      "adventure",
+      "ferry",
+      "water-sports",
+      "scenic"
     ],
     "rating": 4.5,
-    "review_count": 1524
+    "review_count": 3100
   },
   {
-    "id": "pondicherry-live-5",
+    "id": "pondy-06",
     "city_id": "pondicherry",
-    "name": "Our Lady of Angels Church",
-    "category": "spiritual",
-    "sub_category": "Spiritual Shrine & Historic Temple",
-    "description": "church in Puducherry, India",
+    "name": "Cafe des Arts",
+    "category": "cafe",
+    "sub_category": "French Vintage Courtyard Cafe",
+    "description": "A chic 19th-century French colonial house turned cafe, famous for its iconic yellow wall rickshaw mural, crepe suzettes, baguettes, and iced coffees in a bohemian patio.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Spiritual Shrine & Historic Temple experience",
-      "Directly navigable on OpenStreetMap"
+      "Authentic French crepes & fresh croissants",
+      "Artisan vintage courtyard vibe",
+      "Vintage book collection & photo spots"
     ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 60,
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 450,
+    "duration_minutes": 75,
     "coordinates": {
-      "lat": 11.93,
-      "lng": 79.83444444
+      "lat": 11.9332,
+      "lng": 79.8339
     },
-    "address": "Our Lady of Angels Church, Pondicherry",
-    "image_url": "http://commons.wikimedia.org/wiki/Special:FilePath/Eglise%20de%20Notre%20Dame%20des%20Anges%20-%20our%20Lady%20of%20Holy%20Angels%20-%20Pondicherry.JPG",
-    "best_time_to_visit": "Morning or Evening",
+    "address": "10, Suffren Street, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Brunch (10:00 AM - 1:00 PM) or High Tea (4:30 PM - 6:30 PM)",
     "crowd_tendency": "high",
     "recommended_age_groups": [
-      "senior",
-      "family",
-      "adult"
+      "young_adult",
+      "adult",
+      "all"
     ],
     "dietary_options": [
       "all",
+      "vegetarian",
+      "vegan"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "niche_interests": [],
+    "weird_query_matches": [],
+    "dress_code_advisory": "Smart casual.",
+    "accessibility_rating": 4,
+    "tags": [
+      "cafe",
+      "french",
+      "crepes",
+      "coffee",
+      "vintage",
+      "instagrammable"
+    ],
+    "rating": 4.4,
+    "review_count": 1820
+  },
+  {
+    "id": "pondy-07",
+    "city_id": "pondicherry",
+    "name": "Coromandel Cafe & Restaurant",
+    "category": "dining",
+    "sub_category": "Gourmet Continental & Heritage Bistro",
+    "description": "Housed in the restored 8,000-square-foot 19th-century La Maison Rose, Coromandel Cafe offers award-winning culinary plates, craft beverages, artisanal pasta, and lush botanical garden dining.",
+    "highlights": [
+      "Heritage colonial mansion ambiance",
+      "Gourmet farm-to-table cuisine",
+      "Artisan desserts and specialty coffee"
+    ],
+    "budget_tier": "luxury",
+    "estimated_cost_inr": 1100,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 11.9312,
+      "lng": 79.8329
+    },
+    "address": "8, Romain Rolland St, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Dinner (7:30 PM - 10:30 PM) or Candlelit Evening",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "family"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "halal",
+      "vegan"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "niche_interests": [],
+    "weird_query_matches": [],
+    "dress_code_advisory": "Smart casual or evening wear.",
+    "accessibility_rating": 4,
+    "tags": [
+      "dining",
+      "gourmet",
+      "luxury",
+      "romantic",
+      "french",
+      "heritage"
+    ],
+    "rating": 4.6,
+    "review_count": 2400
+  },
+  {
+    "id": "pondy-08",
+    "city_id": "pondicherry",
+    "name": "Surguru Restaurant (Heritage Branch)",
+    "category": "dining",
+    "sub_category": "Pure Vegetarian South Indian Cuisine",
+    "description": "The quintessential destination for pure vegetarian South Indian meals, ghee roast dosas, idlis, and filter coffee. Highly rated for clean preparation, Jain-friendly options, and quick service.",
+    "highlights": [
+      "Crispy golden ghee roast dosas",
+      "Authentic filter kaapi",
+      "Strict pure-veg and Jain options available"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 180,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 11.9351,
+      "lng": 79.831
+    },
+    "address": "No. 12, Sardar Vallabhai Patel Salai, Heritage Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Breakfast (7:30 AM - 10:30 AM) or Dinner (7:00 PM - 9:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "family",
+      "senior",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
       "vegetarian",
       "pure_veg_jain"
     ],
@@ -248,40 +430,98 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
+    "dress_code_advisory": "Casual.",
+    "accessibility_rating": 5,
     "tags": [
-      "spiritual",
-      "live-ingested",
-      "pondicherry"
+      "dining",
+      "south-indian",
+      "pure-veg",
+      "jain-friendly",
+      "budget",
+      "breakfast"
     ],
-    "rating": 4.7,
-    "review_count": 768
+    "rating": 4.5,
+    "review_count": 3500
   },
   {
-    "id": "pondicherry-live-6",
+    "id": "pondy-09",
+    "city_id": "pondicherry",
+    "name": "Serenity Beach & Surf School",
+    "category": "adventure",
+    "sub_category": "Surfing, Rocky Pier & Fishing Village",
+    "description": "A lively coastline with golden sands, breaking waves ideal for beginner and intermediate surfing, and a long boulder pier stretching deep into the Bay of Bengal.",
+    "highlights": [
+      "Certified beginner surfing lessons",
+      "Boulder pier walk into the sea",
+      "Fresh seafood shacks along the shore"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 100,
+    "duration_minutes": 120,
+    "coordinates": {
+      "lat": 11.9688,
+      "lng": 79.8437
+    },
+    "address": "Serenity Beach Road, Kottakuppam, Puducherry 605104",
+    "image_url": "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Early morning for surfing (6:00 AM - 9:00 AM) or sunset",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "young_adult",
+      "adult"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "niche_interests": [],
+    "weird_query_matches": [],
+    "dress_code_advisory": "Beachwear and swimwear.",
+    "accessibility_rating": 3,
+    "tags": [
+      "beach",
+      "surfing",
+      "adventure",
+      "waves",
+      "sunset"
+    ],
+    "rating": 4.4,
+    "review_count": 2100
+  },
+  {
+    "id": "pondy-10",
     "city_id": "pondicherry",
     "name": "Basilica of the Sacred Heart of Jesus",
     "category": "heritage",
-    "sub_category": "Tourist Landmark",
-    "description": "Pondicherry",
+    "sub_category": "Gothic Architecture & Historic Cathedral",
+    "description": "An imposing 1907 Gothic-Revival Catholic church renowned for its rare stained-glass panels depicting the life of Jesus Christ, towering spires, and peaceful interiors.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Tourist Landmark experience",
-      "Directly navigable on OpenStreetMap"
+      "28 stained glass panels",
+      "Rare Gothic Revival architecture in South India",
+      "Peaceful inner sanctuary"
     ],
     "budget_tier": "budget",
-    "estimated_cost_inr": 50,
-    "duration_minutes": 60,
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
     "coordinates": {
-      "lat": 11.92626,
-      "lng": 79.82704
+      "lat": 11.9292,
+      "lng": 79.8279
     },
-    "address": "Basilica of the Sacred Heart of Jesus, Pondicherry",
-    "image_url": "http://commons.wikimedia.org/wiki/Special:FilePath/Puducherry%20Sacred%20Heart%20Cathedral%202.JPG",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "medium",
+    "address": "Door No. 132, South Boulevard, Near Railway Station, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1548625361-16eb164227ec?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (8:00 AM - 11:30 AM) or Afternoon (4:00 PM - 6:00 PM)",
+    "crowd_tendency": "low",
     "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
       "all"
     ],
     "dietary_options": [
@@ -297,44 +537,47 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
+    "dress_code_advisory": "Modest attire requested inside the cathedral.",
+    "accessibility_rating": 5,
     "tags": [
       "heritage",
-      "live-ingested",
-      "pondicherry"
+      "gothic",
+      "church",
+      "architecture",
+      "spiritual",
+      "peaceful"
     ],
-    "rating": 4.8,
-    "review_count": 1715
+    "rating": 4.7,
+    "review_count": 1780
   },
   {
-    "id": "pondicherry-live-7",
+    "id": "pondy-11",
     "city_id": "pondicherry",
-    "name": "Charminar",
-    "category": "heritage",
-    "sub_category": "Heritage Fort & Historical Monument",
-    "description": "The Charminar (lit.\u2009'four minarets') is a monument located in Hyderabad, Telangana, India. Constructed in 1591, the landmark is a symbol of Hyderabad and officially incorporated in the emblem of Telangana. It remained the tallest structure in Hyderabad for 396 years until 1987.",
+    "name": "Pondicherry Botanical Garden",
+    "category": "nature",
+    "sub_category": "Historic Botanical Flora & Toy Train",
+    "description": "Established in 1826 by French horticulturist C.S. Perrottet. Features over 1,500 species of exotic flora, towering centuries-old trees, musical fountains, and a heritage mini toy train.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Heritage Fort & Historical Monument experience",
-      "Directly navigable on OpenStreetMap"
+      "Over 1,500 exotic plant species",
+      "Shaded walkways with mature canopy",
+      "Miniature heritage toy train for kids"
     ],
-    "budget_tier": "moderate",
-    "estimated_cost_inr": 150,
+    "budget_tier": "budget",
+    "estimated_cost_inr": 30,
     "duration_minutes": 90,
     "coordinates": {
-      "lat": 17.36163,
-      "lng": 78.47467
+      "lat": 11.9298,
+      "lng": 79.8219
     },
-    "address": "Charminar, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Charminar_Hyderabad_1.jpg/960px-Charminar_Hyderabad_1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "medium",
+    "address": "Marimalai Adigal Salai, Near New Bus Stand, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (9:00 AM - 11:30 AM) or Evening (4:00 PM - 5:30 PM)",
+    "crowd_tendency": "low",
     "recommended_age_groups": [
-      "adult",
       "family",
-      "young_adult",
-      "senior"
+      "senior",
+      "adult",
+      "all"
     ],
     "dietary_options": [
       "all"
@@ -349,43 +592,47 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
+    "dress_code_advisory": "Casual walking clothes.",
+    "accessibility_rating": 4,
     "tags": [
-      "heritage",
-      "live-ingested",
-      "pondicherry"
+      "nature",
+      "garden",
+      "greenery",
+      "family-friendly",
+      "peaceful",
+      "budget"
     ],
-    "rating": 4.3,
-    "review_count": 1317
+    "rating": 4.2,
+    "review_count": 1450
   },
   {
-    "id": "pondicherry-live-8",
+    "id": "pondy-12",
     "city_id": "pondicherry",
-    "name": "Cuddalore district",
+    "name": "Manakula Vinayagar Temple",
     "category": "spiritual",
-    "sub_category": "Spiritual Shrine & Historic Temple",
-    "description": "Cuddalore district is one of the 38 districts in the state of Tamil Nadu in India, has Nataraja Shiva Temple and Pichavaram Mangrove Forest. The district headquarters is Cuddalore.\n\n.",
+    "sub_category": "Ancient Hindu Temple & Heritage",
+    "description": "A historic temple dedicated to Lord Ganesha, dating back to before French colonization in 1666. Known for its ornate golden spire (Vimana) and 40 incarnations painted on ceilings.",
     "highlights": [
-      "Major attraction in Pondicherry",
-      "Spiritual Shrine & Historic Temple experience",
-      "Directly navigable on OpenStreetMap"
+      "Pre-French colonial heritage",
+      "Gilded gold tower & painted mythological ceiling",
+      "Spiritual temple energy and traditional pooja"
     ],
     "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 60,
+    "estimated_cost_inr": 20,
+    "duration_minutes": 45,
     "coordinates": {
-      "lat": 11.75,
-      "lng": 79.75
+      "lat": 11.936,
+      "lng": 79.8336
     },
-    "address": "Cuddalore district, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/A_view_of_Nataraja_Shiva_Temple_at_Chidambaram%2C_Tamil_Nadu.jpg/960px-A_view_of_Nataraja_Shiva_Temple_at_Chidambaram%2C_Tamil_Nadu.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
+    "address": "Manakula Vinayagar Koil St, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Early morning (6:30 AM - 9:00 AM) or Evening (6:00 PM - 8:30 PM)",
     "crowd_tendency": "high",
     "recommended_age_groups": [
-      "senior",
       "family",
-      "adult"
+      "senior",
+      "adult",
+      "all"
     ],
     "dietary_options": [
       "all",
@@ -402,422 +649,16 @@
     },
     "niche_interests": [],
     "weird_query_matches": [],
-    "dress_code_advisory": null,
+    "dress_code_advisory": "Traditional or modest temple attire required. Footwear deposited outside.",
     "accessibility_rating": 3,
     "tags": [
       "spiritual",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.3,
-    "review_count": 2431
-  },
-  {
-    "id": "pondicherry-live-9",
-    "city_id": "pondicherry",
-    "name": "Golden Beach, Chennai",
-    "category": "beach",
-    "sub_category": "Scenic Beach & Coastline",
-    "description": "Golden Beach is a natural urban beach located along the Bay of Bengal in Chennai, Tamil Nadu, India. VGP Golden Beach is a major tourist attraction in Chennai. It is situated on the East Coast Road, the seaside road from Chennai to Cuddalore via Pondicherry..",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Scenic Beach & Coastline experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 120,
-    "coordinates": {
-      "lat": 12.91307,
-      "lng": 80.25276
-    },
-    "address": "Golden Beach, Chennai, Pondicherry",
-    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "young_adult",
-      "adult",
-      "family"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
-      "beach",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.3,
-    "review_count": 857
-  },
-  {
-    "id": "pondicherry-live-10",
-    "city_id": "pondicherry",
-    "name": "Lal Darwaza Mosque",
-    "category": "spiritual",
-    "sub_category": "Spiritual Shrine & Historic Temple",
-    "description": "The Lal Darwaza Mosque, also known as the Red Portal Mosque and the Ruby Gate Mosque, is a mosque located in Jaunpur, in the Jaunpur district of the state of Uttar Pradesh, India. Completed in 1447 CE by Queen Rajye Bibi, the mosque is dedicated to Sayyid Ali Dawood Kutubbudin, a Muslim saint..",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Spiritual Shrine & Historic Temple experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 60,
-    "coordinates": {
-      "lat": 25.7525,
-      "lng": 82.69027778
-    },
-    "address": "Lal Darwaza Mosque, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Lal_Darwaza_Masjid_03.jpg/960px-Lal_Darwaza_Masjid_03.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "senior",
-      "family",
-      "adult"
-    ],
-    "dietary_options": [
-      "all",
-      "vegetarian",
-      "pure_veg_jain"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
-    "tags": [
-      "spiritual",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.2,
-    "review_count": 2614
-  },
-  {
-    "id": "pondicherry-live-11",
-    "city_id": "pondicherry",
-    "name": "Mahe district",
-    "category": "beach",
-    "sub_category": "Scenic Beach & Coastline",
-    "description": "Mah\u00e9 district, () natively known as Mayyazhi (Malayalam: [m\u0250j\u02d0\u0250\u027bi]), is one of the four non-contiguous districts that comprise the union territory of Puducherry, India. It encompasses the entire geographic area of the Mah\u00e9 region. Mah\u00e9 is the smallest district in India by total land area, measuring just 8.69 square kilometres (3.36 sq mi).\nGeographically positioned along the Malabar Coast, the district functions as a coastal enclave bordered on three sides by Kannur district and on the south by Kozhikode district of the neighbouring state of Kerala.",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Scenic Beach & Coastline experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 120,
-    "coordinates": {
-      "lat": 11.7,
-      "lng": 75.53333333
-    },
-    "address": "Mahe district, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/%E0%B4%AE%E0%B4%AF%E0%B5%8D%E0%B4%AF%E0%B4%B4%E0%B4%BF_traductions.png/960px-%E0%B4%AE%E0%B4%AF%E0%B5%8D%E0%B4%AF%E0%B4%B4%E0%B4%BF_traductions.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "young_adult",
-      "adult",
-      "family"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
-      "beach",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.3,
-    "review_count": 1111
-  },
-  {
-    "id": "pondicherry-live-12",
-    "city_id": "pondicherry",
-    "name": "Promenade Beach",
-    "category": "beach",
-    "sub_category": "Scenic Beach & Coastline",
-    "description": "Rock Beach (or, known as, \"Promenade Beach\", French: Plage de la Promenade)  is the popular stretch of beachfront in the city of Puducherry, India, along the Bay of Bengal. It is a 1.2-kilometre-long stretch in Pondicherry, starts from War Memorial and end at Dupleix Park on the Goubert Avenue.\n\n.",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Scenic Beach & Coastline experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 120,
-    "coordinates": {
-      "lat": 11.9325,
-      "lng": 79.83583333
-    },
-    "address": "Promenade Beach, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Pondicherry-Rock_beach_aerial_view.jpg/960px-Pondicherry-Rock_beach_aerial_view.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "young_adult",
-      "adult",
-      "family"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
-      "beach",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.3,
-    "review_count": 684
-  },
-  {
-    "id": "pondicherry-live-13",
-    "city_id": "pondicherry",
-    "name": "Puducherry (union territory)",
-    "category": "heritage",
-    "sub_category": "Tourist Landmark",
-    "description": "Puducherry (also known as Poudouch\u00e9ry in French or historically as Pondicherry) is a union territory of India, consisting of four small geographically unconnected districts. It was formed out of four territories of former French India, namely Pondich\u00e9ry (now Puducherry), Karikal (Karaikal), Mah\u00e9 and Yanaon (now Yanam), excluding Chandannagar (Chandernagore), and it is named after the largest district, Puducherry, which was also the capital of French India. Historically known as Pondicherry, the territory changed its official name to Puducherry on 1 October 2006.\nThe Union Territory of Puducherry lies in the southern part of the Indian Peninsula.",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Tourist Landmark experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 50,
-    "duration_minutes": 60,
-    "coordinates": {
-      "lat": 11.911,
-      "lng": 79.813
-    },
-    "address": "Puducherry (union territory), Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Pondicherry-Rock_beach_aerial_view.jpg/960px-Pondicherry-Rock_beach_aerial_view.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "medium",
-    "recommended_age_groups": [
-      "all"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
+      "hindu-temple",
       "heritage",
-      "live-ingested",
-      "pondicherry"
+      "ganesha",
+      "culture"
     ],
-    "rating": 4.5,
-    "review_count": 2561
-  },
-  {
-    "id": "pondicherry-live-14",
-    "city_id": "pondicherry",
-    "name": "Sri Lakshmi Narayani Golden Temple",
-    "category": "spiritual",
-    "sub_category": "Spiritual Shrine & Historic Temple",
-    "description": "Sri Lakshmi Narayani Golden Temple complex inside the Thirupuram spiritual park is nestled at the base of a small range of green hills at Thirumalaikodi (or simply Malaikodi) Vellore in Tamil Nadu, India. It is 120 km from Tirupati, 145 km from Chennai, 160 km from Pondicherry and 200 km from Bengaluru. The Maha Kumbhabhishekam or consecration of the temple and its chief deity, Lakshmi or Maha Lakshmi, the Hindu goddess of wealth, was held on 24 August 2007, and devotees from all religions and backgrounds are welcome to visit..",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Spiritual Shrine & Historic Temple experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 60,
-    "coordinates": {
-      "lat": 12.873267,
-      "lng": 79.08842
-    },
-    "address": "Sri Lakshmi Narayani Golden Temple, Pondicherry",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Sripuram_Temple_Multiple_Views.gif?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "senior",
-      "family",
-      "adult"
-    ],
-    "dietary_options": [
-      "all",
-      "vegetarian",
-      "pure_veg_jain"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 3,
-    "tags": [
-      "spiritual",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.2,
-    "review_count": 960
-  },
-  {
-    "id": "pondicherry-live-15",
-    "city_id": "pondicherry",
-    "name": "Velankanni",
-    "category": "beach",
-    "sub_category": "Scenic Beach & Coastline",
-    "description": "Velankanni (V\u0113\u1e37\u0101\u1e45ka\u1e47\u1e47i) is a special grade town panchayat in Nagapattinam district in the Indian state of Tamil Nadu. It lies on the Coromandel Coast of the Bay of Bengal, 350 km south of Chennai (Madras), 12 km south of Nagapattinam, and 33 km southeast of Thiruvarur.\nA canal built to link this town with Vedaranyam still lies to the west. The Vellayar, a minor branch of the Cauvery River, runs south of the town and discharges into the sea.",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Scenic Beach & Coastline experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 0,
-    "duration_minutes": 120,
-    "coordinates": {
-      "lat": 10.6819,
-      "lng": 79.8437
-    },
-    "address": "Velankanni, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Velankanni_Church_2026.jpg/960px-Velankanni_Church_2026.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "high",
-    "recommended_age_groups": [
-      "young_adult",
-      "adult",
-      "family"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
-      "beach",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.2,
-    "review_count": 187
-  },
-  {
-    "id": "pondicherry-live-16",
-    "city_id": "pondicherry",
-    "name": "Yanam district",
-    "category": "heritage",
-    "sub_category": "Tourist Landmark",
-    "description": "Yanam district (Telugu: [ja\u02d0na\u02d0m]) (previously Yanaon, (French: [jana\u0254\u0303])) is one of the four census districts of the Union Territory of Puducherry in India. Administratively it falls under the Puducherry district..",
-    "highlights": [
-      "Major attraction in Pondicherry",
-      "Tourist Landmark experience",
-      "Directly navigable on OpenStreetMap"
-    ],
-    "budget_tier": "budget",
-    "estimated_cost_inr": 50,
-    "duration_minutes": 60,
-    "coordinates": {
-      "lat": 16.73388889,
-      "lng": 82.21083333
-    },
-    "address": "Yanam district, Pondicherry",
-    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Puducherry_Map.svg/960px-Puducherry_Map.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-    "best_time_to_visit": "Morning or Evening",
-    "crowd_tendency": "medium",
-    "recommended_age_groups": [
-      "all"
-    ],
-    "dietary_options": [
-      "all"
-    ],
-    "belief_affiliation": "secular",
-    "etiquette_rules": {
-      "dress_code": "Casual comfortable clothing",
-      "footwear": "Footwear allowed",
-      "silence_policy": "Normal noise levels permitted",
-      "photography": "Photography allowed",
-      "gender_rules": "All welcome together"
-    },
-    "niche_interests": [],
-    "weird_query_matches": [],
-    "dress_code_advisory": null,
-    "accessibility_rating": 4,
-    "tags": [
-      "heritage",
-      "live-ingested",
-      "pondicherry"
-    ],
-    "rating": 4.3,
-    "review_count": 1938
+    "rating": 4.7,
+    "review_count": 3900
   }
 ]

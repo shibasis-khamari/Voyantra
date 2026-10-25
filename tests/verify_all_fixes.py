@@ -65,11 +65,17 @@ def run_all_verifications():
         f"{BASE_URL}/places/fetch-from-internet?city_name=Pondicherry",
         headers={"Authorization": f"Bearer {user_token}"}
     )
-    # Admin token -> 200
-    r_adm_tok = requests.post(
-        f"{BASE_URL}/places/fetch-from-internet?city_name=Pondicherry",
-        headers={"Authorization": f"Bearer {admin_token}"}
-    )
+    # Admin token -> 200 (preserve data file against pollution)
+    pondy_json_path = Path(__file__).resolve().parent.parent / "backend" / "app" / "data" / "pondicherry_places.json"
+    pondy_backup = pondy_json_path.read_text(encoding="utf-8") if pondy_json_path.exists() else None
+    try:
+        r_adm_tok = requests.post(
+            f"{BASE_URL}/places/fetch-from-internet?city_name=Pondicherry",
+            headers={"Authorization": f"Bearer {admin_token}"}
+        )
+    finally:
+        if pondy_backup is not None:
+            pondy_json_path.write_text(pondy_backup, encoding="utf-8")
     pass_1_6 = (r_no_tok.status_code == 401 and r_usr_tok.status_code == 403 and r_adm_tok.status_code == 200)
     results['1.6_ingestion_rbac'] = (
         "PASS" if pass_1_6 else "FAIL",

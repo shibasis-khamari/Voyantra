@@ -1,10 +1,14 @@
 import requests
 import json
 import re
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from ..schemas.place import Place, CategoryEnum, BudgetTierEnum, CrowdTendencyEnum, AgeGroupEnum, DietaryOptionEnum, Coordinates
+from ..core.geo import is_within_operating_bounds, haversine_km, PONDICHERRY_CENTER, CHENNAI_CENTER
+
+logger = logging.getLogger(__name__)
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -225,13 +229,50 @@ class InternetIngestionService:
 
     def ingest_city_from_internet(self, city_name: str) -> Dict[str, Any]:
         """
-        Directly fetches live POI data for any city from OpenStreetMap, Wikidata, and Wikipedia
-        and stores it in the database.
+        Directly fetches live POI data from OpenStreetMap, Wikidata, and Wikipedia.
+        Strictly restricted to Pondicherry and Chennai. Enforces 70km operating bounds,
+        center proximity, overview exclusion, and non-destructive merging.
         """
         city_id = city_name.strip().lower().replace(" ", "_")
+        if city_id not in ["pondicherry", "chennai"]:
+            return {
+                "success": False,
+                "message": f"Voyantra operating pilot strictly supports Pondicherry and Chennai. Destination '{city_name}' is outside operating boundaries."
+            }
+
         geo = self.fetch_city_coordinates(city_name)
         if not geo:
             return {"success": False, "message": f"Could not find coordinates on the internet for '{city_name}'"}
+
+        target_center = PONDICHERRY_CENTER if city_id == "pondicherry" else CHENNAI_CENTER
+        other_center = CHENNAI_CENTER if city_id == "pondicherry" else PONDICHERRY_CENTER
+
+        # Load existing places to merge without overwriting
+        output_file = DATA_DIR / f"{city_id}_places.json"
+        existing_places = []
+        if output_file.exists():
+            try:
+                with open(output_file, "r", encoding="utf-8") as f:
+                    existing_places = json.load(f)
+            except Exception as e:
+                logger.warning(f"Failed to load existing places for {city_id}: {e}")
+
+        def normalize_name(n: str) -> str:
+            return re.sub(r'[^a-z0-9]', '', n.lower())
+
+        existing_norm_names = {normalize_name(p.get("name", "")) for p in existing_places if isinstance(p, dict)}
+        max_live_num = 0
+        prefix = f"{city_id}-live-"
+        for p in existing_places:
+            if isinstance(p, dict):
+                pid = p.get("id", "")
+                if pid.startswith(prefix):
+                    try:
+                        num = int(pid[len(prefix):])
+                        if num > max_live_num:
+                            max_live_num = num
+                    except ValueError:
+                        pass
 
         # 1. Fetch from Wikidata
         wikidata_spots = self.fetch_wikidata_tourist_spots(city_name.title())
@@ -244,8 +285,9 @@ class InternetIngestionService:
         if not combined_raw:
             return {"success": False, "message": f"No tourist destinations found on Wikidata/Wikipedia for '{city_name}'"}
 
-        enriched_places: List[Place] = []
-        seen_names = set()
+        overview_terms = ["district", "union territory", "division", "state of", "taluk", "revenue division"]
+        new_places: List[Place] = []
+        seen_names_this_batch = set()
 
         default_images = {
             CategoryEnum.BEACH: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
@@ -258,17 +300,45 @@ class InternetIngestionService:
         }
 
         for idx, item in enumerate(combined_raw):
-            name = item["name"].strip()
-            if name.lower() in seen_names:
+            name = item.get("name", "").strip()
+            if not name:
                 continue
-            seen_names.add(name.lower())
+
+            name_lower = name.lower()
+            name_norm = normalize_name(name)
+
+            # Name check: drop region, district, or territory overviews
+            if any(term in name_lower for term in overview_terms):
+                logger.info(f"[Ingestion] Rejected non-POI overview: {name}")
+                continue
+
+            if name_norm in existing_norm_names or name_norm in seen_names_this_batch:
+                continue
+
+            lat = float(item["lat"])
+            lng = float(item["lng"])
+
+            # Geofence check: within 70km of operating bounds
+            if not is_within_operating_bounds(lat, lng):
+                logger.info(f"[Ingestion] Dropped out-of-bounds POI: {name} ({lat}, {lng})")
+                continue
+
+            # Closer to target city center than to the other city center
+            dist_target = haversine_km(lat, lng, target_center[0], target_center[1])
+            dist_other = haversine_km(lat, lng, other_center[0], other_center[1])
+            if dist_target >= dist_other:
+                logger.info(f"[Ingestion] Dropped POI closer to other city: {name} ({dist_target:.1f}km vs {dist_other:.1f}km)")
+                continue
+
+            seen_names_this_batch.add(name_norm)
+            max_live_num += 1
 
             desc = item.get("description") or f"{name} is a renowned tourist attraction in {city_name.title()}."
             meta = self.categorize_place(name, desc)
             img = item.get("image_url") or default_images.get(meta["category"], default_images[CategoryEnum.HERITAGE])
 
             place = Place(
-                id=f"{city_id}-live-{len(enriched_places)+1}",
+                id=f"{city_id}-live-{max_live_num}",
                 city_id=city_id,
                 name=name,
                 category=meta["category"],
@@ -278,7 +348,7 @@ class InternetIngestionService:
                 budget_tier=meta["budget"],
                 estimated_cost_inr=meta["cost"],
                 duration_minutes=meta["duration"],
-                coordinates=Coordinates(lat=item["lat"], lng=item["lng"]),
+                coordinates=Coordinates(lat=lat, lng=lng),
                 address=f"{name}, {city_name.title()}",
                 image_url=img,
                 best_time_to_visit="Morning or Evening",
@@ -290,18 +360,15 @@ class InternetIngestionService:
                 rating=round(4.2 + (abs(hash(name)) % 7) / 10.0, 1),
                 review_count=150 + (abs(hash(name)) % 2500)
             )
-            enriched_places.append(place)
+            new_places.append(place)
 
-        if not enriched_places:
-            return {"success": False, "message": f"No valid tourist spots extracted for '{city_name}'"}
+        # Merge and save to disk without overwriting existing entries
+        if new_places:
+            merged_dict_list = existing_places + [p.model_dump(mode="json") for p in new_places]
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(merged_dict_list, f, indent=2, ensure_ascii=False)
 
-        # Save to JSON storage
-        output_file = DATA_DIR / f"{city_id}_places.json"
-        places_dict_list = [p.model_dump() if hasattr(p, 'model_dump') else p.dict() for p in enriched_places]
-        with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(places_dict_list, f, indent=2)
-
-        # Update cities.json
+        # Update cities.json if not present
         cities_file = DATA_DIR / "cities.json"
         try:
             with open(cities_file, "r", encoding="utf-8") as f:
@@ -309,7 +376,7 @@ class InternetIngestionService:
         except Exception:
             cities = []
 
-        if not any(c["id"] == city_id for c in cities):
+        if not any(c.get("id") == city_id for c in cities):
             cities.append({
                 "id": city_id,
                 "name": city_name.title(),
@@ -319,15 +386,15 @@ class InternetIngestionService:
                 "is_pilot": False
             })
             with open(cities_file, "w", encoding="utf-8") as f:
-                json.dump(cities, f, indent=2)
+                json.dump(cities, f, indent=2, ensure_ascii=False)
 
         return {
             "success": True,
             "city_id": city_id,
             "city_name": city_name.title(),
-            "total_ingested": len(enriched_places),
+            "total_ingested": len(new_places),
             "coordinates": {"lat": geo["lat"], "lng": geo["lng"]},
-            "places": [p.model_dump() if hasattr(p, 'model_dump') else p.dict() for p in enriched_places[:10]]
+            "places": [p.model_dump(mode="json") for p in new_places[:10]]
         }
 
 internet_ingestion_service = InternetIngestionService()
