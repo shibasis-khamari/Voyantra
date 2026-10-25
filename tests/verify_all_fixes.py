@@ -9,6 +9,13 @@ BASE_URL = 'http://127.0.0.1:8000/api/v1'
 
 def run_all_verifications():
     results = {}
+
+    # Reset test rate limits for isolation
+    try:
+        requests.post(f"{BASE_URL}/recommendations/reset-rate-limit", timeout=2)
+        requests.post(f"{BASE_URL}/routes/reset-rate-limit", timeout=2)
+    except Exception:
+        pass
     print("=" * 60)
     print("RUNNING VOYANTRA FULL REGRESSION VERIFICATION SUITE")
     print("=" * 60)
@@ -250,8 +257,9 @@ def run_all_verifications():
         "existing_days": itin_init.get("days")
     }, timeout=45)
     itin_ref = refine_req.json().get("itinerary", {})
-    day1_after = itin_ref.get("days", [])[0] if itin_ref.get("days") else {}
-    day2_after = itin_ref.get("days", [])[1] if len(itin_ref.get("days")) > 1 else {}
+    ref_days = itin_ref.get("days") or []
+    day1_after = ref_days[0] if len(ref_days) > 0 else {}
+    day2_after = ref_days[1] if len(ref_days) > 1 else {}
 
     day1_identical = ((day1_before.get("morning") or {}).get("place_name") == (day1_after.get("morning") or {}).get("place_name") and
                       (day1_before.get("afternoon") or {}).get("place_name") == (day1_after.get("afternoon") or {}).get("place_name") and

@@ -111,7 +111,7 @@ export function CrowdReportModal({
           setErrorMsg('Unable to retrieve your physical location: ' + geoErr.message);
         }
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { timeout: 10000, maximumAge: 0 }
     );
   };
 

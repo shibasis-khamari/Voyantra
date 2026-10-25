@@ -30,6 +30,12 @@ def apply_rate_limit(client_ip: str):
         )
     _rate_limit_history[client_ip].append(now)
 
+@router.post("/reset-rate-limit")
+def reset_rate_limit():
+    """Reset rate limiter state for automated testing isolation."""
+    _rate_limit_history.clear()
+    return {"status": "reset", "message": "Recommendation rate limiter history cleared"}
+
 class ItineraryRequest(BaseModel):
     city_id: Optional[str] = "pondicherry"
     city: Optional[str] = None

@@ -36,6 +36,7 @@ def test_phase5_ui():
         # Grant geolocation permission
         context = browser.new_context(
             permissions=["geolocation"],
+            geolocation={"latitude": p_lat, "longitude": p_lng},
             viewport={"width": 1280, "height": 900}
         )
         page = context.new_page()
@@ -136,14 +137,19 @@ def test_phase5_ui():
         submit_btn.click()
 
         # Check for success notification immediately while modal is still open (auto-closes in 1.8s)
-        success_banner = page.wait_for_selector(".bg-emerald-50", timeout=5000)
-        assert success_banner is not None, "Expected success confirmation in modal"
-        print(f"-> Success banner confirmed: {success_banner.text_content()}")
+        success_banner = page.locator("text=Thank you! Your verified report")
+        success_banner.wait_for(state="visible", timeout=5000)
+        assert success_banner.is_visible(), "Expected success confirmation in modal"
+        print(f"-> Success banner confirmed: {success_banner.first.text_content()}")
 
         # Step 7: Wait for modal to auto-close and check live status in popover
         print("\n[Step 7] Waiting for modal to auto-close and checking updated live crowd confidence badge...")
-        page.wait_for_timeout(2500)
+        page.wait_for_timeout(3000)
+        if not page.locator("text=Crowd Density Intelligence").is_visible():
+            badge_elem.click(force=True)
+            page.wait_for_timeout(1000)
         live_badge = page.locator("text=CONFIDENCE")
+        live_badge.wait_for(state="visible", timeout=10000)
         assert live_badge.is_visible(), "Live confidence badge not visible in popover"
         conf_text = live_badge.text_content().strip()
         print(f"-> Live confidence indicator: {conf_text}")
