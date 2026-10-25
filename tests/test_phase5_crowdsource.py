@@ -72,8 +72,7 @@ def test_phase5():
         "city_id": "pondicherry",
         "crowd_level": "bustling",
         "user_lat": near_lat,
-        "user_lng": near_lng,
-        "is_simulated": False
+        "user_lng": near_lng
     }
     r_valid = requests.post(f"{BASE_URL}/crowd/report", json=payload_valid)
     print(f"Valid on-site submission: HTTP {r_valid.status_code}")
@@ -84,14 +83,19 @@ def test_phase5():
     print(f"-> PASS: Report submitted successfully! Reported: {data_valid['reported_density_pct']}%, Blended: {data_valid['blended_density_pct']}%")
 
     # -------------------------------------------------------------------------
-    # TEST 5.3: Cooldown Rate Limiting (15 min cooldown -> 429)
+    # TEST 5.3: Cooldown Rate Limiting (15 min cooldown -> 429) & No Bypass
     # -------------------------------------------------------------------------
-    print("\n--- TEST 5.3: Cooldown Rate Limiting (15-min cooldown) ---")
+    print("\n--- TEST 5.3: Cooldown Rate Limiting & Bypass Defense (15-min cooldown) ---")
     r_repeat = requests.post(f"{BASE_URL}/crowd/report", json=payload_valid)
     print(f"Immediate repeat submission: HTTP {r_repeat.status_code}")
     assert r_repeat.status_code == 429, f"Expected 429 for rapid re-submission, got: {r_repeat.status_code}"
     assert "Cooldown active" in r_repeat.json()["detail"]
-    print("-> PASS: Rapid duplicate submission correctly throttled with HTTP 429.")
+
+    # Verify public client CANNOT bypass cooldown with is_simulated in request body
+    payload_bypass = {**payload_valid, "is_simulated": True}
+    r_bypass = requests.post(f"{BASE_URL}/crowd/report", json=payload_bypass)
+    assert r_bypass.status_code == 429, f"Cooldown bypass attempt failed to return 429: {r_bypass.status_code}"
+    print("-> PASS: Rapid duplicate submission correctly throttled with HTTP 429, even with simulated flag in payload.")
 
     # -------------------------------------------------------------------------
     # TEST 5.4: Privacy Protection (No raw GPS stored in DB)
@@ -106,22 +110,27 @@ def test_phase5():
     print(f"-> PASS: Privacy verified. Reporter hash: {stored_rep['reporter_hash']}, Verification dist: {stored_rep['verification_distance_m']}m.")
 
     # -------------------------------------------------------------------------
-    # TEST 5.5: Feature Snapshot Logging (Excludes rule as input feature)
+    # TEST 5.5: Feature Snapshot Logging (IST timezone & rule baseline)
     # -------------------------------------------------------------------------
-    print("\n--- TEST 5.5: Feature Snapshot Logging & Leakage Prevention ---")
+    print("\n--- TEST 5.5: Feature Snapshot Logging & IST Timezone Consistency ---")
+    from zoneinfo import ZoneInfo
+    now_ist = datetime.now(ZoneInfo("Asia/Kolkata"))
     stored_snap = db[SNAPSHOTS_COLLECTION].find_one({"place_id": p_id})
     assert stored_snap is not None
-    assert "hour_of_day" in stored_snap
+    assert stored_snap["hour_of_day"] == now_ist.hour, f"Snapshot hour {stored_snap['hour_of_day']} != IST hour {now_ist.hour}"
+    assert stored_snap["day_of_week"] == now_ist.weekday()
+    assert stored_snap["month"] == now_ist.month
+    assert stored_snap["is_simulated"] is False
     assert "temperature_c" in stored_snap
     assert "precipitation_mm" in stored_snap
     assert "has_active_festival" in stored_snap
     assert stored_snap["rule_baseline_density_pct"] > 0
-    print(f"-> PASS: Snapshot verified with exogenous features (temp: {stored_snap['temperature_c']}°C, rain: {stored_snap['precipitation_mm']}mm, baseline: {stored_snap['rule_baseline_density_pct']}%).")
+    print(f"-> PASS: Snapshot verified with IST features (hour: {stored_snap['hour_of_day']}, temp: {stored_snap['temperature_c']}°C, rain: {stored_snap['precipitation_mm']}mm, baseline: {stored_snap['rule_baseline_density_pct']}%).")
 
     # -------------------------------------------------------------------------
-    # TEST 5.6: Exponential Decay Blending (Half-life = 30 min)
+    # TEST 5.6: Exponential Decay Blending (Half-life = 30 min) & Confidence Level
     # -------------------------------------------------------------------------
-    print("\n--- TEST 5.6: Exponential Decay Blending Engine ---")
+    print("\n--- TEST 5.6: Exponential Decay Blending Engine & Confidence Level ---")
     now_utc = datetime.now(timezone.utc)
     # Insert older report from 30 mins ago (weight = 0.5)
     db[REPORTS_COLLECTION].insert_one({
@@ -138,16 +147,19 @@ def test_phase5():
     r_live = requests.get(f"{BASE_URL}/crowd/place/{p_id}/live?city_id=pondicherry")
     assert r_live.status_code == 200
     live_data = r_live.json()
-    print(f"Live status: Baseline: {live_data['rule_baseline_density_pct']}%, Blended: {live_data['blended_density_pct']}%, Active: {live_data['active_reports_count']}")
+    print(f"Live status: Baseline: {live_data['rule_baseline_density_pct']}%, Blended: {live_data['blended_density_pct']}%, Active: {live_data['active_reports_count']}, Conf: {live_data.get('confidence_level')}, Last: {live_data.get('last_reported_time')}")
     assert live_data["active_reports_count"] >= 2
+    assert live_data["confidence_level"] in ["HIGH", "MEDIUM", "LOW"]
+    assert live_data["last_reported_time"] is not None
+    assert "IST" in live_data["last_reported_time"]
     # Blended density must shift towards the reports
     assert min(75, live_data["rule_baseline_density_pct"]) <= live_data["blended_density_pct"] <= max(95, live_data["rule_baseline_density_pct"])
-    print("-> PASS: Exponential decay blending shifted density toward active on-site reports.")
+    print("-> PASS: Exponential decay blending and confidence level verified.")
 
     # -------------------------------------------------------------------------
-    # TEST 5.7: Surge Anomaly Detection (3+ reports >= 25% above baseline)
+    # TEST 5.7: Surge Anomaly Detection (3+ DISTINCT reporters)
     # -------------------------------------------------------------------------
-    print("\n--- TEST 5.7: Live Surge Anomaly Detection ---")
+    print("\n--- TEST 5.7: Live Surge Anomaly Detection (3+ Distinct Reporters) ---")
     # Insert 2 more fresh overcrowded reports from distinct hashes
     for idx in [3, 4]:
         db[REPORTS_COLLECTION].insert_one({
@@ -163,10 +175,11 @@ def test_phase5():
 
     r_surge = requests.get(f"{BASE_URL}/crowd/place/{p_id}/live?city_id=pondicherry")
     surge_data = r_surge.json()
-    print(f"Surge check: is_surge={surge_data['is_surge']}, alert={surge_data['anomaly_alert']}, badge={surge_data['status_badge']}")
+    print(f"Surge check: is_surge={surge_data['is_surge']}, alert={surge_data['anomaly_alert']}, badge={surge_data['status_badge']}, conf_level={surge_data['confidence_level']}")
     assert surge_data["is_surge"] is True, "Expected surge flag to trigger for 3+ high reports"
     assert surge_data["anomaly_alert"] is not None
-    print("-> PASS: Surge anomaly successfully detected and flagged.")
+    assert surge_data["confidence_level"] == "HIGH"
+    print("-> PASS: Surge anomaly and HIGH confidence successfully detected and flagged.")
 
     # -------------------------------------------------------------------------
     # TEST 5.8: TTL Index Verification

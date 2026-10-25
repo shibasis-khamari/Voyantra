@@ -6,7 +6,10 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from pymongo import MongoClient
+
+KOLKATA_TZ = ZoneInfo("Asia/Kolkata")
 
 from .festivals_service import festivals_service
 from .places_service import places_service
@@ -124,11 +127,11 @@ class CrowdService:
 
         if target_date_str:
             try:
-                dt = datetime.strptime(target_date_str, "%Y-%m-%d")
+                dt = datetime.strptime(target_date_str, "%Y-%m-%d").replace(tzinfo=KOLKATA_TZ)
             except ValueError:
-                dt = datetime.now()
+                dt = datetime.now(KOLKATA_TZ)
         else:
-            dt = datetime.now()
+            dt = datetime.now(KOLKATA_TZ)
 
         current_hour = hour if hour is not None else dt.hour
         day_of_week = dt.weekday()  # 0=Mon, 5=Sat, 6=Sun
@@ -312,7 +315,8 @@ class CrowdService:
         self,
         request: CrowdReportRequest,
         client_ip: str,
-        user_id: Optional[str] = None
+        user_id: Optional[str] = None,
+        is_simulated: bool = False
     ) -> CrowdReportResponse:
         """
         Processes 1-tap live crowd submission with geofence guard (<= 200m),
@@ -348,22 +352,27 @@ class CrowdService:
         reporter_hash = hashlib.sha256(f"{identifier}:{salt}".encode()).hexdigest()[:16]
 
         now_utc = datetime.now(timezone.utc)
+        now_ist = datetime.now(KOLKATA_TZ)
 
         if self.db is not None:
-            # Check 15-minute cooldown
-            cutoff = now_utc - timedelta(seconds=REPORT_COOLDOWN_SECONDS)
-            recent_rep = self.db[REPORTS_COLLECTION].find_one({
-                "reporter_hash": reporter_hash,
-                "place_id": request.place_id,
-                "created_at": {"$gte": cutoff}
-            })
-            if recent_rep and not request.is_simulated:
-                elapsed_s = (now_utc - recent_rep["created_at"].replace(tzinfo=timezone.utc)).total_seconds()
-                rem_min = int(max(1, (REPORT_COOLDOWN_SECONDS - elapsed_s) // 60))
-                raise TimeoutError(
-                    f"Cooldown active. You submitted a report {int(elapsed_s // 60)}m ago. "
-                    f"Next submission permitted in {rem_min} min."
-                )
+            # Check 15-minute cooldown (applies to all public submissions)
+            if not is_simulated:
+                cutoff = now_utc - timedelta(seconds=REPORT_COOLDOWN_SECONDS)
+                recent_rep = self.db[REPORTS_COLLECTION].find_one({
+                    "reporter_hash": reporter_hash,
+                    "place_id": request.place_id,
+                    "created_at": {"$gte": cutoff}
+                })
+                if recent_rep:
+                    created_dt = recent_rep["created_at"]
+                    if created_dt.tzinfo is None:
+                        created_dt = created_dt.replace(tzinfo=timezone.utc)
+                    elapsed_s = (now_utc - created_dt).total_seconds()
+                    rem_min = int(max(1, (REPORT_COOLDOWN_SECONDS - elapsed_s) // 60))
+                    raise TimeoutError(
+                        f"Cooldown active. You submitted a report {int(elapsed_s // 60)}m ago. "
+                        f"Next submission permitted in {rem_min} min."
+                    )
 
         reported_density = CROWD_LEVEL_TO_DENSITY.get(request.crowd_level, 50)
 
@@ -374,7 +383,7 @@ class CrowdService:
             "crowd_level": request.crowd_level.value,
             "reported_density_pct": reported_density,
             "reporter_hash": reporter_hash,
-            "is_simulated": request.is_simulated,
+            "is_simulated": is_simulated,
             "verification_distance_m": round(dist_m, 1),
             "created_at": now_utc
         }
@@ -386,12 +395,12 @@ class CrowdService:
                 logger.warning(f"[CrowdService] Failed to insert crowd report: {e}")
 
         # 4. Feature Snapshot Logging (Excludes Rule as an ML Input Feature)
-        rule_est = self.estimate_place_crowd(city_id, request.place_id)
+        rule_est = self.estimate_place_crowd(city_id, request.place_id, target_date_str=now_ist.strftime("%Y-%m-%d"), hour=now_ist.hour)
         rule_baseline_pct = rule_est["crowd_density_pct"] if rule_est else 50
 
         # Query Open-Meteo weather
         weather = weather_service.get_current_weather(city_id)
-        active_fests = festivals_service.get_active_festivals_for_date(city_id, now_utc.strftime("%Y-%m-%d"))
+        active_fests = festivals_service.get_active_festivals_for_date(city_id, now_ist.strftime("%Y-%m-%d"))
 
         snapshot_doc = {
             "place_id": request.place_id,
@@ -400,11 +409,11 @@ class CrowdService:
             "reported_density_pct": reported_density,
             # CRITICAL RULE: rule_baseline_density_pct is STRICTLY logged for evaluation baseline, NOT as training feature
             "rule_baseline_density_pct": rule_baseline_pct,
-            "is_simulated": request.is_simulated,
-            "hour_of_day": now_utc.hour,
-            "day_of_week": now_utc.weekday(),
-            "is_weekend": now_utc.weekday() in [5, 6],
-            "month": now_utc.month,
+            "is_simulated": is_simulated,
+            "hour_of_day": now_ist.hour,
+            "day_of_week": now_ist.weekday(),
+            "is_weekend": now_ist.weekday() in [5, 6],
+            "month": now_ist.month,
             "has_active_festival": len(active_fests) > 0,
             "temperature_c": weather.get("temperature_c", 28.5),
             "precipitation_mm": weather.get("precipitation_mm", 0.0),
@@ -419,7 +428,7 @@ class CrowdService:
                 logger.warning(f"[CrowdService] Failed to insert feature snapshot: {e}")
 
         # 5. Evaluate Blended Density with Exponential Decay
-        blended_density, active_count, is_surge, anomaly_alert = self._compute_decay_blending(
+        blended_density, active_count, is_surge, anomaly_alert, _ = self._compute_decay_blending(
             place_id=request.place_id,
             city_id=city_id,
             rule_baseline_pct=rule_baseline_pct
@@ -456,19 +465,22 @@ class CrowdService:
         rule_est = self.estimate_place_crowd(city_id, place_id)
         rule_pct = rule_est["crowd_density_pct"] if rule_est else 50
 
-        blended_density, active_count, is_surge, anomaly_alert = self._compute_decay_blending(
+        blended_density, active_count, is_surge, anomaly_alert, last_reported_time = self._compute_decay_blending(
             place_id=place_id,
             city_id=city_id,
             rule_baseline_pct=rule_pct
         )
 
-        # Confidence badge
+        # Confidence badge & structured level
         if active_count >= 3:
             conf_badge = f"Verified Live ({active_count} on-site reports)"
+            conf_level = "HIGH"
         elif active_count >= 1:
-            conf_badge = f"Live Signal ({active_count} recent report)"
+            conf_badge = f"Live Signal ({active_count} recent report{'s' if active_count > 1 else ''})"
+            conf_level = "MEDIUM"
         else:
             conf_badge = "Rule Baseline Model"
+            conf_level = "LOW"
 
         status_badge = self._density_to_status_badge(blended_density, is_surge)
 
@@ -483,8 +495,9 @@ class CrowdService:
             active_reports_count=active_count,
             is_surge=is_surge,
             anomaly_alert=anomaly_alert,
-            last_reported_time=datetime.now(timezone.utc).strftime("%H:%M UTC"),
-            confidence_badge=conf_badge
+            last_reported_time=last_reported_time,
+            confidence_badge=conf_badge,
+            confidence_level=conf_level
         )
 
     def _compute_decay_blending(
@@ -492,15 +505,16 @@ class CrowdService:
         place_id: str,
         city_id: str,
         rule_baseline_pct: int
-    ) -> Tuple[int, int, bool, Optional[str]]:
+    ) -> Tuple[int, int, bool, Optional[str], Optional[str]]:
         """
         Computes weighted reported density using exponential decay:
         w_i = 0.5 ^ (delta_t / 30.0 min).
         Blends with baseline: alpha = min(0.85, 0.25 * sum(w_i)).
-        Detects anomalies: 3+ reports >= 2 levels above baseline.
+        Detects anomalies: 3+ distinct reports >= 2 levels above baseline.
+        Returns: (blended_density, active_distinct_count, is_surge, anomaly_alert, last_reported_time_ist)
         """
         if self.db is None:
-            return rule_baseline_pct, 0, False, None
+            return rule_baseline_pct, 0, False, None, None
 
         now = datetime.now(timezone.utc)
         two_hours_ago = now - timedelta(hours=2)
@@ -516,16 +530,27 @@ class CrowdService:
             reports = list(cursor)
         except Exception as e:
             logger.warning(f"[CrowdService] Decay query error: {e}")
-            return rule_baseline_pct, 0, False, None
+            return rule_baseline_pct, 0, False, None, None
 
         if not reports:
-            return rule_baseline_pct, 0, False, None
+            return rule_baseline_pct, 0, False, None, None
+
+        # Newest non-simulated report time formatted in IST
+        newest_dt = reports[0]["created_at"]
+        if newest_dt.tzinfo is None:
+            newest_dt = newest_dt.replace(tzinfo=timezone.utc)
+        last_reported_time = newest_dt.astimezone(KOLKATA_TZ).strftime("%H:%M IST")
 
         total_weight = 0.0
         weighted_sum = 0.0
-        surge_candidates = 0
+        surge_reporters = set()
+        distinct_reporters = set()
 
         for r in reports:
+            rep_hash = r.get("reporter_hash")
+            if rep_hash:
+                distinct_reporters.add(rep_hash)
+
             r_time = r["created_at"]
             if r_time.tzinfo is None:
                 r_time = r_time.replace(tzinfo=timezone.utc)
@@ -537,9 +562,10 @@ class CrowdService:
             weighted_sum += weight * density
             total_weight += weight
 
-            # Anomaly check: if report is >= 20% above baseline, or reports overcrowded (>= 90%)
-            if (density - rule_baseline_pct >= 20.0 or density >= 90) and delta_min <= 60.0:
-                surge_candidates += 1
+            # Anomaly check: 3+ distinct reporters >= 20% above baseline, or overcrowded (>= 90%) within last 60m
+            if (density - rule_baseline_pct >= 20.0 or density >= 90.0) and delta_min <= 60.0:
+                if rep_hash:
+                    surge_reporters.add(rep_hash)
 
         if total_weight > 0.0:
             avg_reported = weighted_sum / total_weight
@@ -549,12 +575,12 @@ class CrowdService:
         else:
             blended = rule_baseline_pct
 
-        is_surge = (surge_candidates >= 3)
+        is_surge = (len(surge_reporters) >= 3)
         anomaly_alert = None
         if is_surge:
             anomaly_alert = "⚠️ Live Crowd Surge: 3+ verified visitors have reported footfall significantly higher than normal baseline."
 
-        return blended, len(reports), is_surge, anomaly_alert
+        return blended, len(distinct_reporters), is_surge, anomaly_alert, last_reported_time
 
     @staticmethod
     def _density_to_level(density: int) -> str:

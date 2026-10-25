@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Literal
 
 class CrowdReportLevel(str, Enum):
     serene = "serene"
@@ -22,7 +22,6 @@ class CrowdReportRequest(BaseModel):
     crowd_level: CrowdReportLevel = Field(..., description="Observed crowd category (serene, moderate, bustling, overcrowded)")
     user_lat: float = Field(..., ge=-90.0, le=90.0, description="Reporting user GPS latitude")
     user_lng: float = Field(..., ge=-180.0, le=180.0, description="Reporting user GPS longitude")
-    is_simulated: bool = Field(False, description="Flag for automated/synthetic tests to avoid polluting real user data")
 
 class CrowdReportResponse(BaseModel):
     message: str
@@ -47,3 +46,4 @@ class LiveCrowdResponse(BaseModel):
     anomaly_alert: Optional[str] = None
     last_reported_time: Optional[str] = None
     confidence_badge: str = "Rule Baseline"
+    confidence_level: Literal["HIGH", "MEDIUM", "LOW"] = "LOW"

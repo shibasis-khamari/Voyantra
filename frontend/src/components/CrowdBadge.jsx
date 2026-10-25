@@ -141,8 +141,11 @@ export function CrowdBadge({ placeId, placeName, cityId = 'pondicherry', tendenc
                           Live Blended Status
                         </span>
                       </div>
-                      <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${getConfidenceStyle(liveStatus.confidence_badge)}`}>
-                        {liveStatus.confidence_badge} CONFIDENCE
+                      <span 
+                        title={liveStatus.confidence_badge}
+                        className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${getConfidenceStyle(liveStatus.confidence_level || 'LOW')}`}
+                      >
+                        {liveStatus.confidence_level || 'LOW'} CONFIDENCE
                       </span>
                     </div>
 
@@ -159,8 +162,14 @@ export function CrowdBadge({ placeId, placeName, cityId = 'pondicherry', tendenc
 
                     {liveStatus.active_reports_count > 0 && (
                       <div className="text-[10px] text-slate-500 flex items-center justify-between bg-slate-50 px-2 py-1 rounded-xl">
-                        <span>👥 {liveStatus.active_reports_count} verified reports in last 2 hours</span>
+                        <span>👥 {liveStatus.active_reports_count} verified {liveStatus.active_reports_count === 1 ? 'report' : 'reports'}</span>
                         <span className="font-bold text-brand-600">Blended: {liveStatus.blended_density_pct}%</span>
+                      </div>
+                    )}
+
+                    {liveStatus.last_reported_time && (
+                      <div className="text-[9px] text-slate-400 text-right pr-1">
+                        Latest report at {liveStatus.last_reported_time}
                       </div>
                     )}
                   </div>

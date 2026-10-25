@@ -144,8 +144,10 @@ def test_phase5_ui():
         print("\n[Step 7] Waiting for modal to auto-close and checking updated live crowd confidence badge...")
         page.wait_for_timeout(2500)
         live_badge = page.locator("text=CONFIDENCE")
-        if live_badge.is_visible():
-            print(f"-> Live confidence indicator: {live_badge.text_content()}")
+        assert live_badge.is_visible(), "Live confidence badge not visible in popover"
+        conf_text = live_badge.text_content().strip()
+        print(f"-> Live confidence indicator: {conf_text}")
+        assert any(lvl in conf_text for lvl in ["HIGH", "MEDIUM", "LOW"]), f"Expected HIGH/MEDIUM/LOW in confidence badge, got: {conf_text}"
 
         browser.close()
         print("\n" + "=" * 70)
