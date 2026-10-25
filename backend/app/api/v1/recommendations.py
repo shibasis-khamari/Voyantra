@@ -19,9 +19,6 @@ _rate_limit_history = defaultdict(list)
 RATE_LIMIT_MAX = 10
 RATE_LIMIT_WINDOW = 60
 
-# Cache last generated itinerary per client IP for refinement state preservation
-_last_generated_itinerary = {}
-
 def apply_rate_limit(client_ip: str):
     now = time.time()
     recent = [t for t in _rate_limit_history[client_ip] if now - t < RATE_LIMIT_WINDOW]
@@ -183,10 +180,9 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
     cities = places_service.get_cities()
     city_name = next((c["name"] for c in cities if c["id"] == resolved_city), resolved_city.title())
 
-    # Check for previous existing_days from request or server-side cache
-    prev_days = req.existing_days
-    if not prev_days and client_ip in _last_generated_itinerary:
-        prev_days = _last_generated_itinerary[client_ip].get("days")
+    # Only use client-sent existing_days for explicit Day 2 refinements
+    is_day2_refinement = "day 2" in q_lower or "day2" in q_lower
+    prev_days = req.existing_days if (is_day2_refinement and req.existing_days) else None
 
     # 3. Synthesize with Gemini API
     itinerary = gemini_service.generate_rag_itinerary(
@@ -198,9 +194,6 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
         city_name=city_name,
         existing_days=prev_days
     )
-
-    # Cache this itinerary for subsequent refinement calls
-    _last_generated_itinerary[client_ip] = itinerary
 
     available_alternatives = [
         {

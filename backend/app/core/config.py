@@ -23,6 +23,7 @@ class Settings(BaseModel):
     
     # AI / LLM (Google Gemini API Free Tier)
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
     
     # JWT Settings
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "voyantra_jwt_secret_key_prod_2026_pondicherry_chennai")

@@ -1,6 +1,31 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Any, Union
+from typing import List, Optional, Any, Union, Literal
 from .place import Place, AgeGroupEnum, DietaryOptionEnum, BudgetTierEnum
+
+class ItinerarySlot(BaseModel):
+    place_name: str
+    activity_note: str
+    est_time: str
+
+class ItineraryDay(BaseModel):
+    day_number: int
+    theme: str
+    morning: ItinerarySlot
+    afternoon: ItinerarySlot
+    evening: ItinerarySlot
+
+class ItineraryResponse(BaseModel):
+    itinerary_title: str
+    feasibility_status: str = "100% Feasible"
+    has_unavailability_warning: bool = False
+    unavailability_notice: Optional[str] = None
+    summary: str
+    days: List[ItineraryDay]
+    total_estimated_budget_inr: int
+    belief_and_etiquette_advisory: Optional[str] = None
+    travel_tips: List[str] = Field(default_factory=list)
+    source: Literal["gemini", "fallback"] = "gemini"
+    fallback_reason: Optional[str] = None
 
 class ComponentScores(BaseModel):
     w_category: float
