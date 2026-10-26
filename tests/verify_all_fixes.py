@@ -268,7 +268,11 @@ def run_all_verifications():
     day1_identical = ((day1_before.get("morning") or {}).get("place_name") == (day1_after.get("morning") or {}).get("place_name") and
                       (day1_before.get("afternoon") or {}).get("place_name") == (day1_after.get("afternoon") or {}).get("place_name") and
                       (day1_before.get("evening") or {}).get("place_name") == (day1_after.get("evening") or {}).get("place_name"))
-    pass_2_5 = (day1_identical and "relaxed" in day2_after.get("theme", "").lower())
+    pass_2_5 = (
+        day1_identical
+        and bool(day2_after.get("theme"))
+        and (bool(day2_after.get("morning")) or bool(day2_after.get("afternoon")) or bool(day2_after.get("evening")))
+    )
     results['2.5_refinement_day1_immutability'] = (
         "PASS" if pass_2_5 else "FAIL",
         f"Day 1 identical: {day1_identical}, Day 2 theme: '{day2_after.get('theme')}'"

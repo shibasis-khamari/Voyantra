@@ -504,7 +504,7 @@ class GeminiService:
                 a_place = pick_next(lambda p: p.category in [CategoryEnum.HERITAGE, CategoryEnum.CAFE, CategoryEnum.DINING])
                 # Evening: Beach / Scenic
                 e_place = pick_next(lambda p: p.category in [CategoryEnum.BEACH, CategoryEnum.ADVENTURE])
-                theme = "Relaxed Coastal & Artisan Cafes" if any(w in q_lower for w in ["relaxed", "relax", "leisure", "slow"]) else "Spiritual Serenity & Artisan Cafes"
+                theme = "Spiritual Serenity & Artisan Cafes"
             elif d_num == 3:
                 # Day 3: Nature, Botanical & Local Flavors
                 m_place = pick_next(lambda p: p.category in [CategoryEnum.NATURE, CategoryEnum.HERITAGE])
