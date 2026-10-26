@@ -66,6 +66,10 @@ class MongoDBManager:
         if not self.is_connected or self.db is None:
             return
         users_col = self.db["users"]
+        if users_col.count_documents({}) == 0:
+            for u in self._memory_users:
+                users_col.insert_one(dict(u))
+            print("[MongoDBManager] Seeded default users into MongoDB 'users' collection.")
         # Ensure all existing users in DB have bcrypt-hashed passwords
         for existing in users_col.find():
             existing_pw = existing.get("password", "")
@@ -149,6 +153,82 @@ class MongoDBManager:
         
         for u in self._memory_users:
             if u["email"].lower() == email.lower():
+                return u
+        return None
+
+    def find_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
+        if self.is_connected and self.db is not None:
+            query = {"id": user_id}
+            try:
+                from bson import ObjectId
+                query = {"$or": [{"id": user_id}, {"_id": ObjectId(user_id)}]}
+            except Exception:
+                pass
+            doc = self.db["users"].find_one(query)
+            if doc:
+                doc["_id"] = str(doc.get("_id", doc.get("id")))
+                if "id" not in doc:
+                    doc["id"] = str(doc["_id"])
+                return doc
+        for u in self._memory_users:
+            if u.get("id") == user_id or str(u.get("_id")) == user_id:
+                return u
+        return None
+
+    def list_all_users(self) -> List[Dict[str, Any]]:
+        results = []
+        if self.is_connected and self.db is not None:
+            for doc in self.db["users"].find():
+                u_id = str(doc.get("id") or doc.get("_id"))
+                results.append({
+                    "id": u_id,
+                    "name": doc.get("name", "Traveler"),
+                    "email": doc.get("email", ""),
+                    "role": doc.get("role", "user"),
+                    "avatar_url": doc.get("avatar_url"),
+                    "created_at": doc.get("created_at")
+                })
+            return results
+        for u in self._memory_users:
+            results.append({
+                "id": str(u.get("id") or u.get("_id")),
+                "name": u.get("name", "Traveler"),
+                "email": u.get("email", ""),
+                "role": u.get("role", "user"),
+                "avatar_url": u.get("avatar_url"),
+                "created_at": u.get("created_at")
+            })
+        return results
+
+    def delete_user(self, user_id: str) -> bool:
+        if self.is_connected and self.db is not None:
+            query = {"id": user_id}
+            try:
+                from bson import ObjectId
+                query = {"$or": [{"id": user_id}, {"_id": ObjectId(user_id)}]}
+            except Exception:
+                pass
+            res = self.db["users"].delete_one(query)
+            return res.deleted_count > 0
+        for i, u in enumerate(self._memory_users):
+            if u.get("id") == user_id or str(u.get("_id")) == user_id:
+                self._memory_users.pop(i)
+                return True
+        return False
+
+    def update_user_role(self, user_id: str, new_role: str) -> Optional[Dict[str, Any]]:
+        if self.is_connected and self.db is not None:
+            query = {"id": user_id}
+            try:
+                from bson import ObjectId
+                query = {"$or": [{"id": user_id}, {"_id": ObjectId(user_id)}]}
+            except Exception:
+                pass
+            self.db["users"].update_one(query, {"$set": {"role": new_role}})
+            return self.find_user_by_id(user_id)
+        for u in self._memory_users:
+            if u.get("id") == user_id or str(u.get("_id")) == user_id:
+                u["role"] = new_role
                 return u
         return None
 

@@ -1,10 +1,17 @@
 import os
 import uuid
 from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List, Tuple
 import jwt
 
-from ..schemas.auth import UserLoginRequest, UserRegisterRequest, UserProfile, AuthTokenResponse, UserRoleEnum
+from ..schemas.auth import (
+    UserLoginRequest,
+    UserRegisterRequest,
+    UserProfile,
+    AuthTokenResponse,
+    UserRoleEnum,
+    UserManagementProfile
+)
 from ..core.database import db_manager, hash_password, verify_password
 from ..core.config import settings
 
@@ -72,7 +79,8 @@ class AuthService:
             "name": req.name,
             "email": req.email.lower(),
             "password": hashed,
-            "role": req.role.value
+            "role": req.role.value,
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         saved = db_manager.insert_user(new_user)
@@ -89,5 +97,73 @@ class AuthService:
             token_type="bearer",
             user=profile
         )
+
+    def list_users(self) -> List[UserManagementProfile]:
+        """Lists all registered users for admin review (passwords excluded)."""
+        raw_users = db_manager.list_all_users()
+        profiles = []
+        for u in raw_users:
+            role_val = u.get("role", "user")
+            try:
+                role_enum = UserRoleEnum(role_val)
+            except ValueError:
+                role_enum = UserRoleEnum.USER
+            profiles.append(
+                UserManagementProfile(
+                    id=str(u.get("id")),
+                    name=u.get("name", "Traveler"),
+                    email=u.get("email", ""),
+                    role=role_enum,
+                    avatar_url=u.get("avatar_url"),
+                    created_at=u.get("created_at")
+                )
+            )
+        return profiles
+
+    def delete_user(self, user_id: str, current_user: Dict[str, Any]) -> Tuple[bool, str]:
+        """Deletes a user account with safety checks preventing self-deletion and seed-admin deletion."""
+        target = db_manager.find_user_by_id(user_id)
+        if not target:
+            return False, "User not found."
+
+        target_email = target.get("email", "").lower()
+        if target_email == "admin@voyantra.com":
+            return False, "The default System Administrator account cannot be deleted."
+
+        current_email = current_user.get("email", "").lower()
+        if target_email == current_email:
+            return False, "You cannot delete your own active administrator account."
+
+        success = db_manager.delete_user(user_id)
+        if success:
+            return True, f"User {target.get('name', target_email)} has been successfully removed."
+        return False, "Failed to remove user from database."
+
+    def update_user_role(self, user_id: str, new_role: UserRoleEnum, current_user: Dict[str, Any]) -> Tuple[Optional[UserManagementProfile], str]:
+        """Updates user's role (admin / traveler) with security guards."""
+        target = db_manager.find_user_by_id(user_id)
+        if not target:
+            return None, "User not found."
+
+        target_email = target.get("email", "").lower()
+        if target_email == "admin@voyantra.com" and new_role != UserRoleEnum.ADMIN:
+            return None, "The default System Administrator account role cannot be downgraded."
+
+        current_email = current_user.get("email", "").lower()
+        if target_email == current_email and new_role != UserRoleEnum.ADMIN:
+            return None, "You cannot remove admin privileges from your own active session."
+
+        updated = db_manager.update_user_role(user_id, new_role.value)
+        if not updated:
+            return None, "Failed to update user role."
+
+        return UserManagementProfile(
+            id=str(updated.get("id")),
+            name=updated.get("name", "Traveler"),
+            email=updated.get("email", ""),
+            role=UserRoleEnum(updated.get("role", new_role.value)),
+            avatar_url=updated.get("avatar_url"),
+            created_at=updated.get("created_at")
+        ), f"Role for {updated.get('name', target_email)} successfully updated to {new_role.value}."
 
 auth_service = AuthService()
