@@ -323,9 +323,12 @@ def run_all_verifications():
         "advisory_level": "Peak Tourist Crowd"
     }
     r_f_user = requests.post(f"{BASE_URL}/festivals", json=new_fest, headers={"Authorization": f"Bearer {user_token}"})
-    r_f_admin = requests.post(f"{BASE_URL}/festivals", json=new_fest, headers={"Authorization": f"Bearer {admin_token}"})
+    try:
+        r_f_admin = requests.post(f"{BASE_URL}/festivals", json=new_fest, headers={"Authorization": f"Bearer {admin_token}"})
+        pass_3_12 = (r_f_user.status_code == 403 and r_f_admin.status_code == 201)
+    finally:
+        db.get_collection('festivals').delete_many({"name": "French Heritage Music Carnival"})
     
-    pass_3_12 = (r_f_user.status_code == 403 and r_f_admin.status_code == 201)
     results['3.12_admin_festival_crud'] = (
         "PASS" if pass_3_12 else "FAIL",
         f"User Token: {r_f_user.status_code} (Exp 403), Admin Token: {r_f_admin.status_code} (Exp 201)"
