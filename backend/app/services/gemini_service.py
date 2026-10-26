@@ -51,7 +51,7 @@ class GeminiService:
         Uses Gemini API to parse free-text input into structured JSON filters.
         """
         if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-1.5-flash")
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             headers = {
                 "Content-Type": "application/json",
@@ -186,7 +186,7 @@ class GeminiService:
         fallback_reason = "no_api_key"
 
         if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-1.5-flash")
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             headers = {
                 "Content-Type": "application/json",
