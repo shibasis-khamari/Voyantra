@@ -13,6 +13,42 @@ import { VoyantraAPI } from '../services/api';
 import { usePreferences } from '../context/PreferencesContext';
 import { AGE_GROUPS, DIETARY_OPTIONS, BUDGET_TIERS } from '../types/constants';
 
+function parseBold(str) {
+  const parts = str.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-slate-900">{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+}
+
+function FormattedMessage({ text }) {
+  if (!text) return null;
+  const lines = text.split('\n');
+  return (
+    <div className="space-y-1.5 leading-relaxed text-xs sm:text-sm">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) return <div key={idx} className="h-1" />;
+        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          return (
+            <div key={idx} className="flex items-start gap-2 ml-1 text-slate-700">
+              <span className="text-teal-600 font-bold">•</span>
+              <span>{parseBold(trimmed.substring(2))}</span>
+            </div>
+          );
+        }
+        return (
+          <p key={idx} className="text-slate-800">
+            {parseBold(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export function PlannerPage() {
   const { 
     selectedCity,
@@ -45,10 +81,24 @@ export function PlannerPage() {
   const [draggedCard, setDraggedCard] = useState(null);
   const [dragOverTarget, setDragOverTarget] = useState(null);
   
-  // AI Conversational Chat & Itinerary Refinement State
-  const [chatMessages, setChatMessages] = useState([]);
+  // AI Conversational Chatbox & Itinerary State
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 'welcome-msg',
+      sender: 'ai',
+      text: "Hello! 👋 I'm your **Voyantra AI Travel Concierge**.\n\nYou can chat with me naturally like a local guide — ask for restaurant recommendations, heritage landmarks, beach sunset timings, or ask me to craft a custom multi-day itinerary for any duration or time of day!",
+      timestamp: 'Just now',
+      suggested_followups: [
+        "Plan a 2-day relaxed trip",
+        "Best cafes & breakfast in White Town",
+        "What can I do tomorrow morning?",
+        "Temples, ashrams & dress codes"
+      ]
+    }
+  ]);
   const [chatInputText, setChatInputText] = useState('');
   const [isRefining, setIsRefining] = useState(false);
+  const chatEndRef = useRef(null);
 
   // Phase 4 State: TSP Day Optimization & Navigation
   const [dayOptimizations, setDayOptimizations] = useState({});
@@ -58,8 +108,13 @@ export function PlannerPage() {
   const [showDayMap, setShowDayMap] = useState({});
 
   const itineraryRef = useRef(null);
-
   const [backendError, setBackendError] = useState(null);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, isRefining]);
 
   useEffect(() => {
     fetchRecommendations();
@@ -94,106 +149,66 @@ export function PlannerPage() {
     }
   };
 
-  const handleGenerateAiItinerary = async (textToUse) => {
-    const q = textToUse || promptText;
-    if (!q.trim()) return;
-
-    setLoadingAi(true);
-    setAiItinerary(null);
-    setBackendError(null);
-
-    setTimeout(() => {
-      itineraryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-
-    try {
-      const res = await VoyantraAPI.generateAiItinerary({
-        city_id: selectedCity,
-        query_text: q,
-        age_group: ageGroup,
-        dietary_preference: dietaryPreference,
-        duration_days: durationDays
-      });
-      setAiItinerary(res.itinerary);
-      setAvailableAlternatives(res.available_alternatives || []);
-
-      // Initialize AI Conversation Thread
-      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      setChatMessages([
-        {
-          id: `usr-init-${Date.now()}`,
-          sender: 'user',
-          text: q,
-          timestamp: timeNow
-        },
-        {
-          id: `ai-init-${Date.now()}`,
-          sender: 'ai',
-          text: `I've synthesized your custom ${durationDays}-day itinerary! You can chat with me below to refine any day, adjust pacing, or request specific dining options.`,
-          timestamp: timeNow
-        }
-      ]);
-
-      setTimeout(() => {
-        itineraryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 150);
-    } catch (e) {
-      console.error('Itinerary generation error:', e);
-      setBackendError(e.message);
-    } finally {
-      setLoadingAi(false);
-    }
-  };
-
-  // Follow-Up AI Chat Refinement Handler (Second Prompt Updates Itinerary)
-  const handleFollowUpSubmit = async (customText) => {
-    const text = customText || chatInputText;
-    if (!text.trim() || isRefining || !aiItinerary) return;
+  // Unified AI Travel Concierge Message Handler (Greetings, Q&A, Places & Flexible Itinerary)
+  const handleSendMessage = async (textToSend = null) => {
+    const text = (textToSend || chatInputText).trim();
+    if (!text || isRefining) return;
 
     const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const userMsg = {
       id: `usr-${Date.now()}`,
       sender: 'user',
-      text: text.trim(),
+      text: text,
       timestamp: timeNow
     };
 
     setChatMessages(prev => [...prev, userMsg]);
     setChatInputText('');
     setIsRefining(true);
+    setBackendError(null);
 
     try {
-      const combinedQuery = `Original request: "${promptText}". FOLLOW-UP REFINEMENT INSTRUCTION: "${text.trim()}". Re-synthesize the itinerary days, timings, and dining to satisfy this follow-up update.`;
+      const history = chatMessages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
 
-      const res = await VoyantraAPI.generateAiItinerary({
+      const res = await VoyantraAPI.chatWithAi({
         city_id: selectedCity,
-        query_text: combinedQuery,
+        message: text,
+        conversation_history: history,
+        current_itinerary: aiItinerary,
         age_group: ageGroup,
         dietary_preference: dietaryPreference,
-        duration_days: durationDays,
-        existing_days: aiItinerary ? aiItinerary.days : null
+        duration_days: durationDays
       });
 
-      if (res && res.itinerary) {
-        setAiItinerary(res.itinerary);
-        if (res.available_alternatives) {
-          setAvailableAlternatives(res.available_alternatives);
-        }
-
+      if (res) {
         const aiMsg = {
           id: `ai-${Date.now()}`,
           sender: 'ai',
-          text: `I've updated your itinerary according to your request: "${text.trim()}". Check out the revised schedule below!`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          text: res.reply_message,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          intent: res.intent,
+          recommended_places: res.recommended_places || [],
+          suggested_followups: res.suggested_followups || [],
+          hasItinerary: Boolean(res.itinerary)
         };
         setChatMessages(prev => [...prev, aiMsg]);
+
+        if (res.itinerary) {
+          setAiItinerary(res.itinerary);
+          setTimeout(() => {
+            itineraryRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 350);
+        }
       }
     } catch (e) {
-      console.error("Refinement error:", e);
+      console.error("Chat error:", e);
       const errorMsg = {
         id: `err-${Date.now()}`,
         sender: 'ai',
-        text: `Sorry, I encountered an issue updating the itinerary: ${e.message}. Please try again!`,
+        text: `Sorry, I encountered an issue: ${e.message}. Please check if the backend server is running.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setChatMessages(prev => [...prev, errorMsg]);
@@ -203,8 +218,7 @@ export function PlannerPage() {
   };
 
   const selectPreset = (sugg) => {
-    setPromptText(sugg.prompt);
-    handleGenerateAiItinerary(sugg.prompt);
+    handleSendMessage(sugg.prompt);
   };
 
   // Phase 4 Day Optimization & Route Calculation Helpers
@@ -465,79 +479,188 @@ export function PlannerPage() {
         </div>
       </div>
 
-      {/* AI Natural Language Input Form */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-brand-600" /> Describe Your Custom Trip
-          </label>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 font-medium">Duration:</span>
+      {/* Interactive AI Travel Concierge Chatbox */}
+      <div className="bg-white rounded-3xl border border-teal-200/90 shadow-sm overflow-hidden space-y-0">
+        {/* Chatbox Header */}
+        <div className="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-800 p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-amber-300 shadow-inner">
+              <Sparkles className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-sm sm:text-base tracking-tight text-white">Voyantra AI Travel Concierge</h3>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 text-[10px] font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  Gemini 3.5 Flash Lite Live
+                </span>
+              </div>
+              <p className="text-[11px] text-teal-100/80">
+                Ask for custom itineraries, restaurant recommendations, temple decorum, or beach timings!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <span className="text-[11px] font-bold text-teal-200 uppercase tracking-wider">Duration:</span>
             <select
               value={durationDays}
               onChange={(e) => setDurationDays(Number(e.target.value))}
-              className="px-2.5 py-1 rounded-lg border border-slate-200 font-bold text-brand-800 bg-brand-50 outline-none cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-white/20 font-bold text-teal-900 bg-white/95 text-xs outline-none cursor-pointer shadow-sm"
             >
-              <option value={1}>1 Day Trip</option>
+              <option value={1}>1 Day Plan</option>
               <option value={2}>2 Days Weekend</option>
               <option value={3}>3 Days Vacation</option>
+              <option value={4}>4 Days Holiday</option>
+              <option value={5}>5 Days Getaway</option>
             </select>
           </div>
         </div>
 
-        <div className="relative">
-          <textarea
-            rows={3}
-            value={promptText}
-            onChange={(e) => setPromptText(e.target.value)}
-            placeholder="e.g. 2-day relaxed trip with French colonial heritage walks, quiet cafes, crepes, and sunset at Promenade beach for couples..."
-            className="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-xs sm:text-sm outline-none transition-all"
-          />
-          <button
-            onClick={() => handleGenerateAiItinerary()}
-            disabled={loadingAi || !promptText.trim()}
-            className="absolute bottom-3 right-3 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all"
+        {/* Conversation Stream */}
+        <div className="p-4 sm:p-6 space-y-4 max-h-[460px] overflow-y-auto bg-slate-50/50">
+          {chatMessages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} space-y-2 animate-fadeIn`}
+            >
+              <div
+                className={`max-w-[90%] sm:max-w-[80%] p-4 rounded-2xl text-xs sm:text-sm shadow-xs ${
+                  msg.sender === 'user'
+                    ? 'bg-brand-600 text-white rounded-br-none shadow-brand-600/20'
+                    : 'bg-white border border-teal-100 text-slate-800 rounded-bl-none shadow-sm'
+                }`}
+              >
+                {msg.sender === 'user' ? (
+                  <p className="font-medium leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                ) : (
+                  <FormattedMessage text={msg.text} />
+                )}
+                
+                <span className={`text-[9px] mt-2 block font-medium ${msg.sender === 'user' ? 'text-brand-200 text-right' : 'text-slate-400'}`}>
+                  {msg.timestamp}
+                </span>
+              </div>
+
+              {/* Recommended Place Mini Cards (if returned) */}
+              {msg.recommended_places && msg.recommended_places.length > 0 && (
+                <div className="w-full max-w-[90%] sm:max-w-[80%] grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  {msg.recommended_places.map((place) => (
+                    <div
+                      key={place.id}
+                      className="p-3 rounded-xl bg-white border border-teal-200/80 shadow-2xs flex flex-col justify-between gap-2 hover:border-teal-400 transition-all"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-bold text-xs text-slate-900 line-clamp-1">{place.name}</span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-teal-50 text-teal-800 border border-teal-200">
+                            {place.category}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          Est. Cost: <strong className="text-slate-700">₹{place.estimated_cost_inr}</strong> • {place.duration_minutes} mins
+                        </p>
+                        {place.highlights && place.highlights.length > 0 && (
+                          <p className="text-[10px] text-teal-700 mt-1 line-clamp-1">
+                            ✨ {place.highlights[0]}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => addToTripPlan(place)}
+                        className="w-full py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 text-[10px] font-bold border border-teal-200 transition-colors cursor-pointer"
+                      >
+                        + Add to Trip Plan
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Itinerary Ready Action Banner */}
+              {msg.hasItinerary && (
+                <div className="w-full max-w-[90%] sm:max-w-[80%] p-3 rounded-xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-300 text-teal-900 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🗺️</span>
+                    <div>
+                      <span className="font-bold text-xs">Itinerary Generated!</span>
+                      <p className="text-[10px] text-teal-700">Explore Day-by-Day schedule and map below</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => itineraryRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    className="px-3 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[11px] font-bold shadow-xs flex items-center gap-1 transition-all cursor-pointer"
+                  >
+                    <span>View Plan</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+
+              {/* Contextual Suggested Followups */}
+              {msg.suggested_followups && msg.suggested_followups.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1 pl-1">
+                  {msg.suggested_followups.map((fup, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSendMessage(fup)}
+                      disabled={isRefining}
+                      className="px-2.5 py-1 rounded-full bg-white hover:bg-teal-50 hover:text-teal-800 text-slate-600 text-[10px] sm:text-[11px] font-bold border border-slate-200 hover:border-teal-300 transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
+                    >
+                      💡 {fup}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {isRefining && (
+            <div className="flex items-start gap-2.5 animate-fadeIn">
+              <div className="w-7 h-7 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
+              </div>
+              <div className="p-3.5 rounded-2xl bg-white border border-teal-200 text-xs text-teal-900 font-bold flex items-center gap-2 shadow-xs">
+                <Loader2 className="w-3.5 h-3.5 text-teal-600 animate-spin" />
+                <span>Voyantra Concierge is typing...</span>
+              </div>
+            </div>
+          )}
+
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Chat Input Bar */}
+        <div className="p-3 sm:p-4 bg-white border-t border-slate-100">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="flex items-center gap-2"
           >
-            {loadingAi ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Synthesizing...
-              </>
-            ) : (
-              <>
-                <Send className="w-3.5 h-3.5" /> Generate AI Itinerary
-              </>
-            )}
-          </button>
+            <input
+              type="text"
+              value={chatInputText}
+              onChange={(e) => setChatInputText(e.target.value)}
+              placeholder="Ask a question, say hello, or plan an itinerary (e.g. 'Hello!', 'Best cafes in Pondy', 'Plan a 2-day trip')..."
+              disabled={isRefining}
+              className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-2 focus:ring-teal-600/15 text-xs sm:text-sm font-medium outline-none transition-all"
+            />
+            <button
+              type="submit"
+              disabled={isRefining || !chatInputText.trim()}
+              className="px-5 py-3 rounded-2xl bg-teal-700 hover:bg-teal-800 disabled:opacity-50 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all shrink-0 cursor-pointer"
+            >
+              {isRefining ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              <span className="hidden sm:inline">Send</span>
+            </button>
+          </form>
         </div>
       </div>
 
       {/* Target Ref Anchor for Window Scroll */}
       <div ref={itineraryRef} />
-
-      {/* Dedicated Animated AI Loading Screen */}
-      {loadingAi && (
-        <div className="bg-gradient-to-br from-teal-900 via-brand-900 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl border border-teal-500/30 text-center space-y-6 animate-fadeIn">
-          <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-4 border-teal-400/20 border-t-teal-400 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-4 border-emerald-400/20 border-b-emerald-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-            <Sparkles className="w-9 h-9 text-teal-300 animate-pulse" />
-          </div>
-
-          <div className="space-y-2 max-w-md mx-auto">
-            <h3 className="text-2xl font-black tracking-tight text-white">AI Planning Engine Working...</h3>
-            <p className="text-xs text-teal-200/90 leading-relaxed">
-              Auditing prompt context, checking location feasibility, searching OpenStreetMap vector store, and synthesizing your custom day-by-day itinerary.
-            </p>
-          </div>
-
-          <div className="max-w-xs mx-auto space-y-2">
-            <div className="w-full bg-teal-950/80 h-2 rounded-full overflow-hidden border border-teal-500/30">
-              <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full animate-pulse w-3/4"></div>
-            </div>
-            <div className="text-[10px] text-teal-300 font-mono">Synthesizing real-world itinerary ground truth...</div>
-          </div>
-        </div>
-      )}
 
       {/* Generated AI Day-by-Day Itinerary Result View (DRAG & DROP + EDITABLE) */}
       {aiItinerary && !loadingAi && (
@@ -952,105 +1075,6 @@ export function PlannerPage() {
                 </p>
               </div>
             )}
-          </div>
-
-          {/* AI Continuous Chat Assistant & Itinerary Refinement Panel */}
-          <div className="bg-white rounded-2xl p-5 border border-teal-300/80 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-teal-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                  <Sparkles className="w-5 h-5 text-amber-300" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <span>Chat with AI Assistant & Refine Itinerary</span>
-                  </h3>
-                  <p className="text-[11px] text-slate-500">Ask follow-up questions or send a second prompt to dynamically update your itinerary!</p>
-                </div>
-              </div>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
-                {aiItinerary?.source === 'fallback' ? 'Offline Planner Active' : 'AI Assistant Active'}
-              </span>
-            </div>
-
-            {/* Conversation Log Thread */}
-            <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
-              {chatMessages.map((msg) => (
-                <div 
-                  key={msg.id}
-                  className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
-                >
-                  <div className={`max-w-[85%] p-3.5 rounded-2xl text-xs ${
-                    msg.sender === 'user'
-                      ? 'bg-brand-700 text-white rounded-br-none shadow-xs'
-                      : 'bg-teal-50/90 border border-teal-200/90 text-slate-800 rounded-bl-none'
-                  }`}>
-                    <p className="leading-relaxed font-medium">{msg.text}</p>
-                    <span className={`text-[9px] mt-1 block ${msg.sender === 'user' ? 'text-brand-200 text-right' : 'text-slate-400'}`}>
-                      {msg.timestamp}
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-              {isRefining && (
-                <div className="flex items-start gap-2">
-                  <div className="p-3.5 rounded-2xl bg-teal-50 border border-teal-200 text-xs text-teal-900 font-bold flex items-center gap-2 animate-pulse">
-                    <Loader2 className="w-4 h-4 text-teal-600 animate-spin" />
-                    <span>{aiItinerary?.source === 'fallback' ? 'Offline planner is updating your itinerary...' : 'AI engine is processing your prompt & updating the itinerary...'}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Follow-up Refinement Chips */}
-            <div className="space-y-1.5 pt-1">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quick Refinement Prompts:</div>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { label: '🌿 Add Pure-Veg Dining', text: 'Add pure-vegetarian dining and breakfast options' },
-                  { label: '🧘 Make Day 2 More Relaxed', text: 'Make Day 2 more relaxed with fewer walking activities' },
-                  { label: '🏛️ Include Heritage Monuments', text: 'Include more historic heritage monuments and French colonial sites' },
-                  { label: '🌅 Swap Evening Beach', text: 'Swap evening beach walk for a seaside sunset cafe' },
-                  { label: '⏰ Start Morning at 9:00 AM', text: 'Adjust morning start time to 9:00 AM' }
-                ].map((chip, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleFollowUpSubmit(chip.text)}
-                    disabled={isRefining}
-                    className="px-3 py-1 rounded-full bg-slate-100 hover:bg-teal-50 hover:text-teal-800 text-slate-700 text-[11px] font-bold border border-slate-200 transition-colors disabled:opacity-50"
-                  >
-                    {chip.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Follow-Up Second Prompt Chat Bar */}
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleFollowUpSubmit();
-              }}
-              className="flex items-center gap-2 pt-2"
-            >
-              <input
-                type="text"
-                value={chatInputText}
-                onChange={(e) => setChatInputText(e.target.value)}
-                placeholder="Type your second prompt to update itinerary (e.g. 'Make Day 2 more relaxed')..."
-                disabled={isRefining}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-teal-600 text-xs font-semibold outline-none transition-all"
-              />
-              <button
-                type="submit"
-                disabled={isRefining || !chatInputText.trim()}
-                className="px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-              >
-                {isRefining ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                <span>Send Prompt</span>
-              </button>
-            </form>
           </div>
         </div>
       )}

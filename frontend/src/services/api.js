@@ -104,6 +104,36 @@ export const VoyantraAPI = {
     }
   },
 
+  // Conversational AI Travel Concierge (Greetings, Q&A, Places & Flexible Itinerary)
+  async chatWithAi({ city_id = 'pondicherry', message, conversation_history = [], current_itinerary = null, age_group, dietary_preference, duration_days = 2 }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/recommendations/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          city_id,
+          message,
+          conversation_history,
+          current_itinerary,
+          age_group,
+          dietary_preference,
+          duration_days
+        }),
+        signal: AbortSignal.timeout(35000)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const errData = await res.json();
+      throw new Error(errData.detail || `Server status ${res.status}`);
+    } catch (e) {
+      if (e.message.includes('Server status') || e.name === 'TimeoutError' || e.message.includes('Failed to fetch')) {
+        throw new Error(BACKEND_OFFLINE_MSG);
+      }
+      throw e;
+    }
+  },
+
   // 4. Generate AI Itinerary (RAG + Gemini)
   async generateAiItinerary({ city_id, query_text, age_group, dietary_preference, duration_days = 2, existing_days = null }) {
     try {
