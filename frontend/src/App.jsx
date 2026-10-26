@@ -6,6 +6,7 @@ import { HotelsPage } from './pages/HotelsPage';
 import { MapPage } from './pages/MapPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminPortal } from './components/AdminPortal';
+import { SignUpPage } from './pages/SignUpPage';
 import { PreferencesProvider } from './context/PreferencesContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -26,6 +27,8 @@ export function App() {
         return <ProfilePage />;
       case 'admin':
         return <AdminPortal />;
+      case 'signup':
+        return <SignUpPage setActiveTab={setActiveTab} />;
       default:
         return <ExplorePage />;
     }

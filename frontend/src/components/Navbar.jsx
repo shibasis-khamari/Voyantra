@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, MapPin, Sparkles, Hotel, Map, User, Luggage, LogIn, LogOut, ShieldCheck, Navigation } from 'lucide-react';
+import { Compass, MapPin, Sparkles, Hotel, Map, User, Luggage, LogIn, LogOut, ShieldCheck, Navigation, UserPlus } from 'lucide-react';
 import { usePreferences } from '../context/PreferencesContext';
 import { useAuth } from '../context/AuthContext';
 import { VoyantraAPI } from '../services/api';
@@ -10,6 +10,7 @@ export function Navbar({ activeTab, setActiveTab }) {
   const { user, logout, isAdmin } = useAuth();
   const [cities, setCities] = useState([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginModalMode, setLoginModalMode] = useState('login');
 
   useEffect(() => {
     loadCities();
@@ -130,13 +131,23 @@ export function Navbar({ activeTab, setActiveTab }) {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setIsLoginModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl text-xs font-bold transition-colors"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span>Log In</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => { setLoginModalMode('login'); setIsLoginModalOpen(true); }}
+                    className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Log In</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('signup')}
+                    className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-terracotta hover:bg-terracotta/90 text-white rounded-xl text-xs font-bold transition-colors shadow-xs"
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Sign Up</span>
+                  </button>
+                </div>
               )}
 
               <button
@@ -181,10 +192,11 @@ export function Navbar({ activeTab, setActiveTab }) {
         )}
       </header>
 
-      {/* Login Modal */}
+      {/* Login & Registration Auth Modal */}
       <LoginModal 
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        initialMode={loginModalMode}
       />
     </>
   );
