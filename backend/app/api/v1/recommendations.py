@@ -5,7 +5,7 @@ from fastapi import APIRouter, Query, Body, HTTPException, Request, status
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator
 
-from ...schemas.recommendation import RecommendationRequest, RecommendationResponse
+from ...schemas.recommendation import RecommendationRequest, RecommendationResponse, ConversationalChatRequest, ConversationalChatResponse
 from ...schemas.place import AgeGroupEnum, DietaryOptionEnum, BudgetTierEnum, Place
 from ...services.ranking_service import ranking_service
 from ...services.gemini_service import gemini_service
@@ -115,6 +115,43 @@ def parse_query(query_text: str = Body(..., embed=True)):
     if not query_text or not query_text.strip():
         raise HTTPException(status_code=422, detail="query_text cannot be empty")
     return gemini_service.parse_natural_language_query(query_text)
+
+@router.post("/chat", response_model=ConversationalChatResponse)
+def chat_with_concierge(req: ConversationalChatRequest, request: Request):
+    """
+    Conversational AI Concierge for rational dialogue, place/dining advice, and flexible itinerary planning.
+    """
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    apply_rate_limit(client_ip)
+
+    resolved_city = (req.city_id or req.city or "pondicherry").strip().lower()
+    if resolved_city not in ["pondicherry", "chennai"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"City '{resolved_city}' is outside Voyantra's operating boundaries. Please select Pondicherry or Chennai."
+        )
+
+    all_city_places = places_service.get_all_places(resolved_city)
+    vector_results = vector_store_service.search_semantic_places(req.message, city_id=resolved_city, top_k=12)
+    ranked_places = [item[0] for item in vector_results] if vector_results else all_city_places[:12]
+    catalog_places = ranked_places + [p for p in all_city_places if p.id not in [x.id for x in ranked_places]]
+
+    cities = places_service.get_cities()
+    city_name = next((c["name"] for c in cities if c["id"] == resolved_city), resolved_city.title())
+
+    history_dicts = [{"role": m.role, "content": m.content} for m in req.conversation_history]
+
+    res = gemini_service.chat_conversational(
+        message=req.message,
+        city_name=city_name,
+        retrieved_places=catalog_places,
+        conversation_history=history_dicts,
+        current_itinerary=req.current_itinerary,
+        user_age=req.age_group,
+        user_diet=req.dietary_preference,
+        duration_days=req.duration_days or 2
+    )
+    return res
 
 @router.post("/generate-itinerary")
 def generate_ai_itinerary(req: ItineraryRequest, request: Request):

@@ -588,5 +588,336 @@ class GeminiService:
         )
         return resp.model_dump(mode="json")
 
+    def chat_conversational(
+        self,
+        message: str,
+        city_name: str,
+        retrieved_places: List[Place],
+        conversation_history: Optional[List[Dict[str, Any]]] = None,
+        current_itinerary: Optional[Dict[str, Any]] = None,
+        user_age: Optional[AgeGroupEnum] = None,
+        user_diet: Optional[DietaryOptionEnum] = None,
+        duration_days: int = 2
+    ) -> Dict[str, Any]:
+        """
+        Human-like conversational travel concierge for Pondicherry & Chennai.
+        Handles greetings, dining/place inquiries, and flexible multi-day or single-slot itinerary requests.
+        """
+        places_summary = []
+        for p in retrieved_places:
+            places_summary.append({
+                "name": p.name,
+                "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                "sub_category": p.sub_category,
+                "cost_inr": p.estimated_cost_inr,
+                "highlights": p.highlights,
+                "best_time": p.best_time_to_visit,
+                "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                "dress_code": getattr(p.etiquette_rules, "dress_code", "Casual") if hasattr(p, "etiquette_rules") and p.etiquette_rules else "Casual",
+                "description": p.description[:120]
+            })
+
+        history_lines = []
+        if conversation_history:
+            for h in conversation_history[-6:]:
+                role = "User" if h.get("role") == "user" else "Assistant"
+                history_lines.append(f"{role}: {h.get('content', '')}")
+        history_str = "\n".join(history_lines)
+
+        age_val = user_age.value if hasattr(user_age, 'value') else str(user_age or "young_adult")
+        diet_val = user_diet.value if hasattr(user_diet, 'value') else str(user_diet or "all")
+
+        fallback_reason = "no_api_key"
+
+        if self.api_key and len(self.api_key) > 5:
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+            headers = {
+                "Content-Type": "application/json",
+                "x-goog-api-key": self.api_key
+            }
+
+            prompt = f"""
+            You are Voyantra's AI Travel Concierge — a warm, knowledgeable, polite local guide for {city_name}, India.
+            You communicate naturally, like an experienced, thoughtful human concierge.
+
+            CURATED DESTINATIONS & RESTAURANTS IN {city_name.upper()} (Use ONLY these real places):
+            {json.dumps(places_summary, indent=2)}
+
+            RECENT CONVERSATION:
+            {history_str or "No previous messages."}
+
+            ACTIVE ITINERARY (IF ANY):
+            {json.dumps(current_itinerary) if current_itinerary else "None."}
+
+            USER PROFILE:
+            Age: {age_val}, Dietary: {diet_val}
+
+            LATEST USER MESSAGE:
+            "{message}"
+
+            DECISION INSTRUCTIONS:
+            1. DETERMINE INTENT:
+               - "chat": Greetings (hi, hello, how are you), general conversation, local tips, weather, packing, cultural decorum.
+               - "place_info": Inquiries about specific places, restaurants, cafes, breakfast/dinner, beaches, or temples.
+               - "itinerary": Requests to plan a multi-day trip (e.g. "plan a 2-day trip"), a specific time of day (e.g. "what can I do tomorrow morning?"), or update an existing schedule.
+
+            2. COMPOSE RESPONSE:
+               - "reply_message": Markdown format. Friendly, human-like, helpful. Use polite greetings, bullet points, and emojis.
+               - "recommended_places": Place names from the catalog you specifically recommended in your reply.
+               - "suggested_followups": 2 to 4 quick, relevant follow-up questions the user can ask next.
+               - "itinerary": If the user requested an itinerary (multi-day or single time slot), output the structured itinerary object matching Voyantra schema (only using catalog destinations, respecting dietary preferences, exact budget sum). If the user asked for a specific time of day (e.g., morning), populate only that slot and leave other slots null. If intent is "chat" or "place_info", set "itinerary" to null.
+
+            Output ONLY raw valid JSON matching:
+            {{
+              "intent": "chat" | "place_info" | "itinerary",
+              "reply_message": "...",
+              "recommended_places": ["Place 1"],
+              "suggested_followups": ["Question 1", "Question 2"],
+              "itinerary": null | {{
+                 "itinerary_title": "...",
+                 "feasibility_status": "100% Feasible",
+                 "summary": "...",
+                 "days": [
+                    {{
+                       "day_number": 1,
+                       "theme": "...",
+                       "morning": {{ "place_name": "...", "activity_note": "...", "est_time": "..." }},
+                       "afternoon": null,
+                       "evening": null
+                    }}
+                 ],
+                 "total_estimated_budget_inr": 150,
+                 "belief_and_etiquette_advisory": "...",
+                 "travel_tips": ["..."]
+              }}
+            }}
+            """
+
+            try:
+                payload = {
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {
+                        "responseMimeType": "application/json",
+                        "temperature": 0.5
+                    }
+                }
+                res = requests.post(url, headers=headers, json=payload, timeout=25)
+                if res.ok:
+                    data = res.json()
+                    candidates = data.get("candidates", [])
+                    if candidates:
+                        text_resp = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                        clean_text = text_resp.replace("```json", "").replace("```", "").strip()
+                        parsed = json.loads(clean_text)
+
+                        # Build recommended places list
+                        rec_places = []
+                        rec_names = [normalize_place_name(n) for n in parsed.get("recommended_places", [])]
+                        for p in retrieved_places:
+                            if normalize_place_name(p.name) in rec_names:
+                                rec_places.append({
+                                    "id": p.id,
+                                    "name": p.name,
+                                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                                    "sub_category": p.sub_category,
+                                    "estimated_cost_inr": p.estimated_cost_inr,
+                                    "duration_minutes": p.duration_minutes,
+                                    "highlights": p.highlights,
+                                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                                    "image_url": p.image_url
+                                })
+
+                        # If itinerary was generated, sanitize and validate
+                        itinerary_data = None
+                        if parsed.get("itinerary") and parsed.get("intent") == "itinerary":
+                            q_low = message.lower()
+                            is_day2 = "day 2" in q_low or "day2" in q_low
+                            itinerary_data = self._sanitize_and_validate_itinerary(
+                                parsed=parsed["itinerary"],
+                                retrieved_places=retrieved_places,
+                                user_diet=user_diet or DietaryOptionEnum.ALL,
+                                is_day2_refinement=is_day2,
+                                existing_days=current_itinerary.get("days") if current_itinerary else None
+                            )
+
+                        return {
+                            "city_id": city_name.lower(),
+                            "reply_message": parsed.get("reply_message", "I'm here to help you explore!"),
+                            "intent": parsed.get("intent", "chat"),
+                            "recommended_places": rec_places,
+                            "itinerary": itinerary_data,
+                            "suggested_followups": parsed.get("suggested_followups", [
+                                f"What are the top sights in {city_name}?",
+                                f"Plan a 2-day trip to {city_name}",
+                                "Best cafes in White Town"
+                            ]),
+                            "source": "gemini",
+                            "fallback_reason": None
+                        }
+                else:
+                    logger.warning(f"[GeminiService] Chat HTTP error {res.status_code}. Using fallback.")
+                    fallback_reason = f"http_{res.status_code}"
+            except Exception as e:
+                logger.warning(f"[GeminiService] Chat exception ({e}). Using fallback.")
+                fallback_reason = "exception"
+
+        # Fallback Conversational Response
+        return self._fallback_chat_response(
+            message=message,
+            city_name=city_name,
+            retrieved_places=retrieved_places,
+            current_itinerary=current_itinerary,
+            user_diet=user_diet,
+            duration_days=duration_days,
+            fallback_reason=fallback_reason
+        )
+
+    def _fallback_chat_response(
+        self,
+        message: str,
+        city_name: str,
+        retrieved_places: List[Place],
+        current_itinerary: Optional[Dict[str, Any]] = None,
+        user_diet: Optional[DietaryOptionEnum] = None,
+        duration_days: int = 2,
+        fallback_reason: str = "offline"
+    ) -> Dict[str, Any]:
+        q = message.lower().strip()
+        matched_previews = []
+
+        # Greetings
+        if any(w in q for w in ["hi", "hello", "hey", "good morning", "good evening", "namaste", "who are you"]):
+            reply = (
+                f"Hello! 👋 I'm your **Voyantra AI Travel Concierge** for {city_name}. "
+                f"I'm here to help you discover beautiful destinations, recommend authentic cafes and dining, "
+                f"or craft custom day-by-day itineraries tailored to your schedule and preferences. "
+                f"What would you like to explore today?"
+            )
+            followups = [
+                f"Plan a 2-day relaxed trip to {city_name}",
+                "Best cafes and breakfast in White Town",
+                "Temples, ashrams & spiritual spots",
+                "What is the best time for beach walks?"
+            ]
+            intent = "chat"
+            itin = None
+
+        # Cafe / Dining / Breakfast / Dinner inquiries
+        elif any(w in q for w in ["cafe", "coffee", "croissant", "restaurant", "food", "eat", "breakfast", "lunch", "dinner", "vegan", "vegetarian", "pure veg", "jain"]):
+            dining_places = [p for p in retrieved_places if p.category in [CategoryEnum.CAFE, CategoryEnum.DINING]]
+            if user_diet and user_diet != DietaryOptionEnum.ALL:
+                dining_places = [p for p in dining_places if is_dietary_compliant(p, user_diet)]
+            
+            p_names = ", ".join([f"**{p.name}**" for p in dining_places[:3]])
+            reply = (
+                f"Here are top-rated dining spots in {city_name} matching your tastes:\n\n"
+                f"{p_names}.\n\n"
+                f"- **Surguru Restaurant**: Renowned for crispy ghee roast dosas, authentic filter kaapi, and 100% pure vegetarian & Jain options.\n"
+                f"- **Coromandel Cafe**: Set in a restored heritage mansion, celebrated for artisan coffee, gourmet breakfast, and charming courtyards.\n"
+                f"- **Cafe des Arts**: Classic French bohemian cafe famous for savory crepes, baguettes, and vintage art decor."
+            )
+            for p in dining_places[:3]:
+                matched_previews.append({
+                    "id": p.id,
+                    "name": p.name,
+                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                    "sub_category": p.sub_category,
+                    "estimated_cost_inr": p.estimated_cost_inr,
+                    "duration_minutes": p.duration_minutes,
+                    "highlights": p.highlights,
+                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                    "image_url": p.image_url
+                })
+            followups = [
+                "Plan a 2-day foodie & cafe itinerary",
+                "Where can I find pure-vegetarian breakfast?",
+                "Suggest evening beach cafes"
+            ]
+            intent = "place_info"
+            itin = None
+
+        # Specific place / Beach / Spiritual inquiries
+        elif any(w in q for w in ["beach", "promenade", "rock beach", "auroville", "matrimandir", "ashram", "temple", "monument"]):
+            relevant = [p for p in retrieved_places if any(k in p.name.lower() or k in p.description.lower() for k in ["beach", "auroville", "ashram", "temple", "heritage"])]
+            reply = (
+                f"Here are notable highlights in {city_name} to visit:\n\n"
+                f"- **Promenade Beach (Rock Beach)**: Best visited at sunrise or 5:00 PM - 8:00 PM when Goubert Avenue becomes pedestrian-only.\n"
+                f"- **Auroville & Matrimandir**: Universal township centered around the golden meditation dome. Booking visitor passes in advance is recommended.\n"
+                f"- **Sri Aurobindo Ashram**: A serene sanctuary of meditation and quiet reflection in the heart of White Town."
+            )
+            for p in relevant[:3]:
+                matched_previews.append({
+                    "id": p.id,
+                    "name": p.name,
+                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                    "sub_category": p.sub_category,
+                    "estimated_cost_inr": p.estimated_cost_inr,
+                    "duration_minutes": p.duration_minutes,
+                    "highlights": p.highlights,
+                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                    "image_url": p.image_url
+                })
+            followups = [
+                "Plan an itinerary featuring these places",
+                "What is the dress code for Sri Aurobindo Ashram?",
+                "How far is Auroville from Rock Beach?"
+            ]
+            intent = "place_info"
+            itin = None
+
+        # Itinerary request
+        elif any(w in q for w in ["plan", "itinerary", "schedule", "trip", "day", "morning", "afternoon", "evening", "weekend"]):
+            itin = self._generate_fallback_itinerary(
+                query_text=message,
+                retrieved_places=retrieved_places,
+                user_age=user_age or AgeGroupEnum.YOUNG_ADULT,
+                user_diet=user_diet or DietaryOptionEnum.ALL,
+                duration_days=duration_days,
+                city_name=city_name,
+                existing_days=current_itinerary.get("days") if current_itinerary else None,
+                has_warning=False,
+                warning_msg=None,
+                fallback_reason=fallback_reason
+            )
+            reply = (
+                f"I've designed a custom **{duration_days}-day itinerary** for {city_name}! "
+                f"It balances iconic colonial heritage, peaceful beaches, and authentic dining options. "
+                f"You can review the full schedule below on the interactive canvas or ask me to adjust any stop!"
+            )
+            followups = [
+                "Make Day 2 more relaxed",
+                "Add pure-veg dining options",
+                "Swap morning stop for a cafe visit"
+            ]
+            intent = "itinerary"
+
+        # General helpful fallback
+        else:
+            reply = (
+                f"I'm here to assist you with exploring {city_name}! "
+                f"You can ask me for restaurant recommendations, heritage spots, beach timings, "
+                f"or ask me to plan a custom multi-day itinerary."
+            )
+            followups = [
+                f"What are the top sights in {city_name}?",
+                f"Plan a 2-day trip to {city_name}",
+                "Best cafes in White Town"
+            ]
+            intent = "chat"
+            itin = None
+
+        return {
+            "city_id": city_name.lower(),
+            "reply_message": reply,
+            "intent": intent,
+            "recommended_places": matched_previews,
+            "itinerary": itin,
+            "suggested_followups": followups,
+            "source": "fallback",
+            "fallback_reason": fallback_reason
+        }
+
+
 
 gemini_service = GeminiService()

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Any, Union, Literal
+from typing import List, Optional, Any, Union, Literal, Dict
 from .place import Place, AgeGroupEnum, DietaryOptionEnum, BudgetTierEnum
 
 class ItinerarySlot(BaseModel):
@@ -57,3 +57,40 @@ class RecommendationResponse(BaseModel):
     total_results: int
     ranked_places: List[RankedPlaceItem]
     applied_preferences: dict
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant", "system"]
+    content: str
+    timestamp: Optional[str] = None
+
+class ConversationalChatRequest(BaseModel):
+    city_id: Optional[str] = "pondicherry"
+    city: Optional[str] = None
+    message: str = Field(..., min_length=1)
+    conversation_history: List[ChatMessage] = Field(default_factory=list)
+    current_itinerary: Optional[Dict[str, Any]] = None
+    age_group: Optional[Any] = AgeGroupEnum.YOUNG_ADULT
+    dietary_preference: Optional[Any] = DietaryOptionEnum.ALL
+    duration_days: Optional[int] = 2
+
+class RecommendedPlacePreview(BaseModel):
+    id: str
+    name: str
+    category: str
+    sub_category: Optional[str] = None
+    estimated_cost_inr: int = 0
+    duration_minutes: int = 60
+    highlights: List[str] = Field(default_factory=list)
+    dietary_options: List[str] = Field(default_factory=list)
+    image_url: Optional[str] = None
+
+class ConversationalChatResponse(BaseModel):
+    city_id: str
+    reply_message: str
+    intent: Literal["chat", "place_info", "itinerary"]
+    recommended_places: List[RecommendedPlacePreview] = Field(default_factory=list)
+    itinerary: Optional[ItineraryResponse] = None
+    suggested_followups: List[str] = Field(default_factory=list)
+    source: Literal["gemini", "fallback"] = "gemini"
+    fallback_reason: Optional[str] = None
+
