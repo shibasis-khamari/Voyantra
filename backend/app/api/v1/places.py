@@ -49,6 +49,12 @@ def fetch_from_internet(
     places_service.reload_data()
     return res
 
+@router.post("/reload-data")
+def reload_places_data():
+    """Reload places data from disk JSON files for automated testing isolation."""
+    places_service.reload_data()
+    return {"status": "reloaded", "message": "Places data reloaded from disk"}
+
 @router.get("/{place_id}", response_model=Place)
 def get_place(
     place_id: str,
