@@ -231,6 +231,82 @@ export const VoyantraAPI = {
     }
   },
 
+  // 7b. Auth - Get All Users (Admin)
+  async getUsers() {
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('voyantra_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${BACKEND_URL}/auth/users`, {
+        method: 'GET',
+        headers,
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to fetch users');
+    } catch (e) {
+      if (e.message.includes('Server status') || e.name === 'TimeoutError' || e.message.includes('Failed to fetch')) {
+        throw new Error(BACKEND_OFFLINE_MSG);
+      }
+      throw e;
+    }
+  },
+
+  // 7c. Auth - Delete User (Admin)
+  async deleteUser(userId) {
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('voyantra_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${BACKEND_URL}/auth/users/${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+        headers,
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to delete user');
+    } catch (e) {
+      if (e.message.includes('Server status') || e.name === 'TimeoutError' || e.message.includes('Failed to fetch')) {
+        throw new Error(BACKEND_OFFLINE_MSG);
+      }
+      throw e;
+    }
+  },
+
+  // 7d. Auth - Update User Role (Admin)
+  async updateUserRole(userId, newRole) {
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('voyantra_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${BACKEND_URL}/auth/users/${encodeURIComponent(userId)}/role`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ role: newRole }),
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to update user role');
+    } catch (e) {
+      if (e.message.includes('Server status') || e.name === 'TimeoutError' || e.message.includes('Failed to fetch')) {
+        throw new Error(BACKEND_OFFLINE_MSG);
+      }
+      throw e;
+    }
+  },
+
   // 8. Phase 3: Festivals Advisory API
   async getFestivals(city_id = 'pondicherry') {
     try {
