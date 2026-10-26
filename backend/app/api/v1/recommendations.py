@@ -190,10 +190,12 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
     is_day2_refinement = "day 2" in q_lower or "day2" in q_lower
     prev_days = req.existing_days if (is_day2_refinement and req.existing_days) else None
 
+    catalog_places = filtered_places + [p for p in all_city_places if p.id not in [x.id for x in filtered_places]]
+
     # 3. Synthesize with Gemini API
     itinerary = gemini_service.generate_rag_itinerary(
         query_text=req.query_text,
-        retrieved_places=filtered_places[:8],
+        retrieved_places=catalog_places,
         user_age=req.age_group or AgeGroupEnum.YOUNG_ADULT,
         user_diet=DietaryOptionEnum.PURE_VEG_JAIN if is_strict_jain else (req.dietary_preference or DietaryOptionEnum.ALL),
         duration_days=req.duration_days,

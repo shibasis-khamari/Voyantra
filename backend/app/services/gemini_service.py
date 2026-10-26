@@ -299,7 +299,9 @@ class GeminiService:
                             sanitized = self._sanitize_and_validate_itinerary(
                                 parsed=parsed,
                                 retrieved_places=retrieved_places,
-                                user_diet=user_diet
+                                user_diet=user_diet,
+                                is_day2_refinement=is_day2_refinement,
+                                existing_days=existing_days
                             )
                             if sanitized:
                                 return sanitized
@@ -331,7 +333,9 @@ class GeminiService:
         self,
         parsed: Dict[str, Any],
         retrieved_places: List[Place],
-        user_diet: DietaryOptionEnum
+        user_diet: DietaryOptionEnum,
+        is_day2_refinement: bool = False,
+        existing_days: Optional[List[Dict[str, Any]]] = None
     ) -> Optional[Dict[str, Any]]:
         """
         Validates parsed itinerary against Pydantic schema.
@@ -363,8 +367,25 @@ class GeminiService:
         sanitized_days = []
         actual_cost = 0
 
-        for day in parsed.get("days", []):
+        for day_idx, day in enumerate(parsed.get("days", [])):
             day_dict = dict(day)
+            is_day1_locked = (day_idx == 0 and existing_days and is_day2_refinement and len(existing_days) > 0)
+            if is_day1_locked:
+                day_dict = dict(existing_days[0])
+                for slot_key in ["morning", "afternoon", "evening"]:
+                    slot = day_dict.get(slot_key)
+                    if not slot:
+                        continue
+                    slot_dict = dict(slot)
+                    pname = slot_dict.get("place_name", "").strip()
+                    if pname:
+                        p_norm = normalize_place_name(pname)
+                        used_places.add(p_norm)
+                        matched = catalog_map.get(p_norm)
+                        if matched:
+                            actual_cost += matched.estimated_cost_inr
+                sanitized_days.append(day_dict)
+                continue
             for slot_key in ["morning", "afternoon", "evening"]:
                 slot = day_dict.get(slot_key)
                 if not slot:
