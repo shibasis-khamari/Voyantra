@@ -43,6 +43,7 @@ export function PlaceModal({ place, matchInfo, onClose }) {
                 placeName={place.name} 
                 cityId={place.city_id || 'pondicherry'} 
                 tendency={place.crowd_tendency} 
+                variant="overlay"
               />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{place.name}</h2>

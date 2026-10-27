@@ -43,8 +43,14 @@ export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
 
           {/* Bottom image metadata */}
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs z-20">
-            <CrowdBadge placeId={place.id} placeName={place.name} cityId={place.city_id || 'pondicherry'} tendency={place.crowd_tendency} />
-            <span className="flex items-center gap-1 font-bold bg-slate-900/60 px-2.5 py-1 rounded-full backdrop-blur-md border border-white/10">
+            <CrowdBadge 
+              placeId={place.id} 
+              placeName={place.name} 
+              cityId={place.city_id || 'pondicherry'} 
+              tendency={place.crowd_tendency} 
+              variant="overlay"
+            />
+            <span className="flex items-center gap-1 font-bold bg-slate-900/80 px-2.5 py-1 rounded-full backdrop-blur-md border border-white/20 shadow-xs">
               <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
               {place.rating}
             </span>

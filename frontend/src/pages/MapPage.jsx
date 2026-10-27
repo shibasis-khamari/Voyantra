@@ -103,6 +103,9 @@ export function MapPage() {
                       placeName={p.name} 
                       cityId={p.city_id || selectedCity} 
                       tendency={p.crowd_tendency} 
+                      variant="light"
+                      compact={true}
+                      className="shrink-0"
                     />
                   </div>
                   <div className="text-slate-500 mt-1 line-clamp-1 flex items-center gap-1">
