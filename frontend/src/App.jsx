@@ -16,7 +16,7 @@ export function App() {
   const renderActivePage = () => {
     switch (activeTab) {
       case 'explore':
-        return <ExplorePage />;
+        return <ExplorePage setActiveTab={setActiveTab} />;
       case 'planner':
         return <PlannerPage />;
       case 'hotels':
@@ -30,7 +30,7 @@ export function App() {
       case 'signup':
         return <SignUpPage setActiveTab={setActiveTab} />;
       default:
-        return <ExplorePage />;
+        return <ExplorePage setActiveTab={setActiveTab} />;
     }
   };
 
