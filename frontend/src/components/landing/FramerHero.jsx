@@ -67,7 +67,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
   };
 
   return (
-    <div className="relative overflow-hidden py-12 sm:py-16 lg:py-20 text-white">
+    <div className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24 text-white">
       {/* Full Section Background Image: Luisa Linkous Coastal Horizon */}
       <div className="absolute inset-0 z-0">
         <img 

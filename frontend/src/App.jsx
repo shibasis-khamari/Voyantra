@@ -41,8 +41,8 @@ export function App() {
           {/* Top Navbar */}
           <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          {/* Main Content View */}
-          <main className="flex-1 pb-16">
+          {/* Main Content View: pt-0 on Explore so Hero background extends behind glassy navbar, pt-16 on other pages */}
+          <main className={`flex-1 pb-16 ${activeTab === 'explore' ? 'pt-0' : 'pt-16'}`}>
             {renderActivePage()}
           </main>
 
