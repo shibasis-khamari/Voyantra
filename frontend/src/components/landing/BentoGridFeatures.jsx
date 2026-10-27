@@ -31,6 +31,28 @@ export function BentoGridFeatures({ setActiveTab }) {
         </p>
       </div>
 
+      {/* Section Hero Banner with Planning Photography */}
+      <div className="relative rounded-3xl overflow-hidden border border-sandstone shadow-lg bg-slate-950 text-white min-h-[200px] sm:min-h-[240px] flex items-center p-6 sm:p-10">
+        <img 
+          src="/images/glenn-carstens-peters-ZWD3Dx6aUJg-unsplash.jpg"
+          alt="Intelligent Travel Planning with Maps and Notes"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-brand-900/80 to-transparent" />
+        <div className="relative z-10 max-w-xl space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-300">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Algorithmic Curation</span>
+          </div>
+          <h3 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
+            Precision Planning Behind Every Milestone
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+            How Voyantra harmonizes transit constraints, heat avoidance, and verified catalog landmarks into an effortless itinerary.
+          </p>
+        </div>
+      </div>
+
       {/* Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         

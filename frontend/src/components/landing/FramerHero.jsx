@@ -68,63 +68,73 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
 
   return (
     <div className="relative overflow-hidden pt-4 pb-12 sm:pb-16 lg:pb-20">
-      {/* Ambient background glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-terracotta/15 via-amber-400/10 to-brand-700/10 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-10 right-10 w-72 h-72 bg-brand-500/10 rounded-full blur-2xl pointer-events-none -z-10" />
-
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8"
       >
-        {/* Top Badging & Editorial Headlines */}
-        <div className="text-center max-w-3xl mx-auto space-y-5">
-          {/* Animated Eyebrow Badge */}
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-sandstone shadow-2xs backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-terracotta animate-pulse" />
-            <span className="text-[11px] font-bold text-brand-700 uppercase tracking-widest font-sans">
-              Coastal Tamil Nadu & Pondicherry • Intelligent Travel Planning
-            </span>
-          </motion.div>
+        {/* Cinematic Coastal Hero Card */}
+        <div className="relative rounded-3xl sm:rounded-[2.5rem] overflow-hidden border border-sandstone shadow-2xl bg-slate-950 text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative">
+          
+          {/* Hero Image: Luisa Linkous Coastal Horizon */}
+          <img 
+            src="/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg"
+            alt="Scenic Coastal Horizon of the Bay of Bengal"
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-35 scale-105 transition-transform duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-900/50" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Main Editorial Headline */}
-          <motion.h1 
-            variants={itemVariants}
-            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-brand-700 tracking-tight leading-[1.12]"
-          >
-            Curated Journeys. Intelligent Pacing.{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-terracotta via-amber-600 to-terracotta">
-              Unhurried Coastlines.
-            </span>
-          </motion.h1>
+          {/* Top Badging & Editorial Headlines */}
+          <div className="relative z-10 text-center max-w-3xl mx-auto space-y-6 py-6 sm:py-10">
+            {/* Animated Eyebrow Badge */}
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 shadow-xs backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-terracotta animate-pulse" />
+              <span className="text-[11px] font-bold text-amber-300 uppercase tracking-widest font-sans">
+                Coastal Tamil Nadu & Pondicherry • Intelligent Travel Planning
+              </span>
+            </motion.div>
 
-          {/* Subtext */}
-          <motion.p 
-            variants={itemVariants}
-            className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans max-w-2xl mx-auto"
-          >
-            Experience personalized multi-day itineraries for Pondicherry and Chennai. Powered by local catalog grounding, real-time crowd advisories, and self-declared demographic and dietary preferences.
-          </motion.p>
-
-          {/* Action CTAs */}
-          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => setActiveTab('planner')}
-              className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-brand-700 hover:bg-brand-800 text-white text-xs sm:text-sm font-bold shadow-md shadow-brand-700/20 hover:shadow-lg transition-all"
+            {/* Main Editorial Headline */}
+            <motion.h1 
+              variants={itemVariants}
+              className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12]"
             >
-              <span>Open Trip Planner</span>
-              <ArrowRight className="w-4 h-4 text-terracotta-light group-hover:translate-x-1 transition-transform" />
-            </button>
+              Curated Journeys. Intelligent Pacing.{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-terracotta-light to-amber-200">
+                Unhurried Coastlines.
+              </span>
+            </motion.h1>
 
-            <button
-              onClick={scrollToCatalog}
-              className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white hover:bg-sandstone-light text-slate-700 border border-sandstone text-xs sm:text-sm font-bold transition-colors shadow-2xs"
+            {/* Subtext */}
+            <motion.p 
+              variants={itemVariants}
+              className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans max-w-2xl mx-auto"
             >
-              <Compass className="w-4 h-4 text-slate-500" />
-              <span>Browse Catalog Places</span>
-            </button>
-          </motion.div>
+              Experience personalized multi-day itineraries for Pondicherry and Chennai. Powered by local catalog grounding, real-time crowd advisories, and self-declared demographic and dietary preferences.
+            </motion.p>
+
+            {/* Action CTAs */}
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setActiveTab('planner')}
+                className="group flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-terracotta hover:bg-terracotta/90 text-white text-xs sm:text-sm font-bold shadow-lg shadow-terracotta/30 hover:shadow-xl transition-all"
+              >
+                <span>Open Trip Planner</span>
+                <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={scrollToCatalog}
+                className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-bold transition-colors backdrop-blur-sm"
+              >
+                <Compass className="w-4 h-4 text-amber-300" />
+                <span>Browse Catalog Places</span>
+              </button>
+            </motion.div>
+          </div>
         </div>
 
         {/* Visual Centerpiece (Hero Showcase Deck) */}

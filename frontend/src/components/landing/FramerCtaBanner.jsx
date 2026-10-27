@@ -14,6 +14,14 @@ export function FramerCtaBanner({ setActiveTab }) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="bg-gradient-to-br from-brand-900 via-slate-900 to-terracotta rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
         
+        {/* Background Travel Essentials Photography */}
+        <img 
+          src="/images/charlotte-noelle-98WPMlTl5xo-unsplash.jpg"
+          alt="Travel Planning Essentials & Camera"
+          className="absolute inset-0 w-full h-full object-cover opacity-25 mix-blend-luminosity scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-brand-900/85 to-terracotta/75" />
+
         {/* Ambient atmospheric lighting */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-terracotta/20 rounded-full blur-3xl pointer-events-none" />

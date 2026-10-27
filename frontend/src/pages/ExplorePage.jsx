@@ -88,17 +88,23 @@ export function ExplorePage({ setActiveTab }) {
       {/* 5. Destination Catalog & Interactive Filtering */}
       <div id="places-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 scroll-mt-20">
         
-        {/* Catalog Section Header */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-sandstone shadow-2xs relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
-              <Compass className="w-3.5 h-3.5 text-terracotta" />
+        {/* Catalog Section Hero Banner with Map Pins Photography */}
+        <div className="relative rounded-3xl overflow-hidden border border-sandstone shadow-lg bg-slate-950 text-white min-h-[200px] sm:min-h-[240px] flex items-center p-6 sm:p-10">
+          <img 
+            src="/images/z-TrhLCn1abMU-unsplash.jpg"
+            alt="Verified Destination Map with Location Pins"
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-brand-900/85 to-transparent" />
+          <div className="relative z-10 max-w-2xl space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-300">
+              <Compass className="w-3.5 h-3.5" />
               Verified Local Catalog
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700 leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight">
               Curated Destination Repository
             </h2>
-            <p className="text-sm text-slate-600 leading-relaxed font-sans">
+            <p className="text-sm text-slate-300 leading-relaxed font-sans">
               Filter through verified cultural landmarks, seaside promenades, and bohemian cafes with real-time crowd estimates and dietary indicators.
             </p>
           </div>
