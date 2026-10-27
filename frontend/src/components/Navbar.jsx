@@ -11,10 +11,21 @@ export function Navbar({ activeTab, setActiveTab }) {
   const [cities, setCities] = useState([]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const userMenuRef = useRef(null);
 
   useEffect(() => {
     loadCities();
+  }, []);
+
+  // Listen to scroll to remove glass background finish when at top
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Close dropdown on click outside
@@ -47,9 +58,16 @@ export function Navbar({ activeTab, setActiveTab }) {
     navItems.push({ id: 'admin', label: 'Admin', icon: ShieldCheck });
   }
 
+  // Only show glass background finish when scrolled down or on non-hero pages
+  const hasGlassBackground = isScrolled || activeTab !== 'explore';
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-slate-950/40 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.15)] transition-all duration-300">
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        hasGlassBackground
+          ? 'backdrop-blur-xl bg-slate-950/70 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.15)]'
+          : 'bg-transparent border-b border-transparent shadow-none backdrop-blur-none'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
@@ -67,8 +85,8 @@ export function Navbar({ activeTab, setActiveTab }) {
                 </span>
               </div>
 
-              {/* Manual City Selector Pill (Restricted to Pondicherry & Chennai) */}
-              <div className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/15 px-3 py-1.5 rounded-full backdrop-blur-md transition-colors text-white">
+              {/* Manual City Selector Pill (Glass finish preserved) */}
+              <div className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 px-3 py-1.5 rounded-full backdrop-blur-md transition-colors text-white shadow-xs">
                 <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                 <select
                   value={selectedCity}
@@ -85,8 +103,8 @@ export function Navbar({ activeTab, setActiveTab }) {
               </div>
             </div>
 
-            {/* Center: Organized & Minimal Nav Dock */}
-            <nav className="hidden md:flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-1 rounded-full backdrop-blur-md">
+            {/* Center: Organized & Minimal Nav Dock (Glass finish preserved) */}
+            <nav className="hidden md:flex items-center gap-1 bg-white/10 border border-white/20 px-2 py-1 rounded-full backdrop-blur-md shadow-xs">
               {navItems.map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -96,8 +114,8 @@ export function Navbar({ activeTab, setActiveTab }) {
                     onClick={() => setActiveTab(item.id)}
                     className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
                       isActive 
-                        ? 'text-white bg-white/15 border border-white/20 shadow-xs' 
-                        : 'text-slate-300 hover:text-white hover:bg-white/10'
+                        ? 'text-white bg-white/20 border border-white/30 shadow-xs' 
+                        : 'text-slate-200 hover:text-white hover:bg-white/10'
                     }`}
                   >
                     <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-amber-300' : 'text-slate-400'}`} />
