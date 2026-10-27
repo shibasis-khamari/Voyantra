@@ -33,59 +33,72 @@ export function AccordionFaq() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
-          <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
-          <span>Frequently Asked Questions</span>
+    <section className="relative overflow-hidden py-16 sm:py-20 text-white border-t border-sandstone">
+      {/* Full Section Background Image: Destination Map with Pins */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/images/z-TrhLCn1abMU-unsplash.jpg"
+          alt="Verified Destination Map with Location Pins"
+          className="w-full h-full object-cover object-center opacity-25 scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+            <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
+            <span>Frequently Asked Questions</span>
+          </div>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
+            Clarity & Travel Guidelines
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-xl mx-auto">
+            Everything you need to know about our catalog grounding, data sources, and system tiers.
+          </p>
         </div>
-        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700">
-          Clarity & Travel Guidelines
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 font-sans">
-          Everything you need to know about our catalog grounding, data sources, and system tiers.
-        </p>
-      </div>
 
-      {/* Accordion List */}
-      <div className="space-y-3">
-        {FAQ_ITEMS.map((item, idx) => {
-          const isOpen = openIndex === idx;
+        {/* Accordion List with High-Contrast White Cards */}
+        <div className="space-y-3">
+          {FAQ_ITEMS.map((item, idx) => {
+            const isOpen = openIndex === idx;
 
-          return (
-            <div 
-              key={idx}
-              className="bg-white rounded-2xl border border-sandstone shadow-2xs overflow-hidden transition-colors"
-            >
-              <button
-                onClick={() => toggleItem(idx)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm text-slate-900 hover:text-brand-700 transition-colors"
+            return (
+              <div 
+                key={idx}
+                className="bg-white/95 rounded-2xl border border-sandstone shadow-md overflow-hidden transition-all backdrop-blur-md"
               >
-                <span>{item.q}</span>
-                <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-terracotta' : ''}`} />
-              </button>
+                <button
+                  onClick={() => toggleItem(idx)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm text-slate-900 hover:text-brand-700 transition-colors cursor-pointer"
+                >
+                  <span>{item.q}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-terracotta' : ''}`} />
+                </button>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="content"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-6 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-sandstone/40 font-sans">
-                      {item.a}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          );
-        })}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-700 leading-relaxed border-t border-sandstone/60 font-sans">
+                        {item.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

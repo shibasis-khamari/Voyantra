@@ -78,140 +78,132 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
   const activeJourney = JOURNEY_DATA[selectedCity];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
-      {/* Header & City Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-sandstone pb-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
-            <Compass className="w-3.5 h-3.5 text-terracotta" />
-            <span>Curated Trajectory Preview</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700">
-            A Day in the Coast
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-sans">
-            Preview realistic single-day flows designed for proximity, heat pacing, and cultural etiquette.
-          </p>
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="flex bg-sandstone-light p-1.5 rounded-2xl border border-sandstone self-start sm:self-auto">
-          <button
-            onClick={() => setSelectedCity('pondicherry')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              selectedCity === 'pondicherry'
-                ? 'bg-brand-700 text-white shadow-xs'
-                : 'text-slate-600 hover:text-brand-700'
-            }`}
-          >
-            Pondicherry Trail
-          </button>
-          <button
-            onClick={() => setSelectedCity('chennai')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              selectedCity === 'chennai'
-                ? 'bg-brand-700 text-white shadow-xs'
-                : 'text-slate-600 hover:text-brand-700'
-            }`}
-          >
-            Chennai Trail
-          </button>
-        </div>
-      </div>
-
-      {/* Section Hero Visual Banner with Coastal Retreat Photography */}
-      <div className="relative rounded-3xl overflow-hidden border border-sandstone shadow-lg bg-slate-950 text-white min-h-[200px] sm:min-h-[240px] flex items-center p-6 sm:p-10">
+    <section className="relative overflow-hidden py-16 sm:py-20 text-white border-t border-sandstone">
+      {/* Full Section Background Image: Sara Dubler Coastal Villa & Pool */}
+      <div className="absolute inset-0 z-0">
         <img 
           src="/images/sara-dubler-Koei_7yYtIo-unsplash.jpg"
-          alt="Coastal Retreat & Villa Courtyards"
-          className="absolute inset-0 w-full h-full object-cover opacity-35"
+          alt="Coastal Villa and French Courtyard"
+          className="w-full h-full object-cover object-center opacity-30 scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-transparent" />
-        <div className="relative z-10 max-w-xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-300">
-            <Compass className="w-3.5 h-3.5" />
-            <span>Coastal Trajectories</span>
-          </div>
-          <h3 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
-            From Heritage Courtyards to Seafront Sunsets
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-            Sample our recommended pacing balance — unhurried mornings, midday artisanal cafe breaks, and twilight sea walks.
-          </p>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/85 to-slate-950/95" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-terracotta/15 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* Content Area with Animation */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={selectedCity}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-          className="space-y-6"
-        >
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-slate-900">{activeJourney.title}</h3>
-            <p className="text-xs text-slate-500">{activeJourney.tagline}</p>
-          </div>
-
-          {/* Timeline Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {activeJourney.stops.map((stop, idx) => (
-              <div 
-                key={stop.title}
-                className="bg-white rounded-3xl p-6 border border-sandstone shadow-sm flex flex-col justify-between space-y-4 hover:border-terracotta/40 transition-colors"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sandstone-light text-brand-700 border border-sandstone">
-                      {stop.time}
-                    </span>
-                    <span className="text-[10px] font-semibold text-slate-400">
-                      Stop 0{idx + 1}
-                    </span>
-                  </div>
-
-                  <h4 className="text-base font-bold text-slate-900 leading-snug">
-                    {stop.title}
-                  </h4>
-
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    {stop.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-sandstone/60 space-y-2 text-[11px]">
-                  <div className="flex items-center justify-between font-bold text-slate-700">
-                    <span className="text-brand-700 font-medium">{stop.category}</span>
-                    <span>{stop.cost}</span>
-                  </div>
-                  <div className="text-[10px] text-slate-500 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-terracotta" />
-                    <span>{stop.decorum}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom Callout */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-sandstone-canvas rounded-2xl border border-sandstone text-xs text-slate-600 gap-3">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>All stops selected from verified catalog places with realistic transit buffers.</span>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* Header & City Tabs */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/15 pb-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+              <Compass className="w-3.5 h-3.5" />
+              <span>Curated Trajectory Preview</span>
             </div>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
+              A Day in the Coast
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-xl">
+              Preview realistic single-day flows designed for proximity, heat pacing, and cultural etiquette.
+            </p>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="flex bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 self-start sm:self-auto">
             <button
-              onClick={() => setActiveTab('planner')}
-              className="font-bold text-brand-700 hover:text-terracotta flex items-center gap-1.5 transition-colors shrink-0"
+              onClick={() => setSelectedCity('pondicherry')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                selectedCity === 'pondicherry'
+                  ? 'bg-terracotta text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
+              }`}
             >
-              <span>Customize in Trip Planner</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Pondicherry Trail
+            </button>
+            <button
+              onClick={() => setSelectedCity('chennai')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                selectedCity === 'chennai'
+                  ? 'bg-terracotta text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              Chennai Trail
             </button>
           </div>
-        </motion.div>
-      </AnimatePresence>
-    </div>
+        </div>
+
+        {/* Content Area with Animation */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCity}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="space-y-8"
+          >
+            <div className="space-y-1">
+              <h3 className="text-xl font-serif font-bold text-white">{activeJourney.title}</h3>
+              <p className="text-xs text-amber-200/90">{activeJourney.tagline}</p>
+            </div>
+
+            {/* Timeline Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {activeJourney.stops.map((stop, idx) => (
+                <div 
+                  key={stop.title}
+                  className="bg-white/95 rounded-3xl p-6 border border-white/20 shadow-xl flex flex-col justify-between space-y-4 hover:border-amber-400/50 transition-all text-slate-900 backdrop-blur-md"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-brand-50 text-brand-800 border border-brand-200">
+                        {stop.time}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                        Stop 0{idx + 1}
+                      </span>
+                    </div>
+
+                    <h4 className="text-base font-bold text-slate-900 leading-snug">
+                      {stop.title}
+                    </h4>
+
+                    <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                      {stop.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-200 space-y-2 text-[11px]">
+                    <div className="flex items-center justify-between font-bold text-slate-700">
+                      <span className="text-brand-700 font-semibold">{stop.category}</span>
+                      <span className="text-emerald-700 font-bold">{stop.cost}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-500 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-terracotta shrink-0" />
+                      <span>{stop.decorum}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom Callout */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs text-slate-200 gap-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>All stops selected from verified catalog places with realistic transit buffers.</span>
+              </div>
+              <button
+                onClick={() => setActiveTab('planner')}
+                className="font-bold text-amber-300 hover:text-amber-200 flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+              >
+                <span>Customize in Trip Planner</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </section>
   );
 }

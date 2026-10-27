@@ -16,45 +16,24 @@ import {
 
 export function BentoGridFeatures({ setActiveTab }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
-      {/* Section Header */}
-      <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
-          <Sparkles className="w-3.5 h-3.5 text-terracotta" />
-          <span>Intelligent System Architecture</span>
-        </div>
-        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700">
-          Engineered for Coastal Travel Realities
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
-          Voyantra blends generative travel concierges, catalog grounding, and demographic filtering into a cohesive planning platform.
-        </p>
-      </div>
-
-      {/* Section Hero Banner with Planning Photography */}
-      <div className="relative rounded-3xl overflow-hidden border border-sandstone shadow-lg bg-slate-950 text-white min-h-[200px] sm:min-h-[240px] flex items-center p-6 sm:p-10">
-        <img 
-          src="/images/glenn-carstens-peters-ZWD3Dx6aUJg-unsplash.jpg"
-          alt="Intelligent Travel Planning with Maps and Notes"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-brand-900/80 to-transparent" />
-        <div className="relative z-10 max-w-xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-300">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Algorithmic Curation</span>
+    <section className="w-full bg-white py-16 sm:py-20 border-t border-sandstone">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
+            <Sparkles className="w-3.5 h-3.5 text-terracotta" />
+            <span>Intelligent System Architecture</span>
           </div>
-          <h3 className="font-serif text-2xl sm:text-3xl font-bold leading-tight">
-            Precision Planning Behind Every Milestone
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-            How Voyantra harmonizes transit constraints, heat avoidance, and verified catalog landmarks into an effortless itinerary.
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700">
+            Engineered for Coastal Travel Realities
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+            Voyantra blends generative travel concierges, catalog grounding, and demographic filtering into a cohesive planning platform.
           </p>
         </div>
-      </div>
 
-      {/* Bento Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Card 1: Large Span 2 - Conversational AI Concierge */}
         <motion.div 
@@ -286,7 +265,8 @@ export function BentoGridFeatures({ setActiveTab }) {
           </div>
         </motion.div>
 
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

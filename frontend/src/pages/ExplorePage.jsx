@@ -72,46 +72,39 @@ export function ExplorePage({ setActiveTab }) {
   });
 
   return (
-    <div className="space-y-4">
-      {/* 1. Framer-Inspired Editorial Hero */}
+    <div className="space-y-0">
+      {/* 1. Framer-Inspired Editorial Hero - IMAGE BACKGROUND */}
       <FramerHero setActiveTab={setActiveTab} selectedCity={selectedCity} />
 
-      {/* 2. Seamless Infinite Marquee of Real Catalog Places */}
+      {/* 2. Seamless Infinite Marquee of Real Catalog Places - WHITE DIVIDER */}
       <InfiniteMarquee />
 
-      {/* 3. Asymmetric Bento Grid Features */}
+      {/* 3. Asymmetric Bento Grid Features - WHITE BACKGROUND */}
       <BentoGridFeatures setActiveTab={setActiveTab} />
 
-      {/* 4. Interactive Single-Day Timeline Switcher */}
+      {/* 4. Interactive Single-Day Timeline Switcher - IMAGE BACKGROUND */}
       <InteractiveJourneyTimeline setActiveTab={setActiveTab} />
 
-      {/* 5. Destination Catalog & Interactive Filtering */}
-      <div id="places-catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6 scroll-mt-20">
-        
-        {/* Catalog Section Hero Banner with Map Pins Photography */}
-        <div className="relative rounded-3xl overflow-hidden border border-sandstone shadow-lg bg-slate-950 text-white min-h-[200px] sm:min-h-[240px] flex items-center p-6 sm:p-10">
-          <img 
-            src="/images/z-TrhLCn1abMU-unsplash.jpg"
-            alt="Verified Destination Map with Location Pins"
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-brand-900/85 to-transparent" />
-          <div className="relative z-10 max-w-2xl space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-300">
-              <Compass className="w-3.5 h-3.5" />
+      {/* 5. Destination Catalog & Interactive Filtering - WHITE BACKGROUND */}
+      <section id="places-catalog" className="w-full bg-white py-16 border-t border-sandstone scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          
+          {/* Catalog Section Header on White Canvas */}
+          <div className="bg-sandstone-canvas rounded-3xl p-6 sm:p-10 border border-sandstone shadow-xs space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold uppercase tracking-widest text-brand-700">
+              <Compass className="w-3.5 h-3.5 text-terracotta" />
               Verified Local Catalog
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight text-slate-900">
               Curated Destination Repository
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans max-w-2xl">
               Filter through verified cultural landmarks, seaside promenades, and bohemian cafes with real-time crowd estimates and dietary indicators.
             </p>
           </div>
-        </div>
 
-        {/* Phase 3 Festival & Road Closure Advisory Banner */}
-        <FestivalAdvisoryBanner selectedCity={selectedCity} />
+          {/* Phase 3 Festival & Road Closure Advisory Banner */}
+          <FestivalAdvisoryBanner selectedCity={selectedCity} />
 
         {/* Backend Disconnected Notice */}
         {backendError && (
@@ -199,9 +192,10 @@ export function ExplorePage({ setActiveTab }) {
             </button>
           </div>
         )}
-      </div>
+        </div>
+      </section>
 
-      {/* 6. Clarity & Guidelines FAQ Accordion */}
+      {/* 6. Clarity & Guidelines FAQ Accordion - IMAGE BACKGROUND */}
       <AccordionFaq />
 
       {/* 7. Bottom Action CTA Banner */}
