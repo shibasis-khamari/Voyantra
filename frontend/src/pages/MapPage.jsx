@@ -4,6 +4,7 @@ import { PlaceModal } from '../components/PlaceModal';
 import { VoyantraAPI } from '../services/api';
 import { MapPin, Navigation, Eye, Compass, Layers } from 'lucide-react';
 import { CrowdBadge } from '../components/CrowdBadge';
+import { usePreferences } from '../context/PreferencesContext';
 
 export function MapPage() {
   const { selectedCity } = usePreferences();
@@ -25,6 +26,8 @@ export function MapPage() {
         setPlaces([]);
       });
   }, [selectedCity]);
+
+  const cityName = selectedCity === 'chennai' ? 'Chennai' : 'Pondicherry';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -51,7 +54,7 @@ export function MapPage() {
             Interactive OpenStreetMap View
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Explore {places.length} Pondicherry POIs on Leaflet with live OSRM routing triggers.
+            Explore {places.length} {cityName} POIs on Leaflet with live OSRM routing triggers.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-xl bg-teal-50 text-teal-800 border border-teal-200">
