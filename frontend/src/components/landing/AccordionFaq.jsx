@@ -39,23 +39,23 @@ export function AccordionFaq() {
         <img 
           src="/images/z-TrhLCn1abMU-unsplash.jpg"
           alt="Verified Destination Map with Location Pins"
-          className="w-full h-full object-cover object-center opacity-25 scale-105"
+          className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/40 to-slate-950/80" />
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md shadow-md">
             <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
             <span>Frequently Asked Questions</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">
             Clarity & Travel Guidelines
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-100 font-sans max-w-xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium">
             Everything you need to know about our catalog grounding, data sources, and system tiers.
           </p>
         </div>

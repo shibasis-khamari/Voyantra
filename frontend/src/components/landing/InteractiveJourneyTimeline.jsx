@@ -84,37 +84,37 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
         <img 
           src="/images/sara-dubler-Koei_7yYtIo-unsplash.jpg"
           alt="Coastal Villa and French Courtyard"
-          className="w-full h-full object-cover object-center opacity-30 scale-105"
+          className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/85 to-slate-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/40 to-slate-950/80" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-terracotta/15 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Header & City Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/15 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/20 pb-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md shadow-md">
               <Compass className="w-3.5 h-3.5" />
               <span>Curated Trajectory Preview</span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">
               A Day in the Coast
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 font-sans max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-100 font-sans max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium">
               Preview realistic single-day flows designed for proximity, heat pacing, and cultural etiquette.
             </p>
           </div>
 
           {/* Tab Switcher */}
-          <div className="flex bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 self-start sm:self-auto">
+          <div className="flex bg-slate-950/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 self-start sm:self-auto shadow-md">
             <button
               onClick={() => setSelectedCity('pondicherry')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 selectedCity === 'pondicherry'
                   ? 'bg-terracotta text-white shadow-md'
-                  : 'text-slate-300 hover:text-white'
+                  : 'text-slate-200 hover:text-white'
               }`}
             >
               Pondicherry Trail
@@ -124,7 +124,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 selectedCity === 'chennai'
                   ? 'bg-terracotta text-white shadow-md'
-                  : 'text-slate-300 hover:text-white'
+                  : 'text-slate-200 hover:text-white'
               }`}
             >
               Chennai Trail
@@ -143,8 +143,8 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
             className="space-y-8"
           >
             <div className="space-y-1">
-              <h3 className="text-xl font-serif font-bold text-white">{activeJourney.title}</h3>
-              <p className="text-xs text-amber-200/90">{activeJourney.tagline}</p>
+              <h3 className="text-xl font-serif font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">{activeJourney.title}</h3>
+              <p className="text-xs text-amber-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] font-medium">{activeJourney.tagline}</p>
             </div>
 
             {/* Timeline Cards */}

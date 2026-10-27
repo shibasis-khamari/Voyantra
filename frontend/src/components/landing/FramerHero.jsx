@@ -73,9 +73,9 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
         <img 
           src="/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg"
           alt="Scenic Coastal Horizon of the Bay of Bengal"
-          className="w-full h-full object-cover object-center opacity-30 scale-105"
+          className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/85 to-slate-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/40 to-slate-950/80" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
       </div>
@@ -89,9 +89,9 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
         {/* Top Badging & Editorial Headlines */}
         <div className="text-center max-w-3xl mx-auto space-y-6">
           {/* Animated Eyebrow Badge */}
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 shadow-xs backdrop-blur-md">
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-950/60 border border-white/20 shadow-lg backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-terracotta animate-pulse" />
-            <span className="text-[11px] font-bold text-amber-300 uppercase tracking-widest font-sans">
+            <span className="text-[11px] font-bold text-amber-300 uppercase tracking-widest font-sans drop-shadow-xs">
               Coastal Tamil Nadu & Pondicherry • Intelligent Travel Planning
             </span>
           </motion.div>
@@ -99,7 +99,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
           {/* Main Editorial Headline */}
           <motion.h1 
             variants={itemVariants}
-            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12]"
+            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12] drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]"
           >
             Curated Journeys. Intelligent Pacing.{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-terracotta-light to-amber-200">
@@ -110,7 +110,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
           {/* Subtext */}
           <motion.p 
             variants={itemVariants}
-            className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans max-w-2xl mx-auto"
+            className="text-sm sm:text-base text-slate-100 leading-relaxed font-sans max-w-2xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium"
           >
             Experience personalized multi-day itineraries for Pondicherry and Chennai. Powered by local catalog grounding, real-time crowd advisories, and self-declared demographic and dietary preferences.
           </motion.p>
