@@ -129,8 +129,12 @@ export function LoginModal({ isOpen, onClose, initialMode = 'login' }) {
           </button>
           
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center text-brand-300 border border-white/20">
-              <Sparkles className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+              <img 
+                src="/images/logo/voyantra-icon-nobg-crop.png" 
+                alt="Voyantra" 
+                className="w-8 h-8 object-contain drop-shadow-xs"
+              />
             </div>
             <div>
               <h2 className="text-xl font-bold">

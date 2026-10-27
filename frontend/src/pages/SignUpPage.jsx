@@ -89,11 +89,13 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-terracotta/20 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-6">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('explore')}>
-              <div className="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-md">
-                <Compass className="w-6 h-6 text-sandstone" />
-              </div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-white">Voyantra</span>
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveTab('explore')}>
+              <img 
+                src="/images/logo/voyantra-icon-nobg-crop.png" 
+                alt="Voyantra Logo" 
+                className="w-11 h-11 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+              />
+              <span className="font-logo text-2xl font-extrabold tracking-[0.12em] uppercase text-white">Voyantra</span>
             </div>
 
             <div className="space-y-2">

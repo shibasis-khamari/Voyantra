@@ -91,7 +91,7 @@ export function ExplorePage({ setActiveTab }) {
           
           {/* Catalog Section Header on White Canvas */}
           <div className="bg-sandstone-canvas rounded-3xl p-6 sm:p-10 border border-sandstone shadow-xs space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold uppercase tracking-widest text-brand-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold font-logo uppercase tracking-widest text-brand-700">
               <Compass className="w-3.5 h-3.5 text-terracotta" />
               Verified Local Catalog
             </div>

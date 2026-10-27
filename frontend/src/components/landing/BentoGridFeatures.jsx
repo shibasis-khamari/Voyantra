@@ -20,7 +20,7 @@ export function BentoGridFeatures({ setActiveTab }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-widest border border-sandstone">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold font-logo uppercase tracking-widest border border-sandstone">
             <Sparkles className="w-3.5 h-3.5 text-terracotta" />
             <span>Intelligent System Architecture</span>
           </div>
@@ -73,7 +73,11 @@ export function BentoGridFeatures({ setActiveTab }) {
             <div className="flex justify-start">
               <div className="bg-white text-slate-800 text-xs p-3.5 rounded-2xl rounded-tl-xs max-w-md border border-sandstone shadow-xs space-y-2">
                 <div className="flex items-center gap-1.5 text-brand-700 font-bold text-[11px]">
-                  <Sparkles className="w-3.5 h-3.5 text-terracotta" />
+                  <img 
+                    src="/images/logo/voyantra-icon-nobg-crop.png" 
+                    alt="Voyantra Logo" 
+                    className="w-4 h-4 object-contain"
+                  />
                   <span>Voyantra Concierge</span>
                 </div>
                 <p className="text-slate-600 leading-snug">

@@ -48,7 +48,7 @@ export function AccordionFaq() {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md shadow-md">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold font-logo uppercase tracking-widest backdrop-blur-md shadow-md">
             <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
             <span>Frequently Asked Questions</span>
           </div>
@@ -72,7 +72,7 @@ export function AccordionFaq() {
               >
                 <button
                   onClick={() => toggleItem(idx)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm text-slate-900 hover:text-brand-700 transition-colors cursor-pointer"
+                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold font-logo tracking-wide text-sm sm:text-base text-slate-900 hover:text-brand-700 transition-colors cursor-pointer"
                 >
                   <span>{item.q}</span>
                   <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-terracotta' : ''}`} />

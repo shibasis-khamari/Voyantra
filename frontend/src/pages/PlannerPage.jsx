@@ -484,8 +484,12 @@ export function PlannerPage() {
         {/* Chatbox Header */}
         <div className="bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-800 p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-amber-300 shadow-inner">
-              <Sparkles className="w-5 h-5 animate-pulse" />
+            <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-inner">
+              <img 
+                src="/images/logo/voyantra-icon-nobg-crop.png" 
+                alt="Voyantra AI" 
+                className="w-7 h-7 object-contain drop-shadow-xs" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -617,8 +621,12 @@ export function PlannerPage() {
 
           {isRefining && (
             <div className="flex items-start gap-2.5 animate-fadeIn">
-              <div className="w-7 h-7 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
+              <div className="w-7 h-7 rounded-full bg-teal-800 p-1 flex items-center justify-center shadow-xs">
+                <img 
+                  src="/images/logo/voyantra-icon-nobg-crop.png" 
+                  alt="Voyantra" 
+                  className="w-full h-full object-contain" 
+                />
               </div>
               <div className="p-3.5 rounded-2xl bg-white border border-teal-200 text-xs text-teal-900 font-bold flex items-center gap-2 shadow-xs">
                 <Loader2 className="w-3.5 h-3.5 text-teal-600 animate-spin" />

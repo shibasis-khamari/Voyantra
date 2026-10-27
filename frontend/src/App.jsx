@@ -47,14 +47,20 @@ export function App() {
           </main>
 
           {/* Global Footer */}
-          <footer className="border-t border-slate-200 bg-white py-8 text-slate-500 text-xs">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-800">Voyantra</span>
-                <span>• Personalized Tourist Trip-Planning Platform (Pondicherry & Chennai)</span>
+          <footer className="border-t border-sandstone bg-white py-10 text-slate-500 text-xs">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+                <img 
+                  src="/images/logo/voyantra-logo-horizontal-crop.png" 
+                  alt="Voyantra Logo" 
+                  className="h-8 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => setActiveTab('explore')}
+                />
+                <span className="hidden sm:inline text-slate-300">•</span>
+                <span className="text-slate-600 font-medium">Personalized Tourist Trip-Planning Platform (Pondicherry & Chennai)</span>
               </div>
-              <div className="flex items-center gap-4 text-slate-400">
-                <span>MongoDB & OSM Powered</span>
+              <div className="flex items-center gap-4 text-slate-400 text-[11px]">
+                <span>MongoDB & OSM Grounded</span>
                 <span>•</span>
                 <span>Academic Mini-Project</span>
               </div>

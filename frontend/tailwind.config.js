@@ -10,31 +10,33 @@ export default {
         serif: ['Newsreader', 'Georgia', 'serif'],
         display: ['Newsreader', 'Georgia', 'serif'],
         sans: ['Plus Jakarta Sans', 'sans-serif'],
+        logo: ['Syne', 'Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
         brand: {
-          50: '#f4f6fa',
-          100: '#e4e8f0',
-          200: '#c5cee0',
-          300: '#94a4c2',
-          400: '#5c6e8e',
-          500: '#35455e',
-          600: '#28354a',
-          700: '#1b2538', // Primary Deep Indigo Navy
-          800: '#111c2e',
-          900: '#051022',
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d946e', // Vibrant Ocean Teal from Logo
+          700: '#005458', // Deep Oceanic Pine from Logo
+          800: '#003e42', // Rich Pine Navy
+          900: '#001838', // Midnight Marine Navy from Logo
+          950: '#000b2c', // Deep Midnight from Logo
         },
         terracotta: {
-          DEFAULT: '#e05a38', // Warm Terracotta Sunset
-          light: '#fd6f4b',
-          dark: '#ab3516',
-          subtle: '#ffdad2',
+          DEFAULT: '#ea580c', // Radiant Sunset Terracotta
+          light: '#fd8922',   // Logo Warm Saffron Highlight
+          dark: '#c2410c',
+          subtle: '#ffedd5',
         },
         sandstone: {
-          DEFAULT: '#e7dfd5', // Muted Sandstone
-          light: '#efeeeb',
-          canvas: '#faf8f5', // Soft Warm Linen
-          recessed: '#f3efea',
+          DEFAULT: '#e7dfd5', // Muted Coastal Sandstone
+          light: '#f3f0ea',
+          canvas: '#faf8f5',  // Soft Warm Linen
+          recessed: '#efeae3',
         }
       }
     },
