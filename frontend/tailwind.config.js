@@ -7,9 +7,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['Newsreader', 'Georgia', 'serif'],
-        display: ['Newsreader', 'Georgia', 'serif'],
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+        display: ['"Instrument Serif"', 'Georgia', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         logo: ['Syne', 'Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {

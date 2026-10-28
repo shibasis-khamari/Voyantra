@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { MapView } from '../components/MapView';
 import { PlaceModal } from '../components/PlaceModal';
+import { ItineraryMapModal } from '../components/ItineraryMapModal';
 import { VoyantraAPI } from '../services/api';
-import { MapPin, Navigation, Eye, Compass, Layers } from 'lucide-react';
+import { MapPin, Navigation, Eye, Compass, Layers, ArrowRight } from 'lucide-react';
 import { CrowdBadge } from '../components/CrowdBadge';
 import { usePreferences } from '../context/PreferencesContext';
 
 export function MapPage() {
-  const { selectedCity } = usePreferences();
+  const { selectedCity, activeItinerary } = usePreferences();
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
+  const [isItinMapOpen, setIsItinMapOpen] = useState(false);
 
   const [backendError, setBackendError] = useState(null);
 
@@ -62,6 +64,33 @@ export function MapPage() {
           <span>Zero Paid Google Maps API Traps</span>
         </div>
       </div>
+
+      {/* Active Itinerary Google Maps Route Banner */}
+      {activeItinerary && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-teal-700 text-white flex items-center justify-center shrink-0">
+              <Navigation className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-teal-950 font-logo">Active Itinerary Route Available:</span>
+                <span className="text-xs font-bold text-teal-800">{activeItinerary.itinerary_title}</span>
+              </div>
+              <p className="text-[11px] text-teal-700">
+                View turn-by-turn Google Directions for Day 1 through Day {activeItinerary.days?.length || 1}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsItinMapOpen(true)}
+            className="px-4 py-2 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-xs font-bold font-logo shadow-md flex items-center gap-1.5 transition-all cursor-pointer self-start sm:self-auto shrink-0"
+          >
+            <span>View in Google Maps</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Map + Sidebar Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -147,6 +176,16 @@ export function MapPage() {
 
       {activeModal && (
         <PlaceModal place={activeModal} onClose={() => setActiveModal(null)} />
+      )}
+
+      {/* Google Maps Route Modal for Active Itinerary */}
+      {activeItinerary && (
+        <ItineraryMapModal
+          isOpen={isItinMapOpen}
+          onClose={() => setIsItinMapOpen(false)}
+          itinerary={activeItinerary}
+          placesCatalog={places}
+        />
       )}
     </div>
   );

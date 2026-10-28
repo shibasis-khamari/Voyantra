@@ -51,6 +51,28 @@ export function PreferencesProvider({ children }) {
     }
   });
 
+  const [activeItinerary, setActiveItineraryState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('voyantra_active_itinerary');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const setActiveItinerary = (itin) => {
+    setActiveItineraryState(itin);
+    try {
+      if (itin) {
+        localStorage.setItem('voyantra_active_itinerary', JSON.stringify(itin));
+      } else {
+        localStorage.removeItem('voyantra_active_itinerary');
+      }
+    } catch (e) {
+      console.warn('Failed to save active itinerary to localStorage', e);
+    }
+  };
+
   // Geolocation & Location Detection State
   const [locationNotice, setLocationNotice] = useState(null);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -185,6 +207,8 @@ export function PreferencesProvider({ children }) {
       clearTripPlan,
       favorites,
       toggleFavorite,
+      activeItinerary,
+      setActiveItinerary,
       detectCurrentLocation,
       locationNotice,
       isLocationModalOpen,

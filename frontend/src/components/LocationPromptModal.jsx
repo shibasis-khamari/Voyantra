@@ -24,12 +24,12 @@ export function LocationPromptModal({ isOpen, onClose, currentCity, onSelectCity
         )}
 
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold uppercase tracking-wider border border-sandstone">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold font-sans uppercase tracking-[0.14em] border border-sandstone">
             <Compass className="w-3.5 h-3.5 text-terracotta" />
             Location Detection Advisory
           </div>
           
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-brand-700 leading-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl font-normal text-brand-700 leading-tight">
             Select Your Destination City
           </h2>
 

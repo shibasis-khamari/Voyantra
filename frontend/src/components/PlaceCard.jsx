@@ -65,14 +65,14 @@ export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
               <span className="font-bold text-teal-900 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-teal-600" /> Personal Match
               </span>
-              <span className="font-extrabold text-teal-700">{matchScore}%</span>
+              <span className="font-extrabold text-teal-700 tabular-nums">{matchScore}%</span>
             </div>
           )}
 
           <div>
             <h3 
               onClick={onSelect}
-              className="font-serif text-lg font-bold text-brand-700 group-hover:text-terracotta transition-colors cursor-pointer line-clamp-1 leading-snug"
+              className="font-serif text-[22px] font-normal text-brand-700 group-hover:text-terracotta transition-colors cursor-pointer line-clamp-1 leading-tight"
             >
               {place.name}
             </h3>

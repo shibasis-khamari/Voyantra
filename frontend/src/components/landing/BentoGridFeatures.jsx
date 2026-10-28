@@ -20,14 +20,14 @@ export function BentoGridFeatures({ setActiveTab }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold font-logo uppercase tracking-widest border border-sandstone">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sandstone-light text-brand-700 text-xs font-bold font-sans uppercase tracking-[0.14em] border border-sandstone">
             <Sparkles className="w-3.5 h-3.5 text-terracotta" />
             <span>Intelligent System Architecture</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-700">
+          <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-brand-700 leading-[1.08] tracking-[-0.01em]">
             Engineered for Coastal Travel Realities
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans font-medium">
             Voyantra blends generative travel concierges, catalog grounding, and demographic filtering into a cohesive planning platform.
           </p>
         </div>
@@ -84,7 +84,7 @@ export function BentoGridFeatures({ setActiveTab }) {
                   I recommend <strong className="text-slate-900">Cafe des Arts</strong> on Rue Suffren. It features a 19th-century French courtyard, fresh croissants, and vegetarian crepes. After breakfast, you can walk 3 minutes to the <strong className="text-slate-900">French Quarter Heritage Walk</strong>.
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">
+                  <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 tabular-nums">
                     Est. ₹450
                   </span>
                   <span className="text-[10px] bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">
@@ -265,7 +265,7 @@ export function BentoGridFeatures({ setActiveTab }) {
 
           <div className="pt-1 flex items-center justify-between text-xs text-slate-500 border-t border-sandstone/60">
             <span>Automated distance TSP ordering</span>
-            <span className="font-bold text-slate-800">Exact Budget Sum: ₹450 / traveler</span>
+            <span className="font-bold text-slate-800 tabular-nums">Exact Budget Sum: ₹450 / traveler</span>
           </div>
         </motion.div>
 

@@ -91,14 +91,14 @@ export function ExplorePage({ setActiveTab }) {
           
           {/* Catalog Section Header on White Canvas */}
           <div className="bg-sandstone-canvas rounded-3xl p-6 sm:p-10 border border-sandstone shadow-xs space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold font-logo uppercase tracking-widest text-brand-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold font-sans uppercase tracking-[0.14em] text-brand-700">
               <Compass className="w-3.5 h-3.5 text-terracotta" />
               Verified Local Catalog
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight text-slate-900">
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal leading-[1.08] tracking-[-0.01em] text-slate-900">
               Curated Destination Repository
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans max-w-2xl">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans font-medium max-w-2xl">
               Filter through verified cultural landmarks, seaside promenades, and bohemian cafes with real-time crowd estimates and dietary indicators.
             </p>
           </div>

@@ -48,14 +48,14 @@ export function AccordionFaq() {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold font-logo uppercase tracking-widest backdrop-blur-md shadow-md">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold font-sans uppercase tracking-[0.14em] backdrop-blur-md shadow-md">
             <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
             <span>Frequently Asked Questions</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">
+          <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-[-0.01em]">
             Clarity & Travel Guidelines
           </h2>
-          <p className="text-xs sm:text-sm text-slate-100 font-sans max-w-xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium">
+          <p className="text-sm sm:text-base text-slate-100 font-sans max-w-xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium leading-relaxed">
             Everything you need to know about our catalog grounding, data sources, and system tiers.
           </p>
         </div>

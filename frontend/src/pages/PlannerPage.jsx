@@ -9,6 +9,7 @@ import { PlaceModal } from '../components/PlaceModal';
 import { FestivalAdvisoryBanner } from '../components/FestivalAdvisoryBanner';
 import { TransitLegCard } from '../components/TransitLegCard';
 import { MapView } from '../components/MapView';
+import { ItineraryMapModal } from '../components/ItineraryMapModal';
 import { VoyantraAPI } from '../services/api';
 import { usePreferences } from '../context/PreferencesContext';
 import { AGE_GROUPS, DIETARY_OPTIONS, BUDGET_TIERS } from '../types/constants';
@@ -61,7 +62,9 @@ export function PlannerPage() {
     tripPlan,
     addToTripPlan,
     removeFromTripPlan,
-    clearTripPlan
+    clearTripPlan,
+    activeItinerary: globalItinerary,
+    setActiveItinerary: setGlobalItinerary
   } = usePreferences();
 
   const [recommendations, setRecommendations] = useState([]);
@@ -72,7 +75,9 @@ export function PlannerPage() {
   const [promptText, setPromptText] = useState('');
   const [durationDays, setDurationDays] = useState(2);
   const [presetSuggestions, setPresetSuggestions] = useState([]);
-  const [aiItinerary, setAiItinerary] = useState(null);
+  const [aiItinerary, setAiItinerary] = useState(() => globalItinerary || null);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [mapModalDayIdx, setMapModalDayIdx] = useState(0);
   const [availableAlternatives, setAvailableAlternatives] = useState([]);
   const [loadingAi, setLoadingAi] = useState(false);
   const [editingSlot, setEditingSlot] = useState(null);
@@ -198,6 +203,7 @@ export function PlannerPage() {
 
         if (res.itinerary) {
           setAiItinerary(res.itinerary);
+          setGlobalItinerary(res.itinerary);
           setTimeout(() => {
             itineraryRef.current?.scrollIntoView({ behavior: 'smooth' });
           }, 350);
@@ -583,21 +589,33 @@ export function PlannerPage() {
 
               {/* Itinerary Ready Action Banner */}
               {msg.hasItinerary && (
-                <div className="w-full max-w-[90%] sm:max-w-[80%] p-3 rounded-xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-300 text-teal-900 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🗺️</span>
+                <div className="w-full max-w-[90%] sm:max-w-[80%] p-3.5 rounded-2xl bg-gradient-to-r from-teal-50 via-emerald-50 to-teal-50 border border-teal-300 text-teal-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">🗺️</span>
                     <div>
-                      <span className="font-bold text-xs">Itinerary Generated!</span>
-                      <p className="text-[10px] text-teal-700">Explore Day-by-Day schedule and map below</p>
+                      <span className="font-bold text-xs text-teal-950 font-logo">Itinerary & Route Ready!</span>
+                      <p className="text-[10px] text-teal-700">Explore Google Maps turn-by-turn routing or Day-by-Day schedule</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => itineraryRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    className="px-3 py-1 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[11px] font-bold shadow-xs flex items-center gap-1 transition-all cursor-pointer"
-                  >
-                    <span>View Plan</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
+                  <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                    <button
+                      onClick={() => {
+                        setMapModalDayIdx(0);
+                        setIsMapModalOpen(true);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white text-[11px] font-bold font-logo shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                      <Navigation className="w-3 h-3 text-amber-300" />
+                      <span>Google Maps Route</span>
+                    </button>
+                    <button
+                      onClick={() => itineraryRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-teal-300 hover:bg-teal-50 text-teal-800 text-[11px] font-bold font-logo shadow-2xs flex items-center gap-1 transition-all cursor-pointer"
+                    >
+                      <span>Timeline</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -706,14 +724,25 @@ export function PlannerPage() {
               <h2 className="text-2xl font-extrabold text-slate-900">{aiItinerary.itinerary_title}</h2>
               <p className="text-xs text-slate-600 mt-0.5">{aiItinerary.summary} • <span className="font-semibold text-teal-700">Drag any card between Day 1 & Day 2 to customize your schedule!</span></p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => {
+                  setMapModalDayIdx(0);
+                  setIsMapModalOpen(true);
+                }}
+                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-700 to-brand-700 hover:from-teal-800 hover:to-brand-800 text-white text-xs font-bold font-logo flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+              >
+                <Navigation className="w-4 h-4 text-amber-300" />
+                <span>View on Google Maps</span>
+              </button>
               <button
                 onClick={handleAddAllToBasket}
-                className="px-3.5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                className="px-3.5 py-2 rounded-xl bg-white border border-sandstone hover:bg-slate-50 text-slate-800 text-xs font-bold font-logo flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
               >
-                <Luggage className="w-4 h-4" /> Save Plan to Basket
+                <Luggage className="w-4 h-4 text-terracotta" />
+                <span>Save to Basket</span>
               </button>
-              <div className="text-right">
+              <div className="text-right pl-2">
                 <span className="text-[11px] text-slate-400">Est. Budget</span>
                 <div className="text-xl font-black text-teal-700 flex items-center justify-end">
                   <IndianRupee className="w-4 h-4" /> {aiItinerary.total_estimated_budget_inr}
@@ -764,6 +793,18 @@ export function PlannerPage() {
                     </span>
 
                     <div className="flex items-center gap-2">
+                      {/* Direct Google Maps Route Modal Button */}
+                      <button
+                        onClick={() => {
+                          setMapModalDayIdx(dayIdx);
+                          setIsMapModalOpen(true);
+                        }}
+                        className="text-xs text-brand-700 hover:text-brand-900 font-bold font-logo flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sandstone-light hover:bg-sandstone border border-sandstone transition-all cursor-pointer shadow-2xs"
+                      >
+                        <Navigation className="w-3.5 h-3.5 text-terracotta" />
+                        <span>Google Maps</span>
+                      </button>
+
                       {/* ⚡ Optimize Order Trigger Button (Phase 4 Task 7) */}
                       <button
                         onClick={() => handleOptimizeDay(dayIdx)}
@@ -1288,6 +1329,17 @@ export function PlannerPage() {
           place={activeModalItem.place}
           matchInfo={activeModalItem}
           onClose={() => setActiveModalItem(null)}
+        />
+      )}
+
+      {/* Google Maps Interactive Itinerary Routing Modal */}
+      {aiItinerary && (
+        <ItineraryMapModal
+          isOpen={isMapModalOpen}
+          onClose={() => setIsMapModalOpen(false)}
+          itinerary={aiItinerary}
+          initialDayIndex={mapModalDayIdx}
+          placesCatalog={recommendations.map(r => r.place).filter(Boolean)}
         />
       )}
     </div>

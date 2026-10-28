@@ -95,14 +95,14 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
         {/* Header & City Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/20 pb-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold font-logo uppercase tracking-widest backdrop-blur-md shadow-md">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/60 border border-white/20 text-amber-300 text-xs font-bold font-sans uppercase tracking-[0.14em] backdrop-blur-md shadow-md">
               <Compass className="w-3.5 h-3.5" />
               <span>Curated Trajectory Preview</span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)]">
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-[-0.01em]">
               A Day in the Coast
             </h2>
-            <p className="text-xs sm:text-sm text-slate-100 font-sans max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium">
+            <p className="text-sm sm:text-base text-slate-100 font-sans max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium leading-relaxed">
               Preview realistic single-day flows designed for proximity, heat pacing, and cultural etiquette.
             </p>
           </div>
@@ -143,8 +143,8 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
             className="space-y-8"
           >
             <div className="space-y-1">
-              <h3 className="text-xl font-serif font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">{activeJourney.title}</h3>
-              <p className="text-xs text-amber-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] font-medium">{activeJourney.tagline}</p>
+              <h3 className="text-2xl sm:text-3xl font-serif font-normal text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">{activeJourney.title}</h3>
+              <p className="text-xs sm:text-sm text-amber-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] font-medium">{activeJourney.tagline}</p>
             </div>
 
             {/* Timeline Cards */}
@@ -156,15 +156,15 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold font-logo tracking-wider px-2.5 py-1 rounded-full bg-brand-50 text-brand-800 border border-brand-200">
+                      <span className="text-[11px] font-bold font-sans tracking-wider px-2.5 py-1 rounded-full bg-brand-50 text-brand-800 border border-brand-200 tabular-nums">
                         {stop.time}
                       </span>
-                      <span className="text-[10px] font-bold font-logo tracking-wider text-slate-400 uppercase">
+                      <span className="text-[10px] font-bold font-sans tracking-wider text-slate-400 uppercase tabular-nums">
                         Stop 0{idx + 1}
                       </span>
                     </div>
 
-                    <h4 className="text-base font-bold text-slate-900 leading-snug">
+                    <h4 className="text-[22px] font-serif font-normal text-slate-900 leading-snug">
                       {stop.title}
                     </h4>
 
@@ -174,9 +174,9 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
                   </div>
 
                   <div className="pt-3 border-t border-slate-200 space-y-2 text-[11px]">
-                    <div className="flex items-center justify-between font-bold text-slate-700 font-logo text-xs">
+                    <div className="flex items-center justify-between font-bold text-slate-700 font-sans text-xs">
                       <span className="text-brand-700 font-bold tracking-wide">{stop.category}</span>
-                      <span className="text-emerald-700 font-extrabold">{stop.cost}</span>
+                      <span className="text-emerald-700 font-extrabold tabular-nums">{stop.cost}</span>
                     </div>
                     <div className="text-[10px] text-slate-500 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-terracotta shrink-0" />

@@ -99,7 +99,7 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-serif font-bold leading-tight">
+              <h1 className="text-3xl sm:text-4xl font-serif font-normal leading-tight">
                 Craft Your Journey Across Pondicherry & Chennai
               </h1>
               <p className="text-xs text-slate-300 leading-relaxed">

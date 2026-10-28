@@ -52,7 +52,8 @@ export function MapView({
   onSelectPlace = null, 
   height = '420px',
   routeLegs = [],
-  transitMode = 'driving'
+  transitMode = 'driving',
+  userLocation = null
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -128,6 +129,29 @@ export function MapView({
       }
     });
 
+    // Add User Current Location Marker if present
+    if (userLocation && typeof userLocation.lat === 'number' && typeof userLocation.lng === 'number') {
+      const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: `
+          <div style="
+            background-color: #2563eb;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35);
+          "></div>
+        `,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+      const userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map);
+      userMarker.bindPopup('<strong>Your Location</strong>');
+      markersRef.current.push(userMarker);
+      group.push([userLocation.lat, userLocation.lng]);
+    }
+
     // -------------------------------------------------------------------------
     // Render Turn-by-Turn Route Polylines (Phase 4: Navigation Overlay)
     // -------------------------------------------------------------------------
@@ -179,7 +203,7 @@ export function MapView({
     return () => {
       // Map cleanup on unmount
     };
-  }, [places, routeLegs, transitMode]);
+  }, [places, routeLegs, transitMode, userLocation]);
 
   // Pan to selected place
   useEffect(() => {
@@ -192,9 +216,19 @@ export function MapView({
     }
   }, [selectedPlace]);
 
+  // Ensure Leaflet recalculates dimensions when container mounts or resizes
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      const timer = setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [places, height, routeLegs]);
+
   return (
-    <div className="w-full rounded-2xl overflow-hidden shadow-md border border-slate-200 relative">
-      <div ref={mapContainerRef} style={{ height }} className="w-full bg-slate-100" />
+    <div style={{ height }} className="w-full h-full rounded-2xl overflow-hidden shadow-md border border-slate-200 relative">
+      <div ref={mapContainerRef} className="w-full h-full min-h-[350px] bg-slate-100" />
       {/* Map Legend */}
       <div className="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-md p-2.5 rounded-xl border border-slate-200 shadow-md text-xs space-y-1">
         <div className="font-bold text-slate-800 text-[11px] mb-1">Voyantra Route & Pins</div>

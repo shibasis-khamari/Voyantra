@@ -20,14 +20,14 @@ export function FramerCtaBanner({ setActiveTab }) {
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-terracotta/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="space-y-4 max-w-2xl relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-xs font-bold font-logo uppercase tracking-widest text-brand-800">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-xs font-bold font-sans uppercase tracking-[0.14em] text-brand-800">
               <Sparkles className="w-3.5 h-3.5 text-terracotta" />
               <span>Ready to Explore?</span>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight text-slate-900">
+            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal leading-[1.08] tracking-[-0.01em] text-slate-900">
               Begin Planning Your Coastal Journey
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans font-medium">
               Craft a feasible, balanced day-by-day plan across Pondicherry and Chennai with intelligent route sequencing, transit estimates, and local dining highlights.
             </p>
             <div className="flex items-center gap-4 text-[11px] text-slate-500 pt-1 font-logo">
