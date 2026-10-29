@@ -20,10 +20,12 @@ class Settings(BaseModel):
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./voyantra.db")
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "")
+    MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME", "voyantra_db")
     
     # AI / LLM (Google Gemini API Free Tier)
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     
     # JWT Settings
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "voyantra_jwt_secret_key_prod_2026_pondicherry_chennai")

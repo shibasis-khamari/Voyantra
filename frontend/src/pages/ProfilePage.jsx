@@ -2,6 +2,7 @@ import React from 'react';
 import { User, ShieldCheck, Heart, Trash2, CheckCircle2 } from 'lucide-react';
 import { usePreferences } from '../context/PreferencesContext';
 import { AGE_GROUPS, DIETARY_OPTIONS, BUDGET_TIERS } from '../types/constants';
+import { PageHero } from '../components/PageHero';
 
 export function ProfilePage() {
   const {
@@ -30,16 +31,16 @@ export function ProfilePage() {
         </div>
       </div>
 
+      {/* Privacy Note Alert */}
+      <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200 flex items-start gap-3">
+        <ShieldCheck className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+        <div className="text-xs text-teal-900 leading-relaxed">
+          <strong>Privacy & Ethics Assurance:</strong> Religious and dietary preferences are 100% optional, opt-in, and strictly self-declared. They are never inferred from user names, IP addresses, or regions.
+        </div>
+      </div>
+
       {/* Settings Form */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-8">
-        {/* Privacy Note Alert */}
-        <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200 flex items-start gap-3">
-          <ShieldCheck className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-teal-900 leading-relaxed">
-            <strong>Privacy & Ethics Assurance:</strong> Religious and dietary preferences are 100% optional, opt-in, and strictly self-declared. They are never inferred from user names, IP addresses, or regions.
-          </div>
-        </div>
-
         {/* Age Group */}
         <div className="space-y-3">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">

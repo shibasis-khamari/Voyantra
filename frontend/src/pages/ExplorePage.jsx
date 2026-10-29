@@ -89,18 +89,18 @@ export function ExplorePage({ setActiveTab }) {
       <section id="places-catalog" className="w-full bg-white py-16 border-t border-sandstone scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           
-          {/* Catalog Section Header on White Canvas */}
-          <div className="bg-sandstone-canvas rounded-3xl p-6 sm:p-10 border border-sandstone shadow-xs space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sandstone-light border border-sandstone text-xs font-bold font-sans uppercase tracking-[0.14em] text-brand-700">
-              <Compass className="w-3.5 h-3.5 text-terracotta" />
-              Verified Local Catalog
+          {/* Catalog header */}
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 lg:p-10">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-700">
+                <Compass className="w-4 h-4 text-terracotta" />
+                Explore destinations
+              </div>
+              <h2 className="font-serif text-4xl sm:text-5xl text-slate-900 leading-tight">Find your next stop</h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                Discover places that match your interests, budget, and preferred pace.
+              </p>
             </div>
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal leading-[1.08] tracking-[-0.01em] text-slate-900">
-              Curated Destination Repository
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans font-medium max-w-2xl">
-              Filter through verified cultural landmarks, seaside promenades, and bohemian cafes with real-time crowd estimates and dietary indicators.
-            </p>
           </div>
 
           {/* Phase 3 Festival & Road Closure Advisory Banner */}
@@ -139,17 +139,18 @@ export function ExplorePage({ setActiveTab }) {
         />
 
         {/* Results Header & Sort */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
           <div className="text-sm text-slate-600 font-medium">
-            Showing <span className="font-bold text-brand-700">{sortedPlaces.length}</span> curated destinations
+            Showing <span className="font-bold text-brand-700">{sortedPlaces.length}</span> destinations
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-500 font-medium">Sort by:</span>
+          <div className="flex items-center gap-2 text-xs self-start sm:self-auto">
+            <ArrowUpDown className="w-4 h-4 text-slate-400 shrink-0" />
+            <label htmlFor="destination-sort" className="text-slate-500 font-medium whitespace-nowrap">Sort by</label>
             <select
+              id="destination-sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-2.5 py-1 rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 outline-none cursor-pointer"
+              className="h-10 px-3 rounded-xl border border-slate-200 bg-white font-semibold text-slate-700 outline-none cursor-pointer"
             >
               <option value="rating">Top Rated</option>
               <option value="cost_asc">Cost: Low to High</option>

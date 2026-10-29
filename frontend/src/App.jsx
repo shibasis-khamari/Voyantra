@@ -18,11 +18,11 @@ export function App() {
       case 'explore':
         return <ExplorePage setActiveTab={setActiveTab} />;
       case 'planner':
-        return <PlannerPage />;
+        return <PlannerPage setActiveTab={setActiveTab} />;
       case 'hotels':
         return <HotelsPage />;
       case 'map':
-        return <MapPage />;
+        return <MapPage setActiveTab={setActiveTab} />;
       case 'profile':
         return <ProfilePage />;
       case 'admin':

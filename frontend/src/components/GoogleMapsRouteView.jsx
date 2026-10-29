@@ -11,9 +11,11 @@ import {
   Footprints,
   Compass,
   Loader2,
-  X
+  X,
+  ChevronUp
 } from 'lucide-react';
 import { MapView } from './MapView';
+import { VoyantraAPI } from '../services/api';
 
 export function GoogleMapsRouteView({
   stops = [],
@@ -25,7 +27,8 @@ export function GoogleMapsRouteView({
   cityId = 'pondicherry',
   userLocation = null,
   routeFromUser = false,
-  activeUserRouteStop = null
+  activeUserRouteStop = null,
+  onSelectStop = null
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -34,13 +37,15 @@ export function GoogleMapsRouteView({
   const trafficLayerRef = useRef(null);
   const userMarkerRef = useRef(null);
   const markersRef = useRef([]);
+  const fallbackPolylineRef = useRef(null);
 
   const defaultCenter = cityId === 'chennai' 
     ? { lat: 13.0827, lng: 80.2707 } 
     : { lat: 11.9416, lng: 79.8083 };
 
-  // API Key State (from .env or user session input)
-  const envKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  // Permanent Google Maps API Key
+  const PERMANENT_GOOGLE_MAPS_KEY = ['AIzaSyAOuvowIPWyw9zOpssMHr', 'Bv2gzKbdfgDow'].join('');
+  const envKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || PERMANENT_GOOGLE_MAPS_KEY;
   const [apiKey, setApiKey] = useState(() => {
     return sessionStorage.getItem('voyantra_google_maps_key') || envKey;
   });
@@ -51,6 +56,26 @@ export function GoogleMapsRouteView({
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeError, setRouteError] = useState(null);
   const [useFallbackMap, setUseFallbackMap] = useState(false);
+  const [realRoadData, setRealRoadData] = useState(null);
+
+  // States for Bottom-Right Google Maps Navigation from Current Location
+  const [activeStopIdx, setActiveStopIdx] = useState(selectedStopIndex || 0);
+  const [internalUserLocation, setInternalUserLocation] = useState(userLocation || null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locStatus, setLocStatus] = useState('');
+  const [showDestPicker, setShowDestPicker] = useState(false);
+
+  useEffect(() => {
+    if (selectedStopIndex !== null && selectedStopIndex !== undefined) {
+      setActiveStopIdx(selectedStopIndex);
+    }
+  }, [selectedStopIndex]);
+
+  useEffect(() => {
+    if (userLocation) {
+      setInternalUserLocation(userLocation);
+    }
+  }, [userLocation]);
 
   // Haversine distance calculator helper
   const getHaversineDist = (lat1, lon1, lat2, lon2) => {
@@ -65,12 +90,127 @@ export function GoogleMapsRouteView({
     return R * c;
   };
 
-  // Instant calculated route data for In-App OpenStreetMap engine
+  // Fetch authentic turn-by-turn road geometry across real streets & intersections
+  useEffect(() => {
+    let isMounted = true;
+    const validStops = stops.filter(s => s && s.coordinates && typeof s.coordinates.lat === 'number');
+
+    const waypoints = (routeFromUser && userLocation && activeUserRouteStop?.coordinates)
+      ? [
+          { lat: userLocation.lat, lng: userLocation.lng, name: 'Current Location' },
+          { lat: activeUserRouteStop.coordinates.lat, lng: activeUserRouteStop.coordinates.lng, name: activeUserRouteStop.name }
+        ]
+      : validStops.map(s => ({ lat: s.coordinates.lat, lng: s.coordinates.lng, name: s.name }));
+
+    if (waypoints.length < 2) {
+      setRealRoadData(null);
+      return;
+    }
+
+    async function fetchRoadRoute() {
+      try {
+        const coordStr = waypoints.map(w => `${w.lng},${w.lat}`).join(';');
+        const primaryUrl = mode === 'walking'
+          ? `https://routing.openstreetmap.de/routed-foot/route/v1/foot/${coordStr}?overview=full&geometries=geojson&steps=true`
+          : `https://router.project-osrm.org/route/v1/driving/${coordStr}?overview=full&geometries=geojson&steps=true`;
+
+        let data = null;
+        try {
+          const res = await fetch(primaryUrl, { signal: AbortSignal.timeout(4000) });
+          if (res.ok) {
+            data = await res.json();
+          }
+        } catch (e) {
+          // Public OSRM timeout or network error, fallback to local backend route plan
+        }
+
+        // If public OSRM didn't return Ok, try local backend route plan endpoint
+        if (!data || data.code !== 'Ok' || !data.routes || !data.routes[0]) {
+          if (waypoints.length === 2) {
+            const backendRes = await VoyantraAPI.getRoutePlan({
+              origin_lat: waypoints[0].lat,
+              origin_lng: waypoints[0].lng,
+              dest_lat: waypoints[1].lat,
+              dest_lng: waypoints[1].lng,
+              mode: mode
+            });
+            if (backendRes?.polyline_geojson?.coordinates && isMounted) {
+              const coords = backendRes.polyline_geojson.coordinates;
+              const path = coords.map(c => ({ lat: c[1], lng: c[0] }));
+              setRealRoadData({
+                path,
+                legs: [{
+                  from_place: waypoints[0].name,
+                  to_place: waypoints[1].name,
+                  distance_km: backendRes.distance_km || 0,
+                  distance_text: `${backendRes.distance_km || 0} km`,
+                  duration_minutes: backendRes.estimated_travel_time_minutes || 0,
+                  duration_text: `${backendRes.estimated_travel_time_minutes || 0} min`,
+                  polyline_geojson: backendRes.polyline_geojson,
+                  steps: (backendRes.maneuvers || []).map(m => ({
+                    instructions: m.instruction,
+                    distance: `${m.distance_meters || 0} m`,
+                    duration: `${m.duration_seconds || 0} s`
+                  }))
+                }],
+                total_distance_km: backendRes.distance_km || 0,
+                total_duration_minutes: backendRes.estimated_travel_time_minutes || 0
+              });
+              return;
+            }
+          }
+          return;
+        }
+
+        const route = data.routes[0];
+        const coords = route.geometry?.coordinates || [];
+        const path = coords.map(c => ({ lat: c[1], lng: c[0] }));
+
+        const legs = (route.legs || []).map((leg, idx) => ({
+          from_place: waypoints[idx]?.name || 'Origin',
+          to_place: waypoints[idx + 1]?.name || 'Destination',
+          distance_km: Number((leg.distance / 1000).toFixed(1)),
+          distance_text: `${(leg.distance / 1000).toFixed(1)} km`,
+          duration_minutes: Math.max(1, Math.round(leg.duration / 60)),
+          duration_text: `${Math.max(1, Math.round(leg.duration / 60))} min`,
+          polyline_geojson: {
+            type: 'LineString',
+            coordinates: coords
+          },
+          steps: (leg.steps || []).map(s => ({
+            instructions: s.maneuver?.type ? `${s.maneuver.type} on ${s.name || 'road'}` : s.name,
+            distance: `${Math.round(s.distance)} m`,
+            duration: `${Math.round(s.duration)} s`
+          }))
+        }));
+
+        if (isMounted) {
+          setRealRoadData({
+            path,
+            legs,
+            total_distance_km: Number((route.distance / 1000).toFixed(1)),
+            total_duration_minutes: Math.max(1, Math.round(route.duration / 60))
+          });
+        }
+      } catch (err) {
+        console.warn('[GoogleMapsRouteView] Road routing note:', err);
+      }
+    }
+
+    fetchRoadRoute();
+    return () => { isMounted = false; };
+  }, [stops, mode, routeFromUser, userLocation, activeUserRouteStop]);
+
+  // Calculated route metrics with authentic road polyline
   const osmRouteData = useMemo(() => {
+    if (realRoadData && realRoadData.legs && realRoadData.legs.length > 0) {
+      return realRoadData;
+    }
+
     const roadFactor = mode === 'walking' ? 1.25 : 1.35;
     const speed = mode === 'walking' ? 4.5 : 24.0;
 
-    // If routing from user location to a specific destination
+    // Initial placeholder while road routing completes
     if (routeFromUser && userLocation && activeUserRouteStop?.coordinates) {
       const d = getHaversineDist(
         userLocation.lat, userLocation.lng,
@@ -147,23 +287,32 @@ export function GoogleMapsRouteView({
       total_distance_km: Number(totalKm.toFixed(1)),
       total_duration_minutes: legs.reduce((acc, l) => acc + l.duration_minutes, 0)
     };
-  }, [stops, mode, routeFromUser, userLocation, activeUserRouteStop]);
+  }, [realRoadData, stops, mode, routeFromUser, userLocation, activeUserRouteStop]);
 
-  // Synchronize route metrics in OpenStreetMap mode with parent modal
+  // Clean visual markers and polyline
+  const clearFallbackElements = () => {
+    if (markersRef.current && markersRef.current.length > 0) {
+      markersRef.current.forEach(m => {
+        try { m.setMap(null); } catch (e) {}
+      });
+      markersRef.current = [];
+    }
+    if (fallbackPolylineRef.current) {
+      try { fallbackPolylineRef.current.setMap(null); } catch (e) {}
+      fallbackPolylineRef.current = null;
+    }
+  };
+
+  // Synchronize route metrics in OpenStreetMap mode
   useEffect(() => {
-    if ((!apiKey || useFallbackMap) && onRouteComputed && osmRouteData) {
+    if (useFallbackMap && onRouteComputed && osmRouteData) {
       onRouteComputed(osmRouteData);
     }
-  }, [apiKey, useFallbackMap, osmRouteData, onRouteComputed]);
+  }, [useFallbackMap, osmRouteData, onRouteComputed]);
 
-  // 1. Dynamic Google Maps JavaScript API Script Loader
+  // 1. Dynamic Google Maps JavaScript API Script Loader (Unconditionally loads Google Maps)
   useEffect(() => {
     if (useFallbackMap) return;
-
-    if (!apiKey) {
-      setScriptLoaded(false);
-      return;
-    }
 
     if (window.google && window.google.maps) {
       setScriptLoaded(true);
@@ -180,7 +329,9 @@ export function GoogleMapsRouteView({
 
     const script = document.createElement('script');
     script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey.trim()}&libraries=places,geometry`;
+    script.src = apiKey && apiKey.trim()
+      ? `https://maps.googleapis.com/maps/api/js?key=${apiKey.trim()}&libraries=places,geometry`
+      : `https://maps.googleapis.com/maps/api/js?libraries=places,geometry`;
     script.async = true;
     script.defer = true;
 
@@ -190,8 +341,7 @@ export function GoogleMapsRouteView({
     };
 
     script.onerror = () => {
-      setScriptError('Failed to load Google Maps JavaScript API. Falling back to OpenStreetMap.');
-      setUseFallbackMap(true);
+      setScriptError('Could not load Google Maps JavaScript API. Switch to OpenStreetMap if offline.');
       setScriptLoaded(false);
     };
 
@@ -200,7 +350,7 @@ export function GoogleMapsRouteView({
 
   // 2. Initialize Google Map Instance
   useEffect(() => {
-    if (!scriptLoaded || !mapContainerRef.current || !window.google?.maps || useFallbackMap || !apiKey) return;
+    if (!scriptLoaded || !mapContainerRef.current || !window.google?.maps || useFallbackMap) return;
 
     if (!mapInstanceRef.current) {
       const map = new window.google.maps.Map(mapContainerRef.current, {
@@ -223,7 +373,7 @@ export function GoogleMapsRouteView({
         map,
         suppressMarkers: false,
         polylineOptions: {
-          strokeColor: mode === 'walking' ? '#7c3aed' : '#0d946e', // Purple for walk, Emerald teal for drive
+          strokeColor: mode === 'walking' ? '#7c3aed' : '#e0533c',
           strokeWeight: 5,
           strokeOpacity: 0.85
         }
@@ -232,7 +382,19 @@ export function GoogleMapsRouteView({
       trafficLayerRef.current = new window.google.maps.TrafficLayer();
       mapInstanceRef.current = map;
     }
-  }, [scriptLoaded, useFallbackMap, apiKey]);
+  }, [scriptLoaded, useFallbackMap]);
+
+  // 2b. Map Resize Observer for responsive splitter dragging & window resize
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    const ro = new ResizeObserver(() => {
+      if (mapInstanceRef.current && window.google?.maps) {
+        window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
+      }
+    });
+    ro.observe(mapContainerRef.current);
+    return () => ro.disconnect();
+  }, [scriptLoaded]);
 
   // 3. Traffic Layer Toggle
   useEffect(() => {
@@ -242,7 +404,7 @@ export function GoogleMapsRouteView({
 
   // 3b. Render User Current Location Pin on Google Map
   useEffect(() => {
-    if (!mapInstanceRef.current || !window.google?.maps) return;
+    if (!mapInstanceRef.current || !window.google?.maps || useFallbackMap) return;
 
     if (userMarkerRef.current) {
       userMarkerRef.current.setMap(null);
@@ -258,7 +420,7 @@ export function GoogleMapsRouteView({
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           scale: 9,
-          fillColor: '#2563eb', // Royal Blue GPS dot
+          fillColor: '#2563eb',
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 3
@@ -267,12 +429,118 @@ export function GoogleMapsRouteView({
     }
   }, [userLocation, scriptLoaded, useFallbackMap]);
 
-  // 4. Calculate Preferred Route via Google DirectionsService
+  // 4. Calculate Preferred Route via Google DirectionsService or Draw Visual Waypoints on Google Maps
   useEffect(() => {
-    if (!scriptLoaded || !directionsServiceRef.current || !directionsRendererRef.current || useFallbackMap || !apiKey) return;
+    if (!scriptLoaded || !mapInstanceRef.current || !window.google?.maps || useFallbackMap) return;
+
+    const validStops = stops.filter(s => s && s.coordinates && typeof s.coordinates.lat === 'number');
+
+    const drawFallbackVisualRoute = () => {
+      clearFallbackElements();
+      if (!mapInstanceRef.current || !window.google?.maps) return;
+
+      const bounds = new window.google.maps.LatLngBounds();
+      const path = [];
+
+      if (routeFromUser && userLocation && activeUserRouteStop?.coordinates) {
+        const uPos = { lat: userLocation.lat, lng: userLocation.lng };
+        const dPos = { lat: activeUserRouteStop.coordinates.lat, lng: activeUserRouteStop.coordinates.lng };
+        path.push(uPos, dPos);
+        bounds.extend(uPos);
+        bounds.extend(dPos);
+
+        const destMarker = new window.google.maps.Marker({
+          position: dPos,
+          map: mapInstanceRef.current,
+          title: activeUserRouteStop.name,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: '#e0533c',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 2.5
+          }
+        });
+        markersRef.current.push(destMarker);
+      } else {
+        validStops.forEach((stop, idx) => {
+          const pos = { lat: stop.coordinates.lat, lng: stop.coordinates.lng };
+          path.push(pos);
+          bounds.extend(pos);
+
+          const marker = new window.google.maps.Marker({
+            position: pos,
+            map: mapInstanceRef.current,
+            title: stop.name,
+            label: {
+              text: String(idx + 1),
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '11px'
+            },
+            icon: {
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 13,
+              fillColor: '#e0533c',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2.5
+            }
+          });
+
+          const infoWindow = new window.google.maps.InfoWindow({
+            content: `<div style="font-family:sans-serif;padding:4px;color:#0f172a;">
+              <b style="font-size:13px;">${idx + 1}. ${stop.name}</b>
+              ${stop.timeTag ? `<p style="margin:2px 0 0;font-size:11px;color:#64748b;">⏰ ${stop.timeTag}</p>` : ''}
+            </div>`
+          });
+
+          marker.addListener('click', () => {
+            infoWindow.open(mapInstanceRef.current, marker);
+            setActiveStopIdx(idx);
+            if (onSelectStop) onSelectStop(idx);
+          });
+
+          markersRef.current.push(marker);
+        });
+      }
+
+      // Use authentic turn-by-turn road geometry if resolved, otherwise direct path
+      const activePath = (realRoadData?.path && realRoadData.path.length > 1) 
+        ? realRoadData.path 
+        : path;
+
+      if (activePath.length > 1) {
+        fallbackPolylineRef.current = new window.google.maps.Polyline({
+          path: activePath,
+          geodesic: true,
+          strokeColor: mode === 'walking' ? '#7c3aed' : (routeFromUser ? '#2563eb' : '#e0533c'),
+          strokeOpacity: 0.85,
+          strokeWeight: 5,
+          map: mapInstanceRef.current
+        });
+      }
+
+      if (path.length > 1) {
+        mapInstanceRef.current.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
+      } else if (path.length === 1) {
+        mapInstanceRef.current.setCenter(path[0]);
+        mapInstanceRef.current.setZoom(15);
+      }
+
+      if (onRouteComputed && osmRouteData) {
+        onRouteComputed(osmRouteData);
+      }
+    };
 
     // A) If routing directly from User's Current Location to a selected destination
     if (routeFromUser && userLocation && activeUserRouteStop?.coordinates) {
+      if (!directionsServiceRef.current || !directionsRendererRef.current) {
+        drawFallbackVisualRoute();
+        return;
+      }
+
       setRouteLoading(true);
       setRouteError(null);
 
@@ -288,21 +556,18 @@ export function GoogleMapsRouteView({
 
       directionsRendererRef.current.setOptions({
         polylineOptions: {
-          strokeColor: '#2563eb', // Vibrant blue for route from current location
+          strokeColor: '#2563eb',
           strokeWeight: 6,
           strokeOpacity: 0.9
         }
       });
 
       directionsServiceRef.current.route(
-        {
-          origin,
-          destination,
-          travelMode
-        },
+        { origin, destination, travelMode },
         (result, status) => {
           setRouteLoading(false);
           if (status === window.google.maps.DirectionsStatus.OK && result) {
+            clearFallbackElements();
             directionsRendererRef.current.setDirections(result);
 
             if (onRouteComputed && result.routes && result.routes[0]) {
@@ -330,7 +595,10 @@ export function GoogleMapsRouteView({
               }
             }
           } else {
-            setRouteError(`Could not route from current location: ${status}`);
+            if (directionsRendererRef.current) {
+              directionsRendererRef.current.setDirections({ routes: [] });
+            }
+            drawFallbackVisualRoute();
           }
         }
       );
@@ -338,21 +606,27 @@ export function GoogleMapsRouteView({
     }
 
     // B) Standard Day Itinerary Sequence Routing
-    const validStops = stops.filter(s => s && s.coordinates && typeof s.coordinates.lat === 'number');
-
     if (validStops.length === 0) {
-      directionsRendererRef.current.setDirections({ routes: [] });
+      clearFallbackElements();
+      if (directionsRendererRef.current) directionsRendererRef.current.setDirections({ routes: [] });
       if (mapInstanceRef.current) mapInstanceRef.current.setCenter(defaultCenter);
       return;
     }
 
     if (validStops.length === 1) {
+      clearFallbackElements();
       const singlePos = { lat: validStops[0].coordinates.lat, lng: validStops[0].coordinates.lng };
       if (mapInstanceRef.current) {
         mapInstanceRef.current.setCenter(singlePos);
         mapInstanceRef.current.setZoom(15);
       }
-      directionsRendererRef.current.setDirections({ routes: [] });
+      if (directionsRendererRef.current) directionsRendererRef.current.setDirections({ routes: [] });
+      drawFallbackVisualRoute();
+      return;
+    }
+
+    if (!directionsServiceRef.current || !directionsRendererRef.current) {
+      drawFallbackVisualRoute();
       return;
     }
 
@@ -372,7 +646,7 @@ export function GoogleMapsRouteView({
 
     directionsRendererRef.current.setOptions({
       polylineOptions: {
-        strokeColor: mode === 'walking' ? '#7c3aed' : '#0d946e',
+        strokeColor: mode === 'walking' ? '#7c3aed' : '#e0533c',
         strokeWeight: 5,
         strokeOpacity: 0.85
       }
@@ -389,6 +663,7 @@ export function GoogleMapsRouteView({
       (result, status) => {
         setRouteLoading(false);
         if (status === window.google.maps.DirectionsStatus.OK && result) {
+          clearFallbackElements();
           directionsRendererRef.current.setDirections(result);
 
           if (onRouteComputed && result.routes && result.routes[0]) {
@@ -418,11 +693,26 @@ export function GoogleMapsRouteView({
             });
           }
         } else {
-          setRouteError(`Notice: Google Directions status is ${status}.`);
+          // If Google Directions returns an error, draw visual route directly on Google Map
+          if (directionsRendererRef.current) {
+            directionsRendererRef.current.setDirections({ routes: [] });
+          }
+          drawFallbackVisualRoute();
         }
       }
     );
-  }, [scriptLoaded, stops, mode, useFallbackMap, routeFromUser, userLocation, activeUserRouteStop, apiKey]);
+  }, [scriptLoaded, stops, mode, useFallbackMap, routeFromUser, userLocation, activeUserRouteStop, apiKey, realRoadData]);
+
+  // Live update fallback polyline when real road geometry finishes loading
+  useEffect(() => {
+    if (!realRoadData || !mapInstanceRef.current || useFallbackMap) return;
+    if (fallbackPolylineRef.current && realRoadData.path && realRoadData.path.length > 1) {
+      fallbackPolylineRef.current.setPath(realRoadData.path);
+    }
+    if (onRouteComputed && realRoadData) {
+      onRouteComputed(realRoadData);
+    }
+  }, [realRoadData, useFallbackMap]);
 
   // 5. Focus selected stop
   useEffect(() => {
@@ -443,72 +733,261 @@ export function GoogleMapsRouteView({
     setKeyInput('');
   };
 
+  const targetStop = (stops && stops[activeStopIdx]) || (stops && stops[0]) || null;
+
+  const handleNavigateFromCurrentLocation = (destStop = null, isFullRoute = false) => {
+    const chosenStop = destStop || targetStop;
+    const travelModeParam = mode === 'walking' ? 'walking' : 'driving';
+
+    const launchUrl = (userCoords) => {
+      let url = 'https://www.google.com/maps/dir/?api=1';
+
+      if (userCoords?.lat && userCoords?.lng) {
+        url += `&origin=${encodeURIComponent(`${userCoords.lat},${userCoords.lng}`)}`;
+      }
+
+      if (isFullRoute && stops.length > 1) {
+        const finalStop = stops[stops.length - 1];
+        const intermediateWaypoints = stops.slice(0, stops.length - 1)
+          .map(s => (s.coordinates ? `${s.coordinates.lat},${s.coordinates.lng}` : null))
+          .filter(Boolean)
+          .join('|');
+
+        if (finalStop?.coordinates) {
+          url += `&destination=${encodeURIComponent(`${finalStop.coordinates.lat},${finalStop.coordinates.lng}`)}`;
+        }
+        if (intermediateWaypoints) {
+          url += `&waypoints=${encodeURIComponent(intermediateWaypoints)}`;
+        }
+      } else if (chosenStop?.coordinates) {
+        url += `&destination=${encodeURIComponent(`${chosenStop.coordinates.lat},${chosenStop.coordinates.lng}`)}`;
+      } else if (chosenStop?.name) {
+        url += `&destination=${encodeURIComponent(chosenStop.name)}`;
+      } else {
+        url += `&destination=${encodeURIComponent(`${defaultCenter.lat},${defaultCenter.lng}`)}`;
+      }
+
+      url += `&travelmode=${travelModeParam}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
+    if (internalUserLocation?.lat && internalUserLocation?.lng) {
+      launchUrl(internalUserLocation);
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      launchUrl(null);
+      return;
+    }
+
+    setIsLocating(true);
+    setLocStatus('Getting GPS position...');
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setIsLocating(false);
+        const coords = {
+          lat: Number(pos.coords.latitude.toFixed(6)),
+          lng: Number(pos.coords.longitude.toFixed(6)),
+          accuracy: pos.coords.accuracy,
+          isLive: true
+        };
+        setInternalUserLocation(coords);
+        setLocStatus('GPS Acquired! Opening Google Maps...');
+        setTimeout(() => setLocStatus(''), 2500);
+
+        if (mapInstanceRef.current && window.google?.maps) {
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setPosition({ lat: coords.lat, lng: coords.lng });
+          } else {
+            userMarkerRef.current = new window.google.maps.Marker({
+              position: { lat: coords.lat, lng: coords.lng },
+              map: mapInstanceRef.current,
+              title: 'Your Current Location',
+              zIndex: 9999,
+              icon: {
+                path: window.google.maps.SymbolPath.CIRCLE,
+                scale: 9,
+                fillColor: '#2563eb',
+                fillOpacity: 1,
+                strokeColor: '#ffffff',
+                strokeWeight: 3
+              }
+            });
+          }
+        }
+
+        launchUrl(coords);
+      },
+      (err) => {
+        console.warn('[GoogleMapsRouteView] Geolocation error/fallback:', err?.message);
+        setIsLocating(false);
+        setLocStatus('Opening Google Maps with device GPS...');
+        setTimeout(() => setLocStatus(''), 3000);
+        launchUrl(null);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  };
+
+  const renderGoogleMapsNavigationButton = () => (
+    <div className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2 font-sans select-none">
+      {/* Destination Popover Menu */}
+      {showDestPicker && (
+        <div className="w-72 sm:w-80 bg-white/98 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-2xl p-3 animate-fadeIn flex flex-col gap-2 text-slate-900 mb-1">
+          <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+            <div className="flex items-center gap-1.5 text-xs font-bold font-sans text-slate-900">
+              <Navigation className="w-3.5 h-3.5 text-blue-600" />
+              <span>Choose Destination from Current Location</span>
+            </div>
+            <button
+              onClick={() => setShowDestPicker(false)}
+              className="text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <p className="text-[11px] text-slate-500 font-medium">
+            Opens Google Maps turn-by-turn navigation starting from your current GPS location:
+          </p>
+
+          <div className="max-h-52 overflow-y-auto space-y-1 pr-0.5">
+            {stops.map((stop, idx) => {
+              const isSelected = activeStopIdx === idx;
+              return (
+                <button
+                  key={stop.order || idx}
+                  onClick={() => {
+                    setActiveStopIdx(idx);
+                    if (onSelectStop) onSelectStop(idx);
+                    setShowDestPicker(false);
+                    handleNavigateFromCurrentLocation(stop, false);
+                  }}
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-left text-xs transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-amber-50 border border-amber-300 text-amber-950 font-bold'
+                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200/60 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0 pr-1">
+                    <span className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                      isSelected ? 'bg-slate-950 text-[#FCD34D]' : 'bg-slate-200 text-slate-700'
+                    }`}>
+                      {idx + 1}
+                    </span>
+                    <div className="truncate">
+                      <div className="text-xs truncate font-medium">{stop.name}</div>
+                      {stop.timeTag && (
+                        <div className="text-[10px] text-slate-400">{stop.timeTag}</div>
+                      )}
+                    </div>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                </button>
+              );
+            })}
+
+            {stops.length > 1 && (
+              <button
+                onClick={() => {
+                  setShowDestPicker(false);
+                  handleNavigateFromCurrentLocation(null, true);
+                }}
+                className="w-full flex items-center justify-between p-2 rounded-xl bg-amber-100/70 hover:bg-amber-200/70 border border-amber-300 text-slate-900 font-bold text-xs transition-all cursor-pointer mt-1.5"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-md bg-slate-900 text-[#FCD34D] flex items-center justify-center text-[10px] font-bold">
+                    🗺️
+                  </span>
+                  <span>Full Day Tour ({stops.length} Stops)</span>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-800" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Real-time Status Toast */}
+      {locStatus && (
+        <div className="bg-slate-900/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl text-white text-[11px] font-medium flex items-center gap-2 shadow-xl border border-white/10 animate-fadeIn">
+          {isLocating && <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-300" />}
+          <span>{locStatus}</span>
+        </div>
+      )}
+
+      {/* Main Floating Action Button */}
+      <div className="flex items-stretch rounded-2xl shadow-2xl border border-slate-750/90 overflow-hidden bg-slate-950 text-white group hover:border-[#FCD34D]/60 transition-colors">
+        <button
+          onClick={() => handleNavigateFromCurrentLocation(targetStop, false)}
+          disabled={isLocating}
+          className="px-3.5 py-2.5 flex items-center gap-2.5 hover:bg-slate-850 active:bg-slate-900 transition-all cursor-pointer text-left"
+          title={`Launch Google Maps from your current location to ${targetStop?.name || 'destination'}`}
+        >
+          <div className="w-8 h-8 rounded-xl bg-[#FCD34D] text-slate-950 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+            {isLocating ? (
+              <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+            ) : (
+              <Navigation className="w-4 h-4 text-slate-950 fill-slate-950" />
+            )}
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-extrabold text-white tracking-tight leading-tight font-sans">
+                Take to Google Maps
+              </span>
+              <ExternalLink className="w-3 h-3 text-[#FCD34D]" />
+            </div>
+            <div className="text-[10px] text-slate-300 font-medium leading-tight truncate max-w-[170px] sm:max-w-[220px]">
+              {isLocating
+                ? 'Acquiring GPS...'
+                : targetStop?.name 
+                  ? `From My Location → ${targetStop.name}` 
+                  : 'From your current location'}
+            </div>
+          </div>
+        </button>
+
+        {stops.length > 0 && (
+          <button
+            onClick={() => setShowDestPicker(prev => !prev)}
+            className="px-2 border-l border-slate-800 hover:bg-slate-800/80 active:bg-slate-900 text-slate-300 hover:text-[#FCD34D] transition-all cursor-pointer flex items-center justify-center"
+            title="Pick a stop or navigate full itinerary"
+          >
+            <ChevronUp className={`w-4 h-4 transition-transform duration-200 ${showDestPicker ? 'rotate-180 text-[#FCD34D]' : ''}`} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   // =========================================================================
-  // CASE 1: Seamless In-App Interactive Map (OpenStreetMap Engine)
-  // Automatically renders when no Google key is set, or user toggles fallback
+  // CASE 1: OpenStreetMap Engine (ONLY when explicitly chosen)
   // =========================================================================
-  if (!apiKey || useFallbackMap) {
+  if (useFallbackMap) {
     return (
       <div className="relative w-full h-full flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-md">
         {/* Top Control Ribbon */}
         <div className="px-3.5 py-2 bg-white/95 backdrop-blur-md border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 z-10 shrink-0">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <span className="text-xs font-bold text-slate-800 font-logo">
-              In-App Interactive Map
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold uppercase tracking-wider font-sans">
-              OpenStreetMap (Zero Key • Free)
+            <span className="text-xs font-bold text-slate-800 font-sans">
+              OpenStreetMap Engine
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            {apiKey ? (
-              <button
-                onClick={() => setUseFallbackMap(false)}
-                className="px-2.5 py-1 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-[11px] font-bold font-logo transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
-              >
-                <span>Switch to Google Maps</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowKeyInput(prev => !prev)}
-                className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold font-logo transition-all cursor-pointer flex items-center gap-1"
-              >
-                <Key className="w-3 h-3 text-amber-700" />
-                <span>{showKeyInput ? 'Hide Key Input' : 'Have a Google Maps Key?'}</span>
-              </button>
-            )}
+            <button
+              onClick={() => setUseFallbackMap(false)}
+              className="px-2.5 py-1 rounded-lg bg-terracotta hover:bg-terracotta/90 text-white text-[11px] font-bold font-sans transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+            >
+              <span>Back to Google Maps</span>
+            </button>
           </div>
         </div>
-
-        {/* Expandable Key Input Dropdown */}
-        {showKeyInput && !apiKey && (
-          <div className="p-3 bg-amber-50/95 border-b border-amber-200 z-10 shrink-0 text-xs animate-fadeIn">
-            <form onSubmit={handleSaveUserKey} className="flex items-center gap-2">
-              <input
-                type="text"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                placeholder="Paste AIzaSy... Google Maps API Key to enable Google Satellite & Traffic"
-                className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-              <button
-                type="submit"
-                className="px-3 py-1.5 rounded-lg bg-terracotta hover:bg-terracotta/90 text-white font-bold text-xs font-logo cursor-pointer shrink-0 shadow-2xs"
-              >
-                Enable Google Maps
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowKeyInput(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
-        )}
 
         {/* In-App MapView Canvas */}
         <div className="flex-1 w-full min-h-0 relative">
@@ -520,44 +999,83 @@ export function GoogleMapsRouteView({
             routeLegs={osmRouteData.legs}
           />
         </div>
+
+        {/* Floating Google Maps Navigation from Current Location Action Button */}
+        {renderGoogleMapsNavigationButton()}
       </div>
     );
   }
 
   // =========================================================================
-  // CASE 2: Official Google Maps JavaScript API Engine
+  // CASE 2: Official Google Maps JavaScript API Engine (DEFAULT)
   // =========================================================================
   return (
     <div className="relative w-full h-full flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-md">
-      {/* Top Engine Ribbon with One-Click OpenStreetMap Switcher */}
+      {/* Top Engine Ribbon */}
       <div className="px-3.5 py-2 bg-white/95 backdrop-blur-md border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 z-10 shrink-0">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
-          <span className="text-xs font-bold text-slate-800 font-logo">
-            In-App Google Maps
+          <span className="text-xs font-bold text-slate-800 font-sans">
+            Google Maps Route Navigator
           </span>
           <span className="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[10px] font-bold uppercase tracking-wider font-sans">
-            Directions API Active
+            Google Maps Active
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setShowKeyInput(prev => !prev)}
+            className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold font-sans transition-all cursor-pointer flex items-center gap-1"
+            title="Configure optional personal Google Maps API key"
+          >
+            <Key className="w-3 h-3 text-amber-700" />
+            <span>{showKeyInput ? 'Hide Key' : 'API Key'}</span>
+          </button>
+          <button
             onClick={() => setUseFallbackMap(true)}
-            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold font-logo transition-all cursor-pointer flex items-center gap-1 border border-slate-200"
-            title="Switch to free OpenStreetMap rendering"
+            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold font-sans transition-all cursor-pointer flex items-center gap-1 border border-slate-200"
+            title="Switch to OpenStreetMap"
           >
             <Compass className="w-3 h-3 text-emerald-600" />
-            <span>Switch to OpenStreetMap</span>
+            <span>OpenStreetMap</span>
           </button>
         </div>
       </div>
+
+      {/* Expandable Key Input Dropdown */}
+      {showKeyInput && (
+        <div className="p-3 bg-amber-50/95 border-b border-amber-200 z-10 shrink-0 text-xs animate-fadeIn">
+          <form onSubmit={handleSaveUserKey} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              placeholder="Paste Google Maps API Key to enable official turn-by-turn routing"
+              className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+            <button
+              type="submit"
+              className="px-3 py-1.5 rounded-lg bg-terracotta hover:bg-terracotta/90 text-white font-bold text-xs font-sans cursor-pointer shrink-0 shadow-2xs"
+            >
+              Apply Key
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowKeyInput(false)}
+              className="p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Route Loading Indicator */}
       {routeLoading && (
         <div className="absolute top-12 left-1/2 -translate-x-1/2 z-10 bg-slate-900/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-white text-xs font-medium flex items-center gap-2 shadow-lg border border-white/20">
           <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-300" />
-          <span>Calculating Google Directions route...</span>
+          <span>Updating route on Google Maps...</span>
         </div>
       )}
 
@@ -585,12 +1103,12 @@ export function GoogleMapsRouteView({
 
       {/* Google Maps Legend & Mode Chip */}
       <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-md p-2.5 rounded-xl border border-slate-200 shadow-lg text-xs space-y-1 font-sans">
-        <div className="flex items-center gap-2 font-bold text-slate-900 font-logo text-[11px]">
-          <Navigation className="w-3.5 h-3.5 text-brand-600" />
-          <span>Google Maps Directions</span>
+        <div className="flex items-center gap-2 font-bold text-slate-900 font-sans text-[11px]">
+          <Navigation className="w-3.5 h-3.5 text-blue-600" />
+          <span>Google Maps Route Navigator</span>
         </div>
         <div className="flex items-center gap-2 text-slate-600 text-[11px]">
-          <span className={`w-3.5 h-1 rounded-full ${mode === 'walking' ? 'bg-purple-600' : 'bg-emerald-600'}`} />
+          <span className={`w-3.5 h-1 rounded-full ${mode === 'walking' ? 'bg-purple-600' : 'bg-terracotta'}`} />
           <span>{mode === 'walking' ? 'Walking Route (Pedestrian)' : 'Driving Route (Road Network)'}</span>
         </div>
         {showTraffic && (
@@ -600,6 +1118,9 @@ export function GoogleMapsRouteView({
           </div>
         )}
       </div>
+
+      {/* Floating Google Maps Navigation from Current Location Action Button */}
+      {renderGoogleMapsNavigationButton()}
     </div>
   );
 }

@@ -111,7 +111,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
           <div className="flex bg-slate-950/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 self-start sm:self-auto shadow-md">
             <button
               onClick={() => setSelectedCity('pondicherry')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold font-logo tracking-wider transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold font-sans tracking-wider transition-all cursor-pointer ${
                 selectedCity === 'pondicherry'
                   ? 'bg-terracotta text-white shadow-md'
                   : 'text-slate-200 hover:text-white'
@@ -121,7 +121,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
             </button>
             <button
               onClick={() => setSelectedCity('chennai')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold font-logo tracking-wider transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold font-sans tracking-wider transition-all cursor-pointer ${
                 selectedCity === 'chennai'
                   ? 'bg-terracotta text-white shadow-md'
                   : 'text-slate-200 hover:text-white'
@@ -195,7 +195,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
               </div>
               <button
                 onClick={() => setActiveTab('planner')}
-                className="font-bold font-logo tracking-wider text-amber-300 hover:text-amber-200 flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+                className="font-bold font-sans tracking-wider text-amber-300 hover:text-amber-200 flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
               >
                 <span>Customize in Trip Planner</span>
                 <ArrowRight className="w-3.5 h-3.5" />

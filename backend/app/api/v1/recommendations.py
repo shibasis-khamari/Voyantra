@@ -116,34 +116,121 @@ def parse_query(query_text: str = Body(..., embed=True)):
         raise HTTPException(status_code=422, detail="query_text cannot be empty")
     return gemini_service.parse_natural_language_query(query_text)
 
+COMMON_WORLD_DESTINATIONS = [
+    # Top Indian Destinations
+    "mumbai", "delhi", "new delhi", "bengaluru", "bangalore", "jaipur", "goa", "kerala",
+    "himachal pradesh", "himachal", "manali", "shimla", "kashmir", "ladakh", "leh",
+    "kolkata", "hyderabad", "agra", "varanasi", "udaipur", "jodhpur", "amritsar",
+    "rishikesh", "pondicherry", "puducherry", "pondy", "chennai", "madras", "mysore",
+    "ooty", "kodaikanal", "munnar", "hampi", "andaman", "sikkim", "darjeeling", "pune",
+    "ahmedabad", "chandigarh", "lucknow", "coorg", "wayanad", "alleppey", "kochi",
+    # Top Global Destinations
+    "tokyo", "kyoto", "osaka", "japan", "paris", "france", "bali", "indonesia",
+    "dubai", "uae", "abu dhabi", "singapore", "bangkok", "phuket", "thailand",
+    "london", "uk", "england", "new york", "nyc", "usa", "san francisco", "los angeles",
+    "rome", "italy", "florence", "venice", "barcelona", "madrid", "spain",
+    "amsterdam", "netherlands", "switzerland", "zurich", "geneva", "interlaken",
+    "vietnam", "hanoi", "da nang", "ho chi minh", "maldives", "sri lanka", "colombo",
+    "nepal", "kathmandu", "turkey", "istanbul", "cairo", "egypt", "sydney", "australia",
+    "melbourne", "seoul", "south korea", "berlin", "germany", "greece", "athens", "santorini"
+]
+
+def detect_target_destination(
+    message: str,
+    history: Optional[List[Any]] = None,
+    default_city: Optional[str] = None
+) -> tuple[str, str]:
+    """
+    Detects the user's intended travel destination dynamically from the message,
+    recent conversation history, or request parameters.
+    Returns (city_slug, display_name).
+    """
+    msg_clean = (message or "").strip()
+    msg_lower = msg_clean.lower()
+
+    # 1. Direct match in dictionary of common world & Indian destinations
+    for dest in COMMON_WORLD_DESTINATIONS:
+        pattern = rf"\b{re.escape(dest)}\b"
+        if re.search(pattern, msg_lower):
+            if dest in ["bangalore", "bengaluru"]:
+                return "bengaluru", "Bengaluru"
+            if dest in ["pondy", "puducherry", "pondicherry"]:
+                return "pondicherry", "Pondicherry"
+            if dest in ["madras", "chennai"]:
+                return "chennai", "Chennai"
+            if dest in ["himachal", "himachal pradesh"]:
+                return "himachal-pradesh", "Himachal Pradesh"
+            if dest == "new delhi":
+                return "delhi", "Delhi"
+            if dest == "nyc":
+                return "new-york", "New York"
+            return dest.replace(" ", "-"), dest.title()
+
+    # 2. Check prepositional patterns: "in <Destination>", "to <Destination>", "visit <Destination>"
+    match = re.search(
+        r'\b(?:in|to|around|for|visit|visiting|explore|exploring|near|trip to|travel to|vacation in|holiday in|tour of)\s+([A-Z][a-zA-Z\s]{1,25})(?:[?!.,]|$|\s+(?:this|next|for|with)\b)',
+        msg_clean
+    )
+    if match:
+        extracted = match.group(1).strip()
+        stop_words = {
+            "breakfast", "lunch", "dinner", "evening", "morning", "afternoon",
+            "summer", "winter", "weekend", "a day", "two days", "family",
+            "friends", "couple", "budget", "luxury", "tomorrow", "tonight"
+        }
+        if extracted.lower() not in stop_words and len(extracted) > 2:
+            return extracted.lower().replace(" ", "-"), extracted.title()
+
+    # 3. Check recent conversation history for established destination
+    if history:
+        for turn in reversed(history[-4:]):
+            content = turn.get("content", "") if isinstance(turn, dict) else getattr(turn, "content", "")
+            c_lower = (content or "").lower()
+            for dest in COMMON_WORLD_DESTINATIONS:
+                if re.search(rf"\b{re.escape(dest)}\b", c_lower):
+                    if dest in ["bangalore", "bengaluru"]:
+                        return "bengaluru", "Bengaluru"
+                    if dest in ["pondy", "puducherry", "pondicherry"]:
+                        return "pondicherry", "Pondicherry"
+                    if dest in ["madras", "chennai"]:
+                        return "chennai", "Chennai"
+                    if dest in ["himachal", "himachal pradesh"]:
+                        return "himachal-pradesh", "Himachal Pradesh"
+                    return dest.replace(" ", "-"), dest.title()
+
+    # 4. Fallback to passed default city or Pondicherry
+    fallback = (default_city or "pondicherry").strip().lower()
+    return fallback.replace(" ", "-"), fallback.replace("-", " ").title()
+
 @router.post("/chat", response_model=ConversationalChatResponse)
 def chat_with_concierge(req: ConversationalChatRequest, request: Request):
     """
-    Conversational AI Concierge for rational dialogue, place/dining advice, and flexible itinerary planning.
+    Conversational AI Concierge for worldwide rational dialogue, hotel/dining advice,
+    and flexible itinerary planning for destinations across India and globally.
     """
     client_ip = request.client.host if request.client else "127.0.0.1"
     apply_rate_limit(client_ip)
 
-    resolved_city = (req.city_id or req.city or "pondicherry").strip().lower()
-    if resolved_city not in ["pondicherry", "chennai"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"City '{resolved_city}' is outside Voyantra's operating boundaries. Please select Pondicherry or Chennai."
-        )
-
-    all_city_places = places_service.get_all_places(resolved_city)
-    vector_results = vector_store_service.search_semantic_places(req.message, city_id=resolved_city, top_k=12)
-    ranked_places = [item[0] for item in vector_results] if vector_results else all_city_places[:12]
-    catalog_places = ranked_places + [p for p in all_city_places if p.id not in [x.id for x in ranked_places]]
-
-    cities = places_service.get_cities()
-    city_name = next((c["name"] for c in cities if c["id"] == resolved_city), resolved_city.title())
-
     history_dicts = [{"role": m.role, "content": m.content} for m in req.conversation_history]
+
+    # Dynamically detect destination from message, history, or request payload
+    resolved_slug, resolved_name = detect_target_destination(
+        message=req.message,
+        history=history_dicts,
+        default_city=req.city_id or req.city
+    )
+
+    # Check for local catalog destinations (e.g. pondicherry, chennai)
+    all_city_places = places_service.get_all_places(resolved_slug)
+    catalog_places = []
+    if all_city_places:
+        vector_results = vector_store_service.search_semantic_places(req.message, city_id=resolved_slug, top_k=12)
+        ranked_places = [item[0] for item in vector_results] if vector_results else all_city_places[:12]
+        catalog_places = ranked_places + [p for p in all_city_places if p.id not in [x.id for x in ranked_places]]
 
     res = gemini_service.chat_conversational(
         message=req.message,
-        city_name=city_name,
+        city_name=resolved_name,
         retrieved_places=catalog_places,
         conversation_history=history_dicts,
         current_itinerary=req.current_itinerary,
@@ -158,72 +245,55 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
     client_ip = request.client.host if request.client else "127.0.0.1"
     apply_rate_limit(client_ip)
 
-    resolved_city = (req.city_id or req.city or "pondicherry").strip().lower()
+    # Dynamically detect destination from natural language query or request
+    resolved_slug, resolved_name = detect_target_destination(
+        message=req.query_text,
+        history=None,
+        default_city=req.city_id or req.city
+    )
 
-    # 1. Geographic Boundary Validation
-    if resolved_city not in ["pondicherry", "chennai"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"City '{resolved_city}' is outside Voyantra's operating boundaries. Please select Pondicherry or Chennai."
-        )
-
-    # Check for out-of-scope cities in query text
-    out_of_scope_cities = ["bangalore", "bengaluru", "delhi", "mumbai", "kolkata", "hyderabad", "goa", "kodaikanal", "ooty", "kerala", "jaipur"]
-    q_words = set(re.findall(r'\b[a-z]+\b', req.query_text.lower()))
-    has_target_city = any(tc in q_words for tc in ["pondicherry", "chennai", "pondy", "madras"])
-    found_out = [c for c in out_of_scope_cities if c in q_words]
-    if found_out and not has_target_city:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Voyantra's trip planning pilot currently only covers Pondicherry and Chennai. Destination '{found_out[0].title()}' is outside our geographical boundaries."
-        )
-
-    all_city_places = places_service.get_all_places(resolved_city)
+    all_city_places = places_service.get_all_places(resolved_slug)
     
-    # 2. RAG Vector Search
-    vector_results = vector_store_service.search_semantic_places(req.query_text, city_id=resolved_city, top_k=12)
-    retrieved_places = [item[0] for item in vector_results]
+    # 2. RAG Vector Search (if local catalog exists)
+    filtered_places: List[Place] = []
+    if all_city_places:
+        vector_results = vector_store_service.search_semantic_places(req.query_text, city_id=resolved_slug, top_k=12)
+        retrieved_places = [item[0] for item in vector_results] if vector_results else all_city_places[:12]
 
-    if not retrieved_places:
-        retrieved_places = all_city_places[:12]
+        # Hard Constraint Dietary Filter
+        q_lower = req.query_text.lower()
+        is_strict_jain = "jain" in q_lower or "zero-onion" in q_lower or req.dietary_preference == DietaryOptionEnum.PURE_VEG_JAIN
+        is_halal = "halal" in q_lower or req.dietary_preference == DietaryOptionEnum.HALAL
+        is_vegan = "vegan" in q_lower or req.dietary_preference == DietaryOptionEnum.VEGAN
 
-    # Hard Constraint Dietary Filter
+        for p in retrieved_places:
+            if p.category not in ["cafe", "dining"]:
+                filtered_places.append(p)
+                continue
+            
+            opts = [d.value for d in p.dietary_options]
+            if is_strict_jain:
+                if DietaryOptionEnum.PURE_VEG_JAIN.value in opts or "pure_veg_jain" in opts:
+                    filtered_places.append(p)
+            elif is_halal:
+                if DietaryOptionEnum.HALAL.value in opts or "halal" in opts:
+                    filtered_places.append(p)
+            elif is_vegan:
+                if DietaryOptionEnum.VEGAN.value in opts or "vegan" in opts:
+                    filtered_places.append(p)
+            else:
+                filtered_places.append(p)
+
+        if len(filtered_places) < 4:
+            for p in all_city_places:
+                if p.id not in [x.id for x in filtered_places]:
+                    if p.category not in ["cafe", "dining"]:
+                        filtered_places.append(p)
+                    elif is_strict_jain and DietaryOptionEnum.PURE_VEG_JAIN.value in [d.value for d in p.dietary_options]:
+                        filtered_places.append(p)
+
     q_lower = req.query_text.lower()
     is_strict_jain = "jain" in q_lower or "zero-onion" in q_lower or req.dietary_preference == DietaryOptionEnum.PURE_VEG_JAIN
-    is_halal = "halal" in q_lower or req.dietary_preference == DietaryOptionEnum.HALAL
-    is_vegan = "vegan" in q_lower or req.dietary_preference == DietaryOptionEnum.VEGAN
-
-    filtered_places: List[Place] = []
-    for p in retrieved_places:
-        if p.category not in ["cafe", "dining"]:
-            filtered_places.append(p)
-            continue
-        
-        opts = [d.value for d in p.dietary_options]
-        if is_strict_jain:
-            if DietaryOptionEnum.PURE_VEG_JAIN.value in opts or "pure_veg_jain" in opts:
-                filtered_places.append(p)
-        elif is_halal:
-            if DietaryOptionEnum.HALAL.value in opts or "halal" in opts:
-                filtered_places.append(p)
-        elif is_vegan:
-            if DietaryOptionEnum.VEGAN.value in opts or "vegan" in opts:
-                filtered_places.append(p)
-        else:
-            filtered_places.append(p)
-
-    if len(filtered_places) < 4:
-        for p in all_city_places:
-            if p.id not in [x.id for x in filtered_places]:
-                if p.category not in ["cafe", "dining"]:
-                    filtered_places.append(p)
-                elif is_strict_jain and DietaryOptionEnum.PURE_VEG_JAIN.value in [d.value for d in p.dietary_options]:
-                    filtered_places.append(p)
-
-    cities = places_service.get_cities()
-    city_name = next((c["name"] for c in cities if c["id"] == resolved_city), resolved_city.title())
-
-    # Only use client-sent existing_days for explicit Day 2 refinements
     is_day2_refinement = "day 2" in q_lower or "day2" in q_lower
     prev_days = req.existing_days if (is_day2_refinement and req.existing_days) else None
 
@@ -236,7 +306,7 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
         user_age=req.age_group or AgeGroupEnum.YOUNG_ADULT,
         user_diet=DietaryOptionEnum.PURE_VEG_JAIN if is_strict_jain else (req.dietary_preference or DietaryOptionEnum.ALL),
         duration_days=req.duration_days,
-        city_name=city_name,
+        city_name=resolved_name,
         existing_days=prev_days
     )
 
@@ -244,16 +314,16 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
         {
             "id": p.id,
             "name": p.name,
-            "category": p.category.value,
+            "category": p.category.value if hasattr(p.category, "value") else str(p.category),
             "sub_category": p.sub_category,
             "estimated_cost_inr": p.estimated_cost_inr,
             "duration_minutes": p.duration_minutes
         }
-        for p in (filtered_places + [p for p in all_city_places if p.id not in [x.id for x in filtered_places]])
+        for p in catalog_places
     ]
 
     return {
-        "city_id": resolved_city,
+        "city_id": resolved_slug,
         "query_text": req.query_text,
         "retrieved_places_count": len(filtered_places),
         "available_alternatives": available_alternatives,

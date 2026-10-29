@@ -39,7 +39,7 @@ export function LocationPromptModal({ isOpen, onClose, currentCity, onSelectCity
               <span>{locationStatus?.title || 'Location Detection Notice'}</span>
             </div>
             <p className="text-[11px] text-amber-900/90">
-              {locationStatus?.message || 'Voyantra currently offers curated trip planning for Pondicherry and Chennai. Please manually select your target destination below.'}
+              {locationStatus?.message || 'Voyantra offers worldwide travel concierge support, with featured local catalog guides for Pondicherry and Chennai. Select a featured city or ask about any destination in chat.'}
             </p>
           </div>
         </div>

@@ -51,7 +51,7 @@ class GeminiService:
         Uses Gemini API to parse free-text input into structured JSON filters.
         """
         if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             headers = {
                 "Content-Type": "application/json",
@@ -125,18 +125,18 @@ class GeminiService:
 
     def _check_feasibility_warnings(self, query_text: str, city_name: str) -> tuple[bool, Optional[str]]:
         q = query_text.lower()
+        c_lower = (city_name or "").lower()
+
+        # Only check geographical incompatibilities if the user is explicitly targeting a coastal tropical destination
+        is_coastal_tropical = any(c in c_lower for c in ["pondy", "pondicherry", "chennai", "puducherry"])
         
-        # 1. Snow / Skiing check
-        if "snow" in q or "ski" in q or "skiing" in q:
+        # 1. Snow / Skiing check in coastal tropical destination
+        if is_coastal_tropical and ("snow" in q or "ski" in q or "skiing" in q):
             return True, f"Clarity Notice: Snow skiing is not possible in coastal {city_name}. We have customized your itinerary to feature scenic coastal beaches, ocean walks, and seaside cafes instead."
 
-        # 2. Himalayan / mountain lake check
-        if ("himalayan" in q or "himalaya" in q) and ("lake" in q or "scuba" in q or "chennai" in q or "pondicherry" in q):
-            return True, f"Clarity Notice: Himalayan lakes are located in the far north of India. For coastal {city_name}, we have substituted premier coastal shores, marina walks, and local watersports."
-
-        # 3. Foreign landmarks (Paris / Eiffel Tower / Pyramids)
-        if "eiffel" in q or "paris" in q or "pyramid" in q or "taj mahal" in q:
-            return True, f"Clarity Notice: The requested foreign or distant landmark (e.g., Eiffel Tower / Paris) is outside {city_name}'s geographical boundaries. We have curated authentic French Quarter colonial architecture and seaside heritage walks instead."
+        # 2. Himalayan / mountain lake check specifically in coastal city
+        if is_coastal_tropical and ("himalayan" in q or "himalaya" in q) and any(w in q for w in ["chennai", "pondicherry", "pondy"]):
+            return True, f"Clarity Notice: Himalayan lakes are located in northern India. For coastal {city_name}, we have featured premier coastal shores, marina walks, and local watersports."
 
         return False, None
 
@@ -186,7 +186,7 @@ class GeminiService:
         fallback_reason = "no_api_key"
 
         if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             headers = {
                 "Content-Type": "application/json",
@@ -203,6 +203,21 @@ class GeminiService:
                 Only modify Day 2 to fulfill: "{query_text}".
                 """
 
+            if places_summary:
+                ground_truth_context = f"""
+                AVAILABLE VERIFIED DESTINATIONS IN {city_name.upper()} (Ground Truth Catalog):
+                {json.dumps(places_summary, indent=2)}
+                Constraint: Prioritize these verified catalog places.
+                """
+                constraint_rule = "- Use the verified catalog destinations provided above where applicable."
+            else:
+                ground_truth_context = f"""
+                No pre-cached local database records for {city_name}.
+                Synthesize a realistic, geographically accurate itinerary using your deep real-world knowledge of {city_name}.
+                Select real, well-known attractions, scenic areas, cultural sites, and dining venues in {city_name}.
+                """
+                constraint_rule = f"- Feature real, famous landmarks, attractions, and dining venues in {city_name}. Ensure morning, afternoon, and evening slots represent geographically logical sequences."
+
             prompt = f"""
             You are Voyantra's AI Travel Decision Engine.
             Synthesize a DYNAMIC, REAL-TIME {duration_days}-day travel itinerary for {city_name}.
@@ -214,21 +229,18 @@ class GeminiService:
 
             USER PROFILE: Age Group: {age_val}, Dietary Preference: {diet_val}
 
-            AVAILABLE REAL DESTINATIONS IN {city_name.upper()} (Use ONLY these exact place names as ground truth):
-            {json.dumps(places_summary, indent=2)}
+            {ground_truth_context}
 
             {existing_days_context}
 
             DYNAMIC DECISION INSTRUCTIONS:
             1. READ THE PROMPT INTENT CAREFULLY:
-               - If the prompt asks for "Strict Jain / Pure Veg breakfast", place the verified Pure Veg restaurant in the Morning slot!
-               - If the prompt asks for "ancient Ganesha temple", place the temple in the Morning/Afternoon slot!
-               - If the prompt asks for "French Quarter heritage walk", place White Town in the Evening/Afternoon slot!
+               {constraint_rule}
+               - If the prompt asks for "Strict Jain / Pure Veg breakfast", place a verified or authentic Pure Veg restaurant in the Morning slot!
                - DO NOT schedule the same place twice across days.
-               - DO NOT hallucinate places outside the provided catalog.
 
             2. FEASIBILITY AUDIT:
-               - If something requested is impossible in {city_name}, set "has_unavailability_warning": true and explain in "unavailability_notice".
+               - If something requested is geographically impossible in {city_name}, set "has_unavailability_warning": true and explain in "unavailability_notice".
 
             Return ONLY raw valid JSON matching this exact structure:
             {{
@@ -361,7 +373,39 @@ class GeminiService:
             logger.warning(f"[GeminiService] Schema validation failed: {e}")
             return None
 
-        # Build catalog lookup
+        # If retrieved_places is empty (worldwide destination not in local static database)
+        if not retrieved_places:
+            sanitized_days = []
+            for day_idx, day in enumerate(parsed.get("days", [])):
+                day_dict = dict(day)
+                is_day1_locked = (day_idx == 0 and existing_days and is_day2_refinement and len(existing_days) > 0)
+                if is_day1_locked:
+                    sanitized_days.append(dict(existing_days[0]))
+                    continue
+                for slot_key in ["morning", "afternoon", "evening"]:
+                    slot = day_dict.get(slot_key)
+                    if not slot:
+                        continue
+                    slot_dict = dict(slot)
+                    raw_name = slot_dict.get("place_name", "").strip()
+                    if raw_name:
+                        day_dict[slot_key] = {
+                            "place_name": raw_name,
+                            "activity_note": slot_dict.get("activity_note", f"Visit and explore {raw_name}."),
+                            "est_time": slot_dict.get("est_time", "8:30 AM - 11:30 AM" if slot_key == "morning" else ("12:30 PM - 3:30 PM" if slot_key == "afternoon" else "5:00 PM - 8:00 PM"))
+                        }
+                    else:
+                        day_dict[slot_key] = None
+                sanitized_days.append(day_dict)
+
+            result = itinerary_obj.model_dump(mode="json")
+            result["days"] = sanitized_days
+            result["total_estimated_budget_inr"] = int(parsed.get("total_estimated_budget_inr", 0)) or (len(sanitized_days) * 2000)
+            result["source"] = "gemini"
+            result["fallback_reason"] = None
+            return result
+
+        # Build catalog lookup for destinations with local static database (Pondicherry/Chennai)
         catalog_map = {normalize_place_name(p.name): p for p in retrieved_places}
         used_places: Set[str] = set()
         sanitized_days = []
@@ -553,6 +597,18 @@ class GeminiService:
                         "activity_note": f"{note_prefix} {p_obj.name}.",
                         "est_time": time_str
                     }
+                elif not retrieved_places:
+                    # Provide realistic fallback slots for worldwide destinations when offline
+                    fallback_names = {
+                        "morning": f"Iconic Landmarks of {city_name}" if d_num == 1 else f"Scenic Panorama of {city_name}",
+                        "afternoon": f"{city_name} Cultural Heritage & Museums" if d_num == 1 else f"Local Artisan Markets & Cafes in {city_name}",
+                        "evening": f"Sunset Promenade & Dining in {city_name}" if d_num == 1 else f"Evening City Sights & Cuisine in {city_name}"
+                    }
+                    slots[s_key] = {
+                        "place_name": fallback_names[s_key],
+                        "activity_note": f"{note_prefix} prominent attractions in {city_name}.",
+                        "est_time": time_str
+                    }
                 else:
                     slots[s_key] = None
 
@@ -564,7 +620,7 @@ class GeminiService:
                 "evening": slots.get("evening")
             })
 
-        total_cost = sum(p.estimated_cost_inr for p in scheduled_places)
+        total_cost = sum(p.estimated_cost_inr for p in scheduled_places) or (duration_days * 1800)
 
         title_suffix = query_text[:35].strip()
         if len(query_text) > 35:
@@ -600,8 +656,9 @@ class GeminiService:
         duration_days: int = 2
     ) -> Dict[str, Any]:
         """
-        Human-like conversational travel concierge for Pondicherry & Chennai.
-        Handles greetings, dining/place inquiries, and flexible multi-day or single-slot itinerary requests.
+        Worldwide Conversational Travel Concierge.
+        Handles questions about destinations across India and anywhere else in the world,
+        including hotels, dining, attractions, comparisons, and custom multi-day itineraries.
         """
         places_summary = []
         for p in retrieved_places:
@@ -630,19 +687,27 @@ class GeminiService:
         fallback_reason = "no_api_key"
 
         if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash-lite")
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
             headers = {
                 "Content-Type": "application/json",
                 "x-goog-api-key": self.api_key
             }
 
-            prompt = f"""
-            You are Voyantra's AI Travel Concierge — a warm, knowledgeable, polite local guide for {city_name}, India.
-            You communicate naturally, like an experienced, thoughtful human concierge.
-
-            CURATED DESTINATIONS & RESTAURANTS IN {city_name.upper()} (Use ONLY these real places):
+            dest_context = f"""
+            VERIFIED LOCAL DATABASE DESTINATIONS IN {city_name.upper()} (Ground Truth Catalog):
             {json.dumps(places_summary, indent=2)}
+            """ if places_summary else f"""
+            No local database records for {city_name}.
+            Rely on your comprehensive real-world knowledge of {city_name} to recommend authentic attractions, reputable hotels, and popular dining spots.
+            """
+
+            prompt = f"""
+            You are Voyantra's AI Travel Concierge — a warm, highly knowledgeable, polite, and sophisticated global travel assistant.
+            You assist travelers with ANY destination across India or anywhere else in the world (e.g. Mumbai, Tokyo, Paris, Bali, Himachal Pradesh, Dubai, Goa, Kerala, Delhi, Jaipur, Bengaluru, Pondicherry, Chennai, etc.).
+
+            CONTEXT & RETRIEVED PLACES FOR "{city_name.upper()}":
+            {dest_context}
 
             RECENT CONVERSATION:
             {history_str or "No previous messages."}
@@ -657,22 +722,43 @@ class GeminiService:
             "{message}"
 
             DECISION INSTRUCTIONS:
-            1. DETERMINE INTENT:
-               - "chat": Greetings (hi, hello, how are you), general conversation, local tips, weather, packing, cultural decorum.
-               - "place_info": Inquiries about specific places, restaurants, cafes, breakfast/dinner, beaches, or temples.
-               - "itinerary": Requests to plan a multi-day trip (e.g. "plan a 2-day trip"), a specific time of day (e.g. "what can I do tomorrow morning?"), or update an existing schedule.
+            1. IDENTIFY TARGET DESTINATION & INTENT:
+               - Determine what destination the user is asking about (from the latest message, or recent conversation history if asking a follow-up).
+               - DO NOT restrict or redirect the user to Pondicherry or Chennai unless they explicitly asked about them!
+               - If the destination is Pondicherry or Chennai, prioritize the verified catalog destinations provided above.
+               - If the destination is ANY other place in India or worldwide (e.g. Mumbai, Tokyo, Paris, Bali, Himachal Pradesh, Dubai, Goa, Kerala, etc.):
+                 * Answer naturally and authoritatively using your deep real-world knowledge of the destination.
+                 * Recommend real, highly-regarded attractions, districts, hotels, resorts, and dining venues.
+                 * Distinguish general recommendations from live booking: if live hotel reservation data is not in the direct local catalog, explain gracefully and provide reputable recommendations (e.g. iconic luxury, boutique, or budget hotels and the best neighborhoods to stay in).
+                 * NEVER invent fake live inventory or pretend you verified live room availability today.
+               - Intents:
+                 * "chat": Greetings, general travel advice, comparisons between places (e.g. Goa vs Kerala), packing tips, weather, cultural decorum, or general inquiries without asking for a trip schedule.
+                 * "place_info": Inquiries about specific places, hotels, resorts, restaurants, cafes, beaches, landmarks, or attractions.
+                 * "itinerary": ONLY when the user explicitly asks for an itinerary, trip plan, schedule, or daily agenda.
 
             2. COMPOSE RESPONSE:
-               - "reply_message": Markdown format. Friendly, human-like, helpful. Use polite greetings, bullet points, and emojis.
-               - "recommended_places": Place names from the catalog you specifically recommended in your reply.
-               - "suggested_followups": 2 to 4 quick, relevant follow-up questions the user can ask next.
-               - "itinerary": If the user requested an itinerary (multi-day or single time slot), output the structured itinerary object matching Voyantra schema (only using catalog destinations, respecting dietary preferences, exact budget sum). If the user asked for a specific time of day (e.g., morning), populate only that slot and leave other slots null. If intent is "chat" or "place_info", set "itinerary" to null.
+               - "destination": The primary destination discussed (e.g. "Mumbai", "Tokyo", "Paris", "Bali", "Himachal Pradesh", "Dubai", "Goa", etc.) or "{city_name}".
+               - "reply_message": Markdown format. Friendly, human-like, helpful. Use clear headings, bullet points, and emojis.
+               - "recommended_places": An array of recommended places, hotels, or restaurants. Each item should be an object:
+                 {{"name": "...", "category": "hotel"|"dining"|"cafe"|"heritage"|"beach"|"nature"|"spiritual"|"adventure", "sub_category": "...", "cost_inr": number, "highlights": ["..."], "description": "..."}}
+               - "suggested_followups": 2 to 4 quick, relevant follow-up questions tailored to that destination.
+               - "itinerary": If intent is "itinerary", generate a {duration_days}-day itinerary (or the number of days requested in message, defaulting to 1 if unspecified) for that destination. If intent is "chat" or "place_info", set "itinerary" to null.
 
             Output ONLY raw valid JSON matching:
             {{
               "intent": "chat" | "place_info" | "itinerary",
+              "destination": "{city_name}",
               "reply_message": "...",
-              "recommended_places": ["Place 1"],
+              "recommended_places": [
+                {{
+                  "name": "Place or Hotel Name",
+                  "category": "hotel",
+                  "sub_category": "Luxury Heritage Hotel",
+                  "cost_inr": 3500,
+                  "highlights": ["Sea-facing views", "Historic architecture"],
+                  "description": "Short description of the property or attraction."
+                }}
+              ],
               "suggested_followups": ["Question 1", "Question 2"],
               "itinerary": null | {{
                  "itinerary_title": "...",
@@ -687,7 +773,7 @@ class GeminiService:
                        "evening": null
                     }}
                  ],
-                 "total_estimated_budget_inr": 150,
+                 "total_estimated_budget_inr": 1500,
                  "belief_and_etiquette_advisory": "...",
                  "travel_tips": ["..."]
               }}
@@ -699,7 +785,7 @@ class GeminiService:
                     "contents": [{"parts": [{"text": prompt}]}],
                     "generationConfig": {
                         "responseMimeType": "application/json",
-                        "temperature": 0.5
+                        "temperature": 0.4
                     }
                 }
                 res = requests.post(url, headers=headers, json=payload, timeout=25)
@@ -711,22 +797,71 @@ class GeminiService:
                         clean_text = text_resp.replace("```json", "").replace("```", "").strip()
                         parsed = json.loads(clean_text)
 
+                        target_dest = parsed.get("destination") or city_name
+                        target_slug = re.sub(r'[^a-z0-9]+', '-', target_dest.lower()).strip('-') or "global"
+
                         # Build recommended places list
                         rec_places = []
-                        rec_names = [normalize_place_name(n) for n in parsed.get("recommended_places", [])]
-                        for p in retrieved_places:
-                            if normalize_place_name(p.name) in rec_names:
-                                rec_places.append({
-                                    "id": p.id,
-                                    "name": p.name,
-                                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
-                                    "sub_category": p.sub_category,
-                                    "estimated_cost_inr": p.estimated_cost_inr,
-                                    "duration_minutes": p.duration_minutes,
-                                    "highlights": p.highlights,
-                                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
-                                    "image_url": p.image_url
-                                })
+                        raw_recs = parsed.get("recommended_places", [])
+                        catalog_map = {normalize_place_name(p.name): p for p in retrieved_places}
+
+                        for r_item in raw_recs:
+                            if isinstance(r_item, dict):
+                                r_name = (r_item.get("name") or "").strip()
+                                r_norm = normalize_place_name(r_name)
+                                if r_norm in catalog_map:
+                                    p = catalog_map[r_norm]
+                                    rec_places.append({
+                                        "id": p.id,
+                                        "name": p.name,
+                                        "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                                        "sub_category": p.sub_category,
+                                        "estimated_cost_inr": p.estimated_cost_inr,
+                                        "duration_minutes": p.duration_minutes,
+                                        "highlights": p.highlights,
+                                        "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                                        "image_url": p.image_url
+                                    })
+                                elif r_name:
+                                    rec_places.append({
+                                        "id": re.sub(r'[^a-z0-9]+', '-', r_name.lower()).strip('-') or f"rec-{len(rec_places)}",
+                                        "name": r_name,
+                                        "category": str(r_item.get("category", "heritage")),
+                                        "sub_category": str(r_item.get("sub_category", "Recommended Spot")),
+                                        "estimated_cost_inr": int(r_item.get("cost_inr", 0) or r_item.get("estimated_cost_inr", 0)),
+                                        "duration_minutes": int(r_item.get("duration_minutes", 60)),
+                                        "highlights": r_item.get("highlights", []),
+                                        "dietary_options": r_item.get("dietary_options", ["all"]),
+                                        "image_url": None
+                                    })
+                            elif isinstance(r_item, str) and r_item.strip():
+                                r_name = r_item.strip()
+                                r_norm = normalize_place_name(r_name)
+                                if r_norm in catalog_map:
+                                    p = catalog_map[r_norm]
+                                    rec_places.append({
+                                        "id": p.id,
+                                        "name": p.name,
+                                        "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                                        "sub_category": p.sub_category,
+                                        "estimated_cost_inr": p.estimated_cost_inr,
+                                        "duration_minutes": p.duration_minutes,
+                                        "highlights": p.highlights,
+                                        "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                                        "image_url": p.image_url
+                                    })
+                                else:
+                                    rec_places.append({
+                                        "id": re.sub(r'[^a-z0-9]+', '-', r_name.lower()).strip('-') or f"rec-{len(rec_places)}",
+                                        "name": r_name,
+                                        "category": "heritage",
+                                        "sub_category": "Recommended Spot",
+                                        "estimated_cost_inr": 0,
+                                        "duration_minutes": 60,
+                                        "highlights": [],
+                                        "dietary_options": ["all"],
+                                        "image_url": None
+                                    })
 
                         # If itinerary was generated, sanitize and validate
                         itinerary_data = None
@@ -742,15 +877,15 @@ class GeminiService:
                             )
 
                         return {
-                            "city_id": city_name.lower(),
+                            "city_id": target_slug,
                             "reply_message": parsed.get("reply_message", "I'm here to help you explore!"),
                             "intent": parsed.get("intent", "chat"),
                             "recommended_places": rec_places,
                             "itinerary": itinerary_data,
                             "suggested_followups": parsed.get("suggested_followups", [
-                                f"What are the top sights in {city_name}?",
-                                f"Plan a 2-day trip to {city_name}",
-                                "Best cafes in White Town"
+                                f"What are the top sights in {target_dest}?",
+                                f"Plan a trip to {target_dest}",
+                                f"Best hotels and stays in {target_dest}"
                             ]),
                             "source": "gemini",
                             "fallback_reason": None
@@ -780,88 +915,143 @@ class GeminiService:
         retrieved_places: List[Place],
         current_itinerary: Optional[Dict[str, Any]] = None,
         user_diet: Optional[DietaryOptionEnum] = None,
-        duration_days: int = 2,
+        duration_days: int = 1,
         fallback_reason: str = "offline"
     ) -> Dict[str, Any]:
         q = message.lower().strip()
         matched_previews = []
 
+        # Extract duration from message: default to 1 day if user doesn't mention number of days
+        import re
+        effective_days = 1
+        day_match = re.search(r'\b([1-7])\s*-?\s*days?\b', q)
+        if day_match:
+            effective_days = int(day_match.group(1))
+        elif "weekend" in q:
+            effective_days = 2
+        elif any(f"{w} day" in q for w in ["one", "1"]):
+            effective_days = 1
+        elif any(f"{w} day" in q for w in ["two", "2"]):
+            effective_days = 2
+        elif any(f"{w} day" in q for w in ["three", "3"]):
+            effective_days = 3
+        elif any(f"{w} day" in q for w in ["four", "4"]):
+            effective_days = 4
+        elif any(f"{w} day" in q for w in ["five", "5"]):
+            effective_days = 5
+        elif duration_days and duration_days > 1:
+            effective_days = duration_days
+
+        is_local_catalog = bool(retrieved_places)
+
         # Greetings
         if any(w in q for w in ["hi", "hello", "hey", "good morning", "good evening", "namaste", "who are you"]):
             reply = (
-                f"Hello! 👋 I'm your **Voyantra AI Travel Concierge** for {city_name}. "
-                f"I'm here to help you discover beautiful destinations, recommend authentic cafes and dining, "
-                f"or craft custom day-by-day itineraries tailored to your schedule and preferences. "
+                f"Hello! 👋 I'm your **Voyantra AI Travel Concierge** for **{city_name}** and worldwide travel planning. "
+                f"I'm here to help you discover authentic sights, recommend top-rated hotels and dining, "
+                f"compare destinations, or craft custom itineraries tailored to your schedule and preferences. "
                 f"What would you like to explore today?"
             )
             followups = [
-                f"Plan a 2-day relaxed trip to {city_name}",
-                "Best cafes and breakfast in White Town",
-                "Temples, ashrams & spiritual spots",
-                "What is the best time for beach walks?"
+                f"What are the top sights in {city_name}?",
+                f"Suggest the best hotels in {city_name}",
+                f"Plan a {effective_days}-day trip to {city_name}",
+                "Best dining & cafes"
             ]
             intent = "chat"
             itin = None
 
-        # Cafe / Dining / Breakfast / Dinner inquiries
-        elif any(w in q for w in ["cafe", "coffee", "croissant", "restaurant", "food", "eat", "breakfast", "lunch", "dinner", "vegan", "vegetarian", "pure veg", "jain"]):
-            dining_places = [p for p in retrieved_places if p.category in [CategoryEnum.CAFE, CategoryEnum.DINING]]
-            if user_diet and user_diet != DietaryOptionEnum.ALL:
-                dining_places = [p for p in dining_places if is_dietary_compliant(p, user_diet)]
-            
-            p_names = ", ".join([f"**{p.name}**" for p in dining_places[:3]])
+        # Hotels / Resorts / Stays inquiries
+        elif any(w in q for w in ["hotel", "resort", "stay", "accommodation", "hostel", "room", "lodge", "villa"]):
             reply = (
-                f"Here are top-rated dining spots in {city_name} matching your tastes:\n\n"
-                f"{p_names}.\n\n"
-                f"- **Surguru Restaurant**: Renowned for crispy ghee roast dosas, authentic filter kaapi, and 100% pure vegetarian & Jain options.\n"
-                f"- **Coromandel Cafe**: Set in a restored heritage mansion, celebrated for artisan coffee, gourmet breakfast, and charming courtyards.\n"
-                f"- **Cafe des Arts**: Classic French bohemian cafe famous for savory crepes, baguettes, and vintage art decor."
+                f"Here are key accommodation recommendations for **{city_name}**:\n\n"
+                f"- **Prime Areas to Stay**: Look for central districts, waterfront promenades, or transit-connected neighborhoods in {city_name}.\n"
+                f"- **Luxury & Boutique Tiers**: High-end 5-star properties and boutique heritage hotels offering premium amenities, spas, and fine dining.\n"
+                f"- **Mid-Range & Budget**: Value-oriented business hotels, serviced apartments, and traveler hostels near major sights.\n\n"
+                f"💡 *Note: While real-time live booking inventory is not hosted in our local verified database for {city_name}, these represent top-rated accommodation districts. You can confirm current live room rates and availability on your preferred booking platforms.*"
             )
-            for p in dining_places[:3]:
-                matched_previews.append({
-                    "id": p.id,
-                    "name": p.name,
-                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
-                    "sub_category": p.sub_category,
-                    "estimated_cost_inr": p.estimated_cost_inr,
-                    "duration_minutes": p.duration_minutes,
-                    "highlights": p.highlights,
-                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
-                    "image_url": p.image_url
-                })
             followups = [
-                "Plan a 2-day foodie & cafe itinerary",
-                "Where can I find pure-vegetarian breakfast?",
-                "Suggest evening beach cafes"
+                f"What are the best neighborhoods to stay in {city_name}?",
+                f"Plan a trip to {city_name}",
+                "Compare luxury vs budget options"
             ]
             intent = "place_info"
             itin = None
 
-        # Specific place / Beach / Spiritual inquiries
-        elif any(w in q for w in ["beach", "promenade", "rock beach", "auroville", "matrimandir", "ashram", "temple", "monument"]):
-            relevant = [p for p in retrieved_places if any(k in p.name.lower() or k in p.description.lower() for k in ["beach", "auroville", "ashram", "temple", "heritage"])]
-            reply = (
-                f"Here are notable highlights in {city_name} to visit:\n\n"
-                f"- **Promenade Beach (Rock Beach)**: Best visited at sunrise or 5:00 PM - 8:00 PM when Goubert Avenue becomes pedestrian-only.\n"
-                f"- **Auroville & Matrimandir**: Universal township centered around the golden meditation dome. Booking visitor passes in advance is recommended.\n"
-                f"- **Sri Aurobindo Ashram**: A serene sanctuary of meditation and quiet reflection in the heart of White Town."
-            )
-            for p in relevant[:3]:
-                matched_previews.append({
-                    "id": p.id,
-                    "name": p.name,
-                    "category": p.category.value if hasattr(p.category, "value") else str(p.category),
-                    "sub_category": p.sub_category,
-                    "estimated_cost_inr": p.estimated_cost_inr,
-                    "duration_minutes": p.duration_minutes,
-                    "highlights": p.highlights,
-                    "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
-                    "image_url": p.image_url
-                })
+        # Cafe / Dining / Food inquiries
+        elif any(w in q for w in ["cafe", "coffee", "croissant", "restaurant", "food", "eat", "breakfast", "lunch", "dinner", "vegan", "vegetarian", "pure veg", "jain"]):
+            if is_local_catalog:
+                dining_places = [p for p in retrieved_places if p.category in [CategoryEnum.CAFE, CategoryEnum.DINING]]
+                if user_diet and user_diet != DietaryOptionEnum.ALL:
+                    dining_places = [p for p in dining_places if is_dietary_compliant(p, user_diet)]
+                p_names = ", ".join([f"**{p.name}**" for p in dining_places[:3]]) if dining_places else f"popular spots in {city_name}"
+                reply = (
+                    f"Here are top-rated dining spots in {city_name} matching your tastes:\n\n"
+                    f"{p_names}.\n\n"
+                    f"- **Surguru Restaurant**: Renowned for crispy ghee roast dosas, authentic filter kaapi, and 100% pure vegetarian & Jain options.\n"
+                    f"- **Coromandel Cafe**: Set in a restored heritage mansion, celebrated for artisan coffee, gourmet breakfast, and charming courtyards.\n"
+                    f"- **Cafe des Arts**: Classic French bohemian cafe famous for savory crepes, baguettes, and vintage art decor."
+                )
+                for p in dining_places[:3]:
+                    matched_previews.append({
+                        "id": p.id,
+                        "name": p.name,
+                        "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                        "sub_category": p.sub_category,
+                        "estimated_cost_inr": p.estimated_cost_inr,
+                        "duration_minutes": p.duration_minutes,
+                        "highlights": p.highlights,
+                        "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                        "image_url": p.image_url
+                    })
+            else:
+                reply = (
+                    f"Here are notable dining recommendations for **{city_name}**:\n\n"
+                    f"- **Local Culinary Traditions**: Be sure to explore iconic regional specialties, vibrant food districts, and celebrated heritage eateries in {city_name}.\n"
+                    f"- **Cafes & Coffee**: Look for popular artisanal cafes and roasteries situated around bustling market streets and cultural quarters.\n"
+                    f"- **Dietary Preferences**: Major dining areas in {city_name} feature excellent vegetarian, vegan, and authentic regional choices."
+                )
             followups = [
-                "Plan an itinerary featuring these places",
-                "What is the dress code for Sri Aurobindo Ashram?",
-                "How far is Auroville from Rock Beach?"
+                f"Plan a foodie itinerary for {city_name}",
+                "Where can I find pure-vegetarian breakfast?",
+                "Top evening cafes and restaurants"
+            ]
+            intent = "place_info"
+            itin = None
+
+        # Specific place / Sightseeing / Beach / Monument inquiries
+        elif any(w in q for w in ["beach", "promenade", "temple", "monument", "attraction", "sight", "places to visit", "visit", "explore", "museum", "park"]):
+            if is_local_catalog:
+                relevant = [p for p in retrieved_places if any(k in p.name.lower() or k in p.description.lower() for k in ["beach", "auroville", "ashram", "temple", "heritage"])]
+                reply = (
+                    f"Here are notable highlights in {city_name} to visit:\n\n"
+                    f"- **Promenade Beach (Rock Beach)**: Best visited at sunrise or 5:00 PM - 8:00 PM when Goubert Avenue becomes pedestrian-only.\n"
+                    f"- **Auroville & Matrimandir**: Universal township centered around the golden meditation dome. Booking visitor passes in advance is recommended.\n"
+                    f"- **Sri Aurobindo Ashram**: A serene sanctuary of meditation and quiet reflection in the heart of White Town."
+                )
+                for p in relevant[:3]:
+                    matched_previews.append({
+                        "id": p.id,
+                        "name": p.name,
+                        "category": p.category.value if hasattr(p.category, "value") else str(p.category),
+                        "sub_category": p.sub_category,
+                        "estimated_cost_inr": p.estimated_cost_inr,
+                        "duration_minutes": p.duration_minutes,
+                        "highlights": p.highlights,
+                        "dietary_options": [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options],
+                        "image_url": p.image_url
+                    })
+            else:
+                reply = (
+                    f"Here are top sightseeing highlights and experiences in **{city_name}**:\n\n"
+                    f"- **Iconic Landmarks**: Explore the historical landmarks, scenic viewpoints, and architectural monuments that define {city_name}.\n"
+                    f"- **Cultural Quarters**: Walk through historic neighborhoods, vibrant plazas, and bustling local markets.\n"
+                    f"- **Scenic Outings**: Morning or sunset hours offer the best light and comfortable temperatures for outdoor exploration."
+                )
+            followups = [
+                f"Plan a full itinerary for {city_name}",
+                f"Best time to visit {city_name}",
+                f"Suggest hotels near top sights in {city_name}"
             ]
             intent = "place_info"
             itin = None
@@ -873,7 +1063,7 @@ class GeminiService:
                 retrieved_places=retrieved_places,
                 user_age=user_age or AgeGroupEnum.YOUNG_ADULT,
                 user_diet=user_diet or DietaryOptionEnum.ALL,
-                duration_days=duration_days,
+                duration_days=effective_days,
                 city_name=city_name,
                 existing_days=current_itinerary.get("days") if current_itinerary else None,
                 has_warning=False,
@@ -881,28 +1071,28 @@ class GeminiService:
                 fallback_reason=fallback_reason
             )
             reply = (
-                f"I've designed a custom **{duration_days}-day itinerary** for {city_name}! "
-                f"It balances iconic colonial heritage, peaceful beaches, and authentic dining options. "
+                f"I've designed a custom **{effective_days}-day itinerary** for **{city_name}**! "
+                f"It balances iconic sights, cultural exploration, and authentic dining options. "
                 f"You can review the full schedule below on the interactive canvas or ask me to adjust any stop!"
             )
             followups = [
-                "Make Day 2 more relaxed",
-                "Add pure-veg dining options",
-                "Swap morning stop for a cafe visit"
+                f"Make Day 1 more relaxed in {city_name}",
+                f"Add vegetarian dining options in {city_name}",
+                f"Suggest hotels for this {city_name} itinerary"
             ]
             intent = "itinerary"
 
         # General helpful fallback
         else:
             reply = (
-                f"I'm here to assist you with exploring {city_name}! "
-                f"You can ask me for restaurant recommendations, heritage spots, beach timings, "
-                f"or ask me to plan a custom multi-day itinerary."
+                f"I'm here to assist you with exploring **{city_name}** or any other destination worldwide! "
+                f"You can ask me for hotel recommendations, dining spots, landmark tips, "
+                f"destination comparisons, or ask me to plan a custom multi-day itinerary."
             )
             followups = [
                 f"What are the top sights in {city_name}?",
-                f"Plan a 2-day trip to {city_name}",
-                "Best cafes in White Town"
+                f"Suggest the best hotels in {city_name}",
+                f"Plan a 2-day trip to {city_name}"
             ]
             intent = "chat"
             itin = None

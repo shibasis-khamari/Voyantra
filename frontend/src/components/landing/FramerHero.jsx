@@ -120,7 +120,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-start gap-3 pt-1">
             <button
               onClick={() => setActiveTab('planner')}
-              className="group flex items-center gap-2 px-5 py-3 rounded-2xl bg-terracotta hover:bg-terracotta/90 text-white text-xs sm:text-sm font-bold font-logo tracking-wide shadow-lg shadow-terracotta/30 hover:shadow-xl transition-all cursor-pointer"
+              className="group flex items-center gap-2 px-5 py-3 rounded-2xl bg-terracotta hover:bg-terracotta/90 text-white text-xs sm:text-sm font-bold font-sans tracking-wide shadow-lg shadow-terracotta/30 hover:shadow-xl transition-all cursor-pointer"
             >
               <span>Open Trip Planner</span>
               <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
@@ -128,7 +128,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
 
             <button
               onClick={scrollToCatalog}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-bold font-logo tracking-wide transition-colors backdrop-blur-sm cursor-pointer"
+              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs sm:text-sm font-bold font-sans tracking-wide transition-colors backdrop-blur-sm cursor-pointer"
             >
               <Compass className="w-4 h-4 text-amber-300" />
               <span>Browse Catalog</span>
@@ -152,8 +152,8 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <span className="font-logo font-bold tracking-wide">Example Day 1 Itinerary</span>
-                    <span className="px-1.5 py-0.5 rounded bg-white/10 border border-white/15 text-[10px] text-amber-300 font-semibold font-logo">
+                    <span className="font-sans font-bold tracking-wide">Example Day 1 Itinerary</span>
+                    <span className="px-1.5 py-0.5 rounded bg-white/10 border border-white/15 text-[10px] text-amber-300 font-semibold font-sans">
                       Pondicherry
                     </span>
                   </div>
@@ -162,7 +162,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
               </div>
 
               {/* Status pill */}
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold font-logo tracking-wide self-start sm:self-auto shrink-0 shadow-xs backdrop-blur-sm">
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-[10px] font-bold font-sans tracking-wide self-start sm:self-auto shrink-0 shadow-xs backdrop-blur-sm">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                 <span>Feasibility Verified</span>
               </div>

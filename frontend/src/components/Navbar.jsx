@@ -82,7 +82,7 @@ export function Navbar({ activeTab, setActiveTab }) {
                   alt="Voyantra" 
                   className="w-9 h-9 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
                 />
-                <span className="font-logo text-xl font-extrabold tracking-[0.12em] uppercase text-white drop-shadow-xs group-hover:text-amber-300 transition-colors">
+                <span className="font-sans text-xl font-extrabold tracking-[0.12em] uppercase text-white drop-shadow-xs group-hover:text-amber-300 transition-colors">
                   Voyantra
                 </span>
               </div>
@@ -93,7 +93,7 @@ export function Navbar({ activeTab, setActiveTab }) {
                 <select
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
-                  className="bg-transparent text-xs font-semibold font-logo tracking-wider text-white outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
+                  className="bg-transparent text-xs font-semibold font-sans tracking-wider text-white outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
                   title="Select destination city manually"
                 >
                   {cities.map(c => (
@@ -114,7 +114,7 @@ export function Navbar({ activeTab, setActiveTab }) {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold font-logo tracking-wider transition-all duration-200 cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold font-sans tracking-wider transition-all duration-200 cursor-pointer ${
                       isActive 
                         ? 'text-white bg-white/20 border border-white/30 shadow-xs' 
                         : 'text-slate-200 hover:text-white hover:bg-white/10'
@@ -181,7 +181,7 @@ export function Navbar({ activeTab, setActiveTab }) {
                 /* Logged Out: Single Consolidated Sign In / Sign Up Button */
                 <button
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold font-logo tracking-wider transition-all backdrop-blur-md cursor-pointer hover:border-white/30 shadow-xs"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-semibold font-sans tracking-wider transition-all backdrop-blur-md cursor-pointer hover:border-white/30 shadow-xs"
                 >
                   <LogIn className="w-3.5 h-3.5 text-amber-300" />
                   <span>Log In</span>
@@ -191,7 +191,7 @@ export function Navbar({ activeTab, setActiveTab }) {
               {/* Trip Plan Basket Pill */}
               <button
                 onClick={() => setActiveTab('planner')}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold font-logo tracking-wider transition-all backdrop-blur-md cursor-pointer shadow-xs"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold font-sans tracking-wider transition-all backdrop-blur-md cursor-pointer shadow-xs"
                 title="Open Trip Basket"
               >
                 <Luggage className="w-3.5 h-3.5 text-amber-300" />

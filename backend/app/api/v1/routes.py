@@ -47,16 +47,16 @@ def calculate_route(request: RouteRequest, req: Request):
     client_ip = req.client.host if req.client else "127.0.0.1"
     apply_route_rate_limit(client_ip)
 
-    # 1. Coordinate Bounds Validation (Pondicherry & Chennai operating regions)
+    # 1. Coordinate Bounds Validation (Global geographic range)
     if not is_within_operating_bounds(request.origin_lat, request.origin_lng):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Origin coordinate ({request.origin_lat}, {request.origin_lng}) is outside Voyantra operating destinations (Pondicherry and Chennai)."
+            detail=f"Origin coordinate ({request.origin_lat}, {request.origin_lng}) is not a valid coordinate."
         )
     if not is_within_operating_bounds(request.dest_lat, request.dest_lng):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Destination coordinate ({request.dest_lat}, {request.dest_lng}) is outside Voyantra operating destinations (Pondicherry and Chennai)."
+            detail=f"Destination coordinate ({request.dest_lat}, {request.dest_lng}) is not a valid coordinate."
         )
 
     try:
@@ -103,7 +103,7 @@ def calculate_matrix(request: RouteMatrixRequest, req: Request):
         if not is_within_operating_bounds(c.lat, c.lng):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Waypoint {idx + 1} ({c.lat}, {c.lng}) is outside Voyantra operating destinations (Pondicherry and Chennai)."
+                detail=f"Waypoint {idx + 1} ({c.lat}, {c.lng}) is not a valid coordinate."
             )
 
     try:
@@ -134,7 +134,7 @@ def optimize_day_schedule(request: DayOptimizationRequest, req: Request):
         if not is_within_operating_bounds(s.coordinates.lat, s.coordinates.lng):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Slot '{s.place_name}' coordinates ({s.coordinates.lat}, {s.coordinates.lng}) are outside Voyantra operating destinations (Pondicherry and Chennai)."
+                detail=f"Slot '{s.place_name}' coordinates ({s.coordinates.lat}, {s.coordinates.lng}) are not valid coordinates."
             )
 
     try:

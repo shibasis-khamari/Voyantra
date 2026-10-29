@@ -1,139 +1,92 @@
 import React from 'react';
-import { Star, MapPin, Clock, IndianRupee, Plus, Check, Heart, Eye, Sparkles } from 'lucide-react';
+import { Star, MapPin, IndianRupee, Plus, Check, Heart, Eye, Sparkles } from 'lucide-react';
 import { CrowdBadge } from './CrowdBadge';
 import { AdvisoryBadge } from './AdvisoryBadge';
 import { usePreferences } from '../context/PreferencesContext';
+
+const LOCAL_DESTINATION_IMAGES = [
+  '/images/maniraj-i3FLO6Nthw4-unsplash.jpg',
+  '/images/rohit-durbha-3GpBMD609o4-unsplash.jpg',
+  '/images/llxvisuals--E7dpukTajA-unsplash.jpg',
+  '/images/sara-dubler-Koei_7yYtIo-unsplash.jpg',
+  '/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg',
+  '/images/z-TrhLCn1abMU-unsplash.jpg'
+];
 
 export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
   const { tripPlan, addToTripPlan, removeFromTripPlan, favorites, toggleFavorite } = usePreferences();
 
   const isPlanned = tripPlan.some(p => p.id === place.id);
   const isFav = favorites.includes(place.id);
+  const imageIndex = place.id ? [...place.id].reduce((sum, char) => sum + char.charCodeAt(0), 0) % LOCAL_DESTINATION_IMAGES.length : 0;
+  const imageSrc = place.image_url || '/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg';
 
   return (
-    <div className="group bg-white rounded-2xl border border-sandstone hover:border-terracotta/50 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between relative">
-      <div>
-        {/* Card Image Banner */}
-        <div className="relative h-52 w-full bg-sandstone-light rounded-t-3xl">
-          <div className="overflow-hidden h-full w-full rounded-t-3xl">
-            <img
-              src={place.image_url}
-              alt={place.name}
-              loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent pointer-events-none rounded-t-3xl" />
-
-          {/* Top badges */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-            <span className="text-[10px] font-extrabold tracking-widest uppercase px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-brand-700 shadow-xs border border-sandstone/60">
-              {place.category}
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(place.id);
-              }}
-              className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-600 hover:text-terracotta shadow-xs transition-colors border border-sandstone/60"
-            >
-              <Heart className={`w-4 h-4 ${isFav ? 'fill-terracotta text-terracotta' : ''}`} />
-            </button>
-          </div>
-
-          {/* Bottom image metadata */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs z-20">
-            <CrowdBadge 
-              placeId={place.id} 
-              placeName={place.name} 
-              cityId={place.city_id || 'pondicherry'} 
-              tendency={place.crowd_tendency} 
-              variant="overlay"
-            />
-            <span className="flex items-center gap-1 font-bold bg-slate-900/80 px-2.5 py-1 rounded-full backdrop-blur-md border border-white/20 shadow-xs">
-              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              {place.rating}
-            </span>
-          </div>
+    <article className="group bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">
+      <div className="relative h-56 overflow-hidden bg-slate-100">
+        <img src={imageSrc} alt={place.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/10" />
+        <div className="absolute top-4 left-4 right-4 flex items-start justify-between gap-3">
+          <span className="max-w-[70%] truncate text-[10px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 rounded-full bg-white/95 text-brand-700 shadow-sm">
+            {place.category}
+          </span>
+          <button
+            aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
+            onClick={(e) => { e.stopPropagation(); toggleFavorite(place.id); }}
+            className="w-9 h-9 shrink-0 rounded-full bg-white/95 flex items-center justify-center text-slate-600 hover:text-terracotta shadow-sm"
+          >
+            <Heart className={`w-4 h-4 ${isFav ? 'fill-terracotta text-terracotta' : ''}`} />
+          </button>
         </div>
+        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white text-xs">
+          <CrowdBadge placeId={place.id} placeName={place.name} cityId={place.city_id || 'pondicherry'} tendency={place.crowd_tendency} variant="overlay" />
+          <span className="flex items-center gap-1 font-bold bg-slate-950/80 px-2.5 py-1.5 rounded-full">
+            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+            {place.rating}
+          </span>
+        </div>
+      </div>
 
-        {/* Card Body */}
-        <div className="p-5 space-y-3">
-          {/* Match Score (in Planner mode) */}
-          {matchScore !== undefined && (
-            <div className="flex items-center justify-between py-1.5 px-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs">
-              <span className="font-bold text-teal-900 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-teal-600" /> Personal Match
-              </span>
-              <span className="font-extrabold text-teal-700 tabular-nums">{matchScore}%</span>
+      <div className="flex flex-col flex-1 p-5">
+        {matchScore !== undefined && (
+          <div className="flex items-center justify-between mb-3 py-2 px-3 rounded-xl bg-teal-50 border border-teal-100 text-xs">
+            <span class="font-bold text-teal-900 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5" />Personal match</span>
+            <span className="font-extrabold text-teal-700">{matchScore}%</span>
+          </div>
+        )}
+        <button onClick={onSelect} className="text-left">
+          <h3 className="font-serif text-[24px] text-brand-700 leading-tight group-hover:text-terracotta transition-colors">{place.name}</h3>
+        </button>
+        <p className="mt-1.5 text-xs text-slate-500 flex items-start gap-1.5">
+          <MapPin className="w-3.5 h-3.5 mt-0.5 text-terracotta shrink-0" />
+          <span className="line-clamp-1">{place.address}</span>
+        </p>
+        <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-2">{place.description}</p>
+        <div className="mt-4"><AdvisoryBadge dressCode={place.dress_code_advisory} accessibilityRating={place.accessibility_rating} dietaryTag={place.dietary_options} /></div>
+
+        <div className="mt-auto pt-5">
+          <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Budget</div>
+              <div className="mt-0.5 font-bold text-brand-700 flex items-center text-sm">
+                <IndianRupee className="w-3.5 h-3.5" />
+                {place.estimated_cost_inr === 0 ? 'Free entry' : place.estimated_cost_inr}
+              </div>
             </div>
-          )}
-
-          <div>
-            <h3 
-              onClick={onSelect}
-              className="font-serif text-[22px] font-normal text-brand-700 group-hover:text-terracotta transition-colors cursor-pointer line-clamp-1 leading-tight"
-            >
-              {place.name}
-            </h3>
-            <p className="text-xs text-slate-500 flex items-center gap-1 mt-1 line-clamp-1">
-              <MapPin className="w-3.5 h-3.5 text-terracotta shrink-0" />
-              {place.address}
-            </p>
-          </div>
-
-          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-sans">
-            {place.description}
-          </p>
-
-          {/* Advisories & tags */}
-          <AdvisoryBadge
-            dressCode={place.dress_code_advisory}
-            accessibilityRating={place.accessibility_rating}
-            dietaryTag={place.dietary_options}
-          />
-        </div>
-      </div>
-
-      {/* Card Footer */}
-      <div className="p-5 pt-0 border-t border-sandstone/50 mt-3 flex items-center justify-between gap-2 pt-3">
-        <div className="text-xs">
-          <div className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Est. Budget</div>
-          <div className="font-bold text-brand-700 flex items-center text-sm">
-            <IndianRupee className="w-3.5 h-3.5 text-slate-600" />
-            {place.estimated_cost_inr === 0 ? 'Free Entry' : place.estimated_cost_inr}
+            <div className="flex items-center gap-2 shrink-0">
+              <button aria-label="View details" onClick={onSelect} className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center">
+                <Eye className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => isPlanned ? removeFromTripPlan(place.id) : addToTripPlan(place)}
+                className={`h-10 flex items-center justify-center gap-1.5 px-4 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${isPlanned ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-brand-700 text-white hover:bg-brand-800'}`}
+              >
+                {isPlanned ? <><Check className="w-4 h-4" />Added</> : <><Plus className="w-4 h-4" />Add to trip</>}
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onSelect}
-            className="p-2 rounded-xl bg-sandstone-light hover:bg-sandstone text-slate-700 transition-colors border border-sandstone"
-            title="View Details"
-          >
-            <Eye className="w-4 h-4" />
-          </button>
-
-          <button
-            onClick={() => isPlanned ? removeFromTripPlan(place.id) : addToTripPlan(place)}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold transition-all shadow-xs ${
-              isPlanned 
-                ? 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'
-                : 'bg-brand-700 text-white hover:bg-terracotta shadow-brand-700/10'
-            }`}
-          >
-            {isPlanned ? (
-              <>
-                <Check className="w-3.5 h-3.5" /> Added
-              </>
-            ) : (
-              <>
-                <Plus className="w-3.5 h-3.5" /> Add to Trip
-              </>
-            )}
-          </button>
-        </div>
       </div>
-    </div>
+    </article>
   );
 }

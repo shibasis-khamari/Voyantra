@@ -230,14 +230,14 @@ export function ItineraryMapModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-bold font-logo text-slate-900 leading-tight">
+                <h2 className="text-base sm:text-lg font-bold font-sans text-slate-900 leading-tight">
                   Google Maps Route Navigator
                 </h2>
-                <span className="px-2 py-0.5 rounded-full bg-sandstone text-[10px] text-slate-700 font-semibold uppercase tracking-wider font-logo">
+                <span className="px-2 py-0.5 rounded-full bg-sandstone text-[10px] text-slate-700 font-semibold uppercase tracking-wider font-sans">
                   {itinerary.city_id === 'chennai' ? 'Chennai' : 'Pondicherry'}
                 </span>
                 {routeFromUser && (
-                  <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[10px] text-blue-800 font-bold uppercase tracking-wider font-logo flex items-center gap-1 border border-blue-200">
+                  <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[10px] text-blue-800 font-bold uppercase tracking-wider font-sans flex items-center gap-1 border border-blue-200">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
                     From Current Location
                   </span>
@@ -254,7 +254,7 @@ export function ItineraryMapModal({
             <div className="flex bg-white rounded-xl p-1 border border-sandstone shadow-xs">
               <button
                 onClick={() => setTravelMode('driving')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-logo flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-sans flex items-center gap-1.5 transition-all cursor-pointer ${
                   travelMode === 'driving' 
                     ? 'bg-brand-700 text-white shadow-xs' 
                     : 'text-slate-600 hover:text-slate-900'
@@ -265,7 +265,7 @@ export function ItineraryMapModal({
               </button>
               <button
                 onClick={() => setTravelMode('walking')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-logo flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold font-sans flex items-center gap-1.5 transition-all cursor-pointer ${
                   travelMode === 'walking' 
                     ? 'bg-purple-700 text-white shadow-xs' 
                     : 'text-slate-600 hover:text-slate-900'
@@ -279,7 +279,7 @@ export function ItineraryMapModal({
             {/* Traffic Toggle */}
             <button
               onClick={() => setShowTraffic(prev => !prev)}
-              className={`hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold font-logo border transition-all cursor-pointer ${
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold font-sans border transition-all cursor-pointer ${
                 showTraffic 
                   ? 'bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs' 
                   : 'bg-white border-sandstone text-slate-600 hover:bg-slate-50'
@@ -296,7 +296,7 @@ export function ItineraryMapModal({
                 href={googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-terracotta hover:bg-terracotta/90 text-white text-xs font-bold font-logo shadow-md hover:shadow-lg transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-terracotta hover:bg-terracotta/90 text-white text-xs font-bold font-sans shadow-md hover:shadow-lg transition-all cursor-pointer"
                 title="Launch turn-by-turn voice navigation in the Google Maps App"
               >
                 <span>Navigate in App</span>
@@ -317,7 +317,7 @@ export function ItineraryMapModal({
         {/* Day Switcher Tabs */}
         {days.length > 1 && (
           <div className="px-5 py-2.5 bg-white border-b border-sandstone flex items-center gap-2 overflow-x-auto shrink-0">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-logo mr-1">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-sans mr-1">
               Select Day:
             </span>
             {days.map((d, idx) => {
@@ -330,7 +330,7 @@ export function ItineraryMapModal({
                     setSelectedStopIdx(null);
                     setExpandedLegIdx(null);
                   }}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-logo transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer whitespace-nowrap ${
                     isSelected
                       ? 'bg-brand-700 text-white shadow-xs'
                       : 'bg-sandstone-canvas text-slate-600 hover:bg-sandstone hover:text-slate-900 border border-sandstone'
@@ -352,7 +352,7 @@ export function ItineraryMapModal({
             {/* Day Theme & Live Stats Banner */}
             <div className="p-4 bg-white border-b border-sandstone space-y-2 shrink-0">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-brand-700 font-logo">
+                <span className="text-xs font-bold uppercase tracking-wider text-brand-700 font-sans">
                   {routeFromUser ? 'Direct Route from Location' : `Day ${activeDay?.day_number || 1} • ${activeDay?.theme || 'Curated Trail'}`}
                 </span>
                 <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
@@ -517,7 +517,7 @@ export function ItineraryMapModal({
                   /* Minimized Floating Pill */
                   <button
                     onClick={() => setIsUserRouteWindowMinimized(false)}
-                    className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl hover:shadow-2xl hover:border-blue-400 transition-all text-xs font-logo group cursor-pointer text-slate-800"
+                    className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl hover:shadow-2xl hover:border-blue-400 transition-all text-xs font-sans group cursor-pointer text-slate-800"
                   >
                     <span className="relative flex h-2.5 w-2.5">
                       <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${userLocation?.isLive ? 'bg-blue-400' : 'bg-amber-400'}`}></span>
@@ -542,7 +542,7 @@ export function ItineraryMapModal({
                           <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${userLocation?.isLive ? 'bg-blue-600' : 'bg-amber-500'}`}></span>
                         </span>
                         <div>
-                          <h4 className="text-xs font-bold font-logo text-slate-900 leading-tight">
+                          <h4 className="text-xs font-bold font-sans text-slate-900 leading-tight">
                             Route from My Location
                           </h4>
                           <span className="text-[10px] text-slate-500 font-medium block">
@@ -575,7 +575,7 @@ export function ItineraryMapModal({
                       {/* Destination Dropdown */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-logo">
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 font-sans">
                             Destination:
                           </label>
                           <span className="text-[10px] text-blue-600 font-medium font-sans">
@@ -603,7 +603,7 @@ export function ItineraryMapModal({
                       <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider font-logo block">
+                            <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider font-sans block">
                               To {activeTargetStop.name}
                             </span>
                             <span className="text-[11px] text-slate-600 truncate block">
@@ -624,7 +624,7 @@ export function ItineraryMapModal({
                         <div className="grid grid-cols-2 gap-1.5 pt-1">
                           <button
                             onClick={() => setRouteFromUser(prev => !prev)}
-                            className={`w-full py-1.5 px-2 rounded-lg text-[11px] font-bold font-logo flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                            className={`w-full py-1.5 px-2 rounded-lg text-[11px] font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                               routeFromUser
                                 ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
                                 : 'bg-white hover:bg-slate-50 text-blue-700 border border-blue-200'
@@ -638,7 +638,7 @@ export function ItineraryMapModal({
                             href={activeTargetStop.navUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-1.5 px-2 rounded-lg text-[11px] font-bold font-logo bg-terracotta hover:bg-terracotta/90 text-white shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                            className="w-full py-1.5 px-2 rounded-lg text-[11px] font-bold font-sans bg-terracotta hover:bg-terracotta/90 text-white shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                             title="Launch Google Maps Live Navigation"
                           >
                             <span>GPS Nav</span>
@@ -649,7 +649,7 @@ export function ItineraryMapModal({
 
                       {/* All Day Destinations Quick Distance List */}
                       <div className="space-y-1 pt-1">
-                        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 font-logo">
+                        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 font-sans">
                           <span>All Stops from You</span>
                           <span>Dist / Est. Time</span>
                         </div>

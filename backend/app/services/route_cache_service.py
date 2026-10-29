@@ -74,12 +74,12 @@ class RouteCacheService:
 
     def _init_mongo_client(self):
         try:
-            # PyMongo fail-fast timeouts per specification (300ms connect/server, 500ms socket)
+            timeout_ms = 5000 if "mongodb+srv" in MONGODB_URL else 1000
             self.client = MongoClient(
                 MONGODB_URL,
-                serverSelectionTimeoutMS=300,
-                connectTimeoutMS=300,
-                socketTimeoutMS=500
+                serverSelectionTimeoutMS=timeout_ms,
+                connectTimeoutMS=timeout_ms,
+                socketTimeoutMS=timeout_ms
             )
             self.db = self.client[DB_NAME]
             self.ensure_indexes()

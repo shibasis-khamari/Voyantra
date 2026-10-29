@@ -4,9 +4,13 @@ from pymongo import MongoClient
 import json
 import bcrypt
 from pathlib import Path
+from dotenv import load_dotenv
+
+ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
 
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-DB_NAME = "voyantra_db"
+DB_NAME = os.getenv("MONGODB_DB_NAME", "voyantra_db")
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 def hash_password(plain_pw: str) -> str:
@@ -51,7 +55,8 @@ class MongoDBManager:
 
     def _init_connection(self):
         try:
-            self.client = MongoClient(MONGODB_URL, serverSelectionTimeoutMS=2000)
+            timeout_ms = 7000 if "mongodb+srv" in MONGODB_URL else 2000
+            self.client = MongoClient(MONGODB_URL, serverSelectionTimeoutMS=timeout_ms)
             self.client.admin.command('ping')
             self.db = self.client[DB_NAME]
             self.is_connected = True

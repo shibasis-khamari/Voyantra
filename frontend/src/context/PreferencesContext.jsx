@@ -82,8 +82,8 @@ export function PreferencesProvider({ children }) {
     if (!navigator.geolocation) {
       if (manualTrigger) {
         setLocationStatus({
-          title: 'Geolocation Not Supported',
-          message: 'Your browser does not support GPS location detection. Please manually select Pondicherry or Chennai.'
+          title: 'Geolocation Notice',
+          message: 'Your browser does not support GPS location detection. You can explore any destination worldwide or select a featured city.'
         });
         setIsLocationModalOpen(true);
       }
@@ -96,50 +96,23 @@ export function PreferencesProvider({ children }) {
         const distPondy = calculateDistanceKm(latitude, longitude, 11.9416, 79.8083);
         const distChennai = calculateDistanceKm(latitude, longitude, 13.0827, 80.2707);
 
-        if (distPondy <= 70 && distChennai <= 70) {
-          // Inside both radii: nearest city wins
-          if (distChennai < distPondy) {
-            setSelectedCity('chennai');
-            setLocationNotice(`📍 Detected Location: Near Chennai (${Math.round(distChennai)} km)`);
-          } else {
-            setSelectedCity('pondicherry');
-            setLocationNotice(`📍 Detected Location: Near Pondicherry (${Math.round(distPondy)} km)`);
-          }
-          setIsLocationModalOpen(false);
-        } else if (distPondy <= 70) {
-          setSelectedCity('pondicherry');
-          setLocationNotice(`📍 Detected Location: Near Pondicherry (${Math.round(distPondy)} km)`);
-          setIsLocationModalOpen(false);
+        if (distPondy <= 70) {
+          setLocationNotice(`📍 Detected GPS: Near Pondicherry (${Math.round(distPondy)} km)`);
         } else if (distChennai <= 70) {
-          setSelectedCity('chennai');
-          setLocationNotice(`📍 Detected Location: Near Chennai (${Math.round(distChennai)} km)`);
-          setIsLocationModalOpen(false);
+          setLocationNotice(`📍 Detected GPS: Near Chennai (${Math.round(distChennai)} km)`);
         } else {
-          // Out of bounds (e.g. > 70 km from both Pondicherry & Chennai)
-          const closest = distPondy < distChennai ? `Pondicherry (~${Math.round(distPondy)} km)` : `Chennai (~${Math.round(distChennai)} km)`;
-          setLocationStatus({
-            title: 'Outside Operating Destinations',
-            message: `Your GPS location is outside our operating cities (Closest: ${closest}). Voyantra currently operates exclusively in Pondicherry and Chennai. Please manually choose your target city.`
-          });
-          setIsLocationModalOpen(true);
+          setLocationNotice(`📍 Detected GPS: ${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`);
         }
       },
       (error) => {
-        console.warn('Geolocation error:', error);
-        if (manualTrigger || !localStorage.getItem('voyantra_city_prompted')) {
-          setLocationStatus({
-            title: 'Location Permission Needed or GPS Offline',
-            message: 'Could not access your GPS coordinates. Voyantra currently operates exclusively in Pondicherry and Chennai. Please manually select your target destination city.'
-          });
-          setIsLocationModalOpen(true);
-        }
+        console.warn('Geolocation notice:', error);
       },
       { timeout: 8000, enableHighAccuracy: true }
     );
   };
 
   useEffect(() => {
-    // Run auto-detection on first visit
+    // Run optional GPS detection on first visit for location features
     detectCurrentLocation(false);
   }, []);
 

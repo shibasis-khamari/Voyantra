@@ -95,7 +95,7 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
                 alt="Voyantra Logo" 
                 className="w-11 h-11 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
               />
-              <span className="font-logo text-2xl font-extrabold tracking-[0.12em] uppercase text-white">Voyantra</span>
+              <span className="font-sans text-2xl font-extrabold tracking-[0.12em] uppercase text-white">Voyantra</span>
             </div>
 
             <div className="space-y-2">

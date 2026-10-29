@@ -56,7 +56,7 @@ export function BentoGridFeatures({ setActiveTab }) {
               </span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Ask natural questions about coastal sights, timings, and dietary dining. Every response is strictly grounded in real verified venues in Pondicherry and Chennai.
+              Ask natural questions about sights, hotel stays, timings, and dietary dining worldwide with instant answers and verified local insights.
             </p>
           </div>
 

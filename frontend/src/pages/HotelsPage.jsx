@@ -3,6 +3,7 @@ import { HotelCard } from '../components/HotelCard';
 import { VoyantraAPI } from '../services/api';
 import { Hotel, IndianRupee, SlidersHorizontal, MapPin } from 'lucide-react';
 import { BUDGET_TIERS } from '../types/constants';
+import { PageHero } from '../components/PageHero';
 
 export function HotelsPage() {
   const [hotels, setHotels] = useState([]);
@@ -51,20 +52,13 @@ export function HotelsPage() {
           </div>
         </div>
       )}
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl p-8 text-white shadow-xl">
-        <div className="max-w-2xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-200 text-xs font-semibold border border-indigo-500/30">
-            <Hotel className="w-3.5 h-3.5" /> Curated Stays & Heritage Villas
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            Pondicherry Hotels & Homestays
-          </h1>
-          <p className="text-sm text-slate-300">
-            Filtered by proximity to White Town, Promenade Beach, and Auroville, with transparent budget tiers and dietary dining options.
-          </p>
-        </div>
-      </div>
+      {/* Page header */}
+      <PageHero
+        eyebrow="Handpicked stays"
+        title="Find a stay that fits your journey"
+        description="Compare coastal hotels and heritage stays by budget, location, and comfort."
+        image="/images/rohit-durbha-3GpBMD609o4-unsplash.jpg"
+      />
 
       {/* Filter Controls */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">

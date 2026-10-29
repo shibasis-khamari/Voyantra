@@ -27,16 +27,10 @@ def is_valid_coordinate(lat: float, lng: float) -> bool:
 
 def is_within_operating_bounds(lat: float, lng: float) -> bool:
     """
-    Assert that the coordinate is strictly within Voyantra's operating geography:
-    within 70 km radius of Pondicherry center OR within 70 km radius of Chennai center.
-    No extraneous rectangular boxes or other towns permitted.
+    Assert that the coordinate is a valid geographic coordinate on Earth.
+    Supports global coordinates (-90 <= lat <= 90, -180 <= lng <= 180).
     """
-    if not is_valid_coordinate(lat, lng):
-        return False
-    
-    dist_pondy = haversine_km(lat, lng, PONDICHERRY_CENTER[0], PONDICHERRY_CENTER[1])
-    dist_chennai = haversine_km(lat, lng, CHENNAI_CENTER[0], CHENNAI_CENTER[1])
-    return dist_pondy <= OPERATING_RADIUS_KM or dist_chennai <= OPERATING_RADIUS_KM
+    return is_valid_coordinate(lat, lng)
 
 
 

@@ -5,7 +5,7 @@ import { ChevronDown, HelpCircle } from 'lucide-react';
 const FAQ_ITEMS = [
   {
     q: 'How does Voyantra generate its personalized itineraries?',
-    a: 'Voyantra connects to Google Gemini generative models while strictly constraining recommendations to our catalog of verified attractions, heritage sites, and dining venues in Pondicherry and Chennai. This prevents hallucinated locations or geographically impossible schedules.'
+    a: 'Voyantra connects to Google Gemini generative models to provide worldwide travel planning and intelligent assistance. For featured regions like Pondicherry and Chennai, recommendations are further augmented by our catalog of verified attractions, heritage sites, and dining venues with localized crowd pacing.'
   },
   {
     q: 'What happens if the external AI service is unreachable?',
@@ -21,7 +21,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Which geographical areas are currently supported?',
-    a: 'Voyantra is purpose-built and strictly scoped to Pondicherry (Puducherry) and Chennai, Tamil Nadu. We intentionally do not generate itineraries outside these regions to ensure depth, localized crowd heuristics, and accurate transit buffers.'
+    a: 'Voyantra supports travel-related queries and itinerary generation for destinations worldwide across India and internationally (including Mumbai, Tokyo, Paris, Bali, Himachal Pradesh, Dubai, and beyond), with dedicated high-density verified catalog data for Pondicherry and Chennai.'
   }
 ];
 
@@ -72,7 +72,7 @@ export function AccordionFaq() {
               >
                 <button
                   onClick={() => toggleItem(idx)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold font-logo tracking-wide text-sm sm:text-base text-slate-900 hover:text-brand-700 transition-colors cursor-pointer"
+                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold font-sans tracking-wide text-sm sm:text-base text-slate-900 hover:text-brand-700 transition-colors cursor-pointer"
                 >
                   <span>{item.q}</span>
                   <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-terracotta' : ''}`} />

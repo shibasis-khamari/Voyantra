@@ -104,8 +104,8 @@ export const VoyantraAPI = {
     }
   },
 
-  // Conversational AI Travel Concierge (Greetings, Q&A, Places & Flexible Itinerary)
-  async chatWithAi({ city_id = 'pondicherry', message, conversation_history = [], current_itinerary = null, age_group, dietary_preference, duration_days = 2 }) {
+  // Conversational AI Travel Concierge (Worldwide Q&A, Places, Hotels & Flexible Itinerary)
+  async chatWithAi({ city_id = null, message, conversation_history = [], current_itinerary = null, age_group, dietary_preference, duration_days = 2 }) {
     try {
       const res = await fetch(`${BACKEND_URL}/recommendations/chat`, {
         method: 'POST',
@@ -442,5 +442,9 @@ export const VoyantraAPI = {
       console.warn('[VoyantraAPI] optimizeDaySchedule error:', e.message);
       throw e;
     }
+  },
+
+  async optimizeDayRoute(payload) {
+    return this.optimizeDaySchedule(payload);
   }
 };

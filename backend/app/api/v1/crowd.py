@@ -111,10 +111,15 @@ def get_city_crowd_index(
     Returns overall city congestion index and active festival alerts.
     """
     resolved_city = city_id.strip().lower()
-    if resolved_city not in ["pondicherry", "chennai"]:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"City '{city_id}' not found. Supported cities are Pondicherry and Chennai."
-        )
     resolved_date = target_date or date
+    if resolved_city not in ["pondicherry", "chennai"]:
+        return {
+            "city_id": resolved_city,
+            "city_name": resolved_city.replace("-", " ").title(),
+            "target_date": resolved_date or "today",
+            "overall_congestion_level": "moderate",
+            "congestion_score": 45,
+            "active_festivals": [],
+            "source": "baseline_estimate"
+        }
     return crowd_service.get_city_crowd_index(city_id=resolved_city, target_date_str=resolved_date)
