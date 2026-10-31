@@ -81,6 +81,16 @@ class PlaceBase(BaseModel):
     recommended_age_groups: List[AgeGroupEnum] = [AgeGroupEnum.ALL]
     dietary_options: List[DietaryOptionEnum] = [DietaryOptionEnum.ALL]
 
+    # Provenance, Verification & Operating Metadata
+    source_url: Optional[str] = None
+    source_verified_at: Optional[str] = None
+    verification_status: str = "unverified"  # "unverified" (default), "verified", "estimated"
+    last_updated_at: Optional[str] = None
+    opening_hours: Optional[str] = None
+    opening_hours_verified: bool = False
+    weekly_closing_days: List[str] = Field(default_factory=list)
+    is_major_attraction: bool = True
+
     # Enhanced Religion, Beliefs & Niche Interest Differentiation Fields
     belief_affiliation: BeliefAffiliationEnum = BeliefAffiliationEnum.SECULAR
     etiquette_rules: Optional[EtiquetteRules] = Field(default_factory=EtiquetteRules)

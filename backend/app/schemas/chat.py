@@ -60,19 +60,27 @@ class RestaurantCardData(BaseModel):
 
 class ItinerarySlotData(BaseModel):
     slot_id: Optional[str] = None
+    place_id: Optional[str] = None
     place_name: str
+    category: Optional[str] = None
     activity_note: Optional[str] = ""
     est_time: Optional[str] = ""
     duration_minutes: Optional[int] = 60
     cost_inr: Optional[int] = 0
+    travel_time_from_prev_minutes: Optional[int] = None
+    travel_distance_from_prev_km: Optional[float] = None
+    hours_confirmation_required: bool = False
 
 class ItineraryDayData(BaseModel):
     day_number: int
     theme: str
+    city_id: Optional[str] = None
     morning: Optional[ItinerarySlotData] = None
     afternoon: Optional[ItinerarySlotData] = None
     evening: Optional[ItinerarySlotData] = None
     custom_stops: Optional[List[ItinerarySlotData]] = None
+    day_budget_inr: Optional[int] = None
+    estimated_travel_time_minutes: Optional[int] = None
 
 class ItineraryAlternativeData(BaseModel):
     id: str
@@ -81,6 +89,7 @@ class ItineraryAlternativeData(BaseModel):
     summary: str
     days: List[ItineraryDayData]
     total_estimated_budget_inr: int
+    quality_score: Optional[float] = None
 
 class ItineraryData(BaseModel):
     itinerary_title: str
@@ -88,6 +97,10 @@ class ItineraryData(BaseModel):
     city_id: str
     days: List[ItineraryDayData]
     total_estimated_budget_inr: int
+    budget_breakdown: Optional[Dict[str, Any]] = None
+    budget_disclaimer: Optional[str] = None
+    quality_score: Optional[float] = None
+    validation_passed: bool = True
     unavailability_notice: Optional[str] = None
     travel_tips: List[str] = Field(default_factory=list)
     belief_and_etiquette_advisory: Optional[str] = None
@@ -102,6 +115,11 @@ class ChatTurnRequest(BaseModel):
     current_itinerary: Optional[Dict[str, Any]] = None
     user_preferences: Optional[Dict[str, Any]] = None
     duration_days: Optional[int] = 2
+    travel_date: Optional[str] = None
+    transport_mode: Optional[str] = None
+    starting_location: Optional[str] = None
+    ending_location: Optional[str] = None
+    party_size: Optional[int] = 1
 
 class ChatTurnResponse(BaseModel):
     conversation_id: str

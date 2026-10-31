@@ -52,7 +52,14 @@
       "free"
     ],
     "rating": 4.7,
-    "review_count": 3200
+    "review_count": 3200,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-02",
@@ -109,7 +116,14 @@
       "eco-friendly"
     ],
     "rating": 4.6,
-    "review_count": 2840
+    "review_count": 2840,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-03",
@@ -164,7 +178,14 @@
       "walk"
     ],
     "rating": 4.8,
-    "review_count": 1950
+    "review_count": 1950,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-04",
@@ -219,7 +240,14 @@
       "heritage"
     ],
     "rating": 4.7,
-    "review_count": 2100
+    "review_count": 2100,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-05",
@@ -272,7 +300,14 @@
       "scenic"
     ],
     "rating": 4.5,
-    "review_count": 3100
+    "review_count": 3100,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-06",
@@ -328,7 +363,14 @@
       "instagrammable"
     ],
     "rating": 4.4,
-    "review_count": 1820
+    "review_count": 1820,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
   },
   {
     "id": "pondy-07",
@@ -385,7 +427,14 @@
       "heritage"
     ],
     "rating": 4.6,
-    "review_count": 2400
+    "review_count": 2400,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
   },
   {
     "id": "pondy-08",
@@ -441,7 +490,14 @@
       "breakfast"
     ],
     "rating": 4.5,
-    "review_count": 3500
+    "review_count": 3500,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
   },
   {
     "id": "pondy-09",
@@ -493,7 +549,14 @@
       "sunset"
     ],
     "rating": 4.4,
-    "review_count": 2100
+    "review_count": 2100,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-10",
@@ -548,7 +611,14 @@
       "peaceful"
     ],
     "rating": 4.7,
-    "review_count": 1780
+    "review_count": 1780,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-11",
@@ -603,7 +673,14 @@
       "budget"
     ],
     "rating": 4.2,
-    "review_count": 1450
+    "review_count": 1450,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "pondy-12",
@@ -659,6 +736,759 @@
       "culture"
     ],
     "rating": 4.7,
-    "review_count": 3900
+    "review_count": 3900,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-13",
+    "city_id": "pondicherry",
+    "name": "Arikamedu Archaeological Site",
+    "category": "heritage",
+    "sub_category": "Ancient Indo-Roman Trading Port Ruins",
+    "description": "Historic archaeological excavation on the banks of Ariyankuppam River revealing an ancient maritime port that traded with the Roman Empire between 2nd century BCE and 8th century CE.",
+    "highlights": [
+      "Ruins of Roman amphorae and brick warehouses",
+      "Scenic river estuary with tropical palms",
+      "Rare ancient trade heritage"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 11.9075,
+      "lng": 79.8164
+    },
+    "address": "Ariyankuppam, Puducherry 605007",
+    "image_url": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (7:00 AM - 10:00 AM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "accessibility_rating": 3,
+    "tags": [
+      "heritage",
+      "archaeology",
+      "roman",
+      "history",
+      "river"
+    ],
+    "rating": 4.3,
+    "review_count": 850,
+    "source_url": "https://asi.nic.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "08:00 AM - 05:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-14",
+    "city_id": "pondicherry",
+    "name": "Bharathi Park & Aayi Mandapam",
+    "category": "heritage",
+    "sub_category": "French Colonial Garden & Neoclassical Pavilion",
+    "description": "Historic shaded central park in the heart of the French Quarter featuring the pearl-white Aayi Mandapam monument built during the reign of Napoleon III to commemorate a 16th-century courtesan.",
+    "highlights": [
+      "Neoclassical Aayi Mandapam archway",
+      "Ancient shaded banyan trees and fountains",
+      "Centerpiece of French administrative quarter"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 11.9332,
+      "lng": 79.8341
+    },
+    "address": "Rue Saint Gilles, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (6:00 AM - 9:00 AM) or Evening (4:30 PM - 7:30 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "senior",
+      "family",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual comfortable clothing",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Normal noise levels permitted",
+      "photography": "Photography allowed",
+      "gender_rules": "All welcome together"
+    },
+    "accessibility_rating": 4,
+    "tags": [
+      "park",
+      "heritage",
+      "monument",
+      "white_town",
+      "garden"
+    ],
+    "rating": 4.4,
+    "review_count": 1400,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:00 AM - 08:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-15",
+    "city_id": "pondicherry",
+    "name": "Pondicherry Museum",
+    "category": "heritage",
+    "sub_category": "Regional Antiquities & French Colonial Artifacts",
+    "description": "Richly curated regional museum showcasing rare Pallava and Chola stone sculptures, ancient Roman amphorae from Arikamedu, French colonial furniture, and historic coin collections.",
+    "highlights": [
+      "Exquisite Chola bronzes & stone deities",
+      "Arikamedu Roman trade relics",
+      "Governor Dupleix bed and French artifacts"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 10,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 11.9344,
+      "lng": 79.8351
+    },
+    "address": "Saint Louis St, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (10:00 AM - 1:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "etiquette_rules": {
+      "dress_code": "Casual attire",
+      "footwear": "Footwear allowed",
+      "silence_policy": "Quiet museum decorum requested",
+      "photography": "Restricted in select galleries",
+      "gender_rules": "All welcome together"
+    },
+    "accessibility_rating": 4,
+    "tags": [
+      "museum",
+      "heritage",
+      "history",
+      "bronzes",
+      "art"
+    ],
+    "rating": 4.3,
+    "review_count": 1100,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:00 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Monday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-16",
+    "city_id": "pondicherry",
+    "name": "Goubert Market",
+    "category": "shopping",
+    "sub_category": "Historic French-Era Covered Bazaar",
+    "description": "Centuries-old bustling market building filled with aromatic South Indian spices, exotic local fruits, fresh jasmine garlands, and authentic coastal goods.",
+    "highlights": [
+      "Aromatic fresh spice aisles",
+      "Traditional flower garland weavers",
+      "Vibrant local market atmosphere"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 11.936,
+      "lng": 79.829
+    },
+    "address": "Jawaharlal Nehru St, MG Road Area, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (7:00 AM - 10:30 AM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "adult",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 3,
+    "tags": [
+      "shopping",
+      "market",
+      "bazaar",
+      "spices",
+      "culture"
+    ],
+    "rating": 4.3,
+    "review_count": 920,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:00 AM - 09:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "pondy-17",
+    "city_id": "pondicherry",
+    "name": "French War Memorial",
+    "category": "heritage",
+    "sub_category": "World War I Commemorative Monument",
+    "description": "Elegant memorial on Goubert Avenue facing the Bay of Bengal, dedicated to French-Indian residents who lost their lives in World War I.",
+    "highlights": [
+      "Sea-facing commemorative arch",
+      "Annual Bastille Day ceremonial lighting",
+      "Seaside promenade setting"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 30,
+    "coordinates": {
+      "lat": 11.9328,
+      "lng": 79.8354
+    },
+    "address": "Goubert Ave, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Sunset (5:00 PM - 7:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 5,
+    "tags": [
+      "heritage",
+      "monument",
+      "promenade",
+      "history"
+    ],
+    "rating": 4.5,
+    "review_count": 1600,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-18",
+    "city_id": "pondicherry",
+    "name": "Sri Karneshwar Nataraja Temple",
+    "category": "spiritual",
+    "sub_category": "Pyramid-Shaped Coastal Hindu Temple",
+    "description": "A rare architectural coastal temple designed like the Pyramids of Giza, dedicated to Lord Shiva as Nataraja, positioned on the golden dunes of Pudukuppam beach.",
+    "highlights": [
+      "Remarkable pyramid-style sanctuary",
+      "Ocean breeze and serene coastal dunes",
+      "Peaceful non-crowded spiritual energy"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 12.0232,
+      "lng": 79.8631
+    },
+    "address": "Pudukuppam Beach Road, Tamil Nadu 604303",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (6:30 AM - 11:00 AM) or Sunset (4:30 PM - 7:00 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "hindu",
+    "dress_code_advisory": "Modest temple clothing required. Footwear left outside.",
+    "accessibility_rating": 3,
+    "tags": [
+      "temple",
+      "spiritual",
+      "pyramid",
+      "coastal",
+      "tranquil"
+    ],
+    "rating": 4.7,
+    "review_count": 780,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:30 AM - 12:00 PM, 04:30 PM - 08:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-19",
+    "city_id": "pondicherry",
+    "name": "Veerampattinam Beach",
+    "category": "beach",
+    "sub_category": "Expansive Coastal Sands & Fishing Village",
+    "description": "One of the longest and widest beaches in Puducherry, situated near an ancient fishing village. Uncrowded golden shoreline perfect for scenic contemplation and coastal walks.",
+    "highlights": [
+      "Broad uncommercialized sandy shoreline",
+      "Traditional catamaran fishing boats",
+      "Unobstructed sea views"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 11.8906,
+      "lng": 79.8247
+    },
+    "address": "Veerampattinam Coastal Rd, Puducherry 605007",
+    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (6:00 AM - 8:30 AM) or Evening (4:30 PM - 6:30 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 3,
+    "tags": [
+      "beach",
+      "sea",
+      "scenic",
+      "quiet",
+      "coastal"
+    ],
+    "rating": 4.5,
+    "review_count": 1350,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "Open 24 hours",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-20",
+    "city_id": "pondicherry",
+    "name": "Cluny Embroidery Centre",
+    "category": "heritage",
+    "sub_category": "18th-Century Convent & Hand-Embroidery Atelier",
+    "description": "Housed in a grand 18th-century French colonial heritage mansion run by the Sisters of Saint Joseph of Cluny, supporting underprivileged women through exquisite handcrafted embroidery.",
+    "highlights": [
+      "Historic 250-year-old French mansion architecture",
+      "Delicate hand-embroidered tablecloths & linen",
+      "Peaceful colonial garden courtyard"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 11.9324,
+      "lng": 79.834
+    },
+    "address": "Rue Romain Rolland, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (10:00 AM - 12:30 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "christian_catholic",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "embroidery",
+      "crafts",
+      "convent",
+      "white_town"
+    ],
+    "rating": 4.6,
+    "review_count": 670,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "08:30 AM - 12:00 PM, 02:00 PM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Sunday",
+      "Monday"
+    ],
+    "is_major_attraction": false
+  },
+  {
+    "id": "pondy-21",
+    "city_id": "pondicherry",
+    "name": "Maison Perumal Dining",
+    "category": "dining",
+    "sub_category": "Heritage Tamil-French Courtyard Dining",
+    "description": "An authentic restored Franco-Tamil heritage hotel courtyard by CGH Earth, serving regional Chettinad and Creole-inspired culinary delicacies with local seafood and spices.",
+    "highlights": [
+      "Traditional courtyard dining ambience",
+      "Claypot fish curry and plantain leaf delicacies",
+      "Authentic heritage architecture"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 800,
+    "duration_minutes": 75,
+    "coordinates": {
+      "lat": 11.9388,
+      "lng": 79.8295
+    },
+    "address": "Perumal Koil St, Heritage Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Lunch (12:30 PM - 3:00 PM) or Dinner (7:30 PM - 10:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "family"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "dining",
+      "heritage",
+      "chettinad",
+      "creole",
+      "seafood"
+    ],
+    "rating": 4.6,
+    "review_count": 890,
+    "source_url": "https://cghearth.com/maison-perumal",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "12:30 PM - 03:00 PM, 07:30 PM - 10:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "pondy-22",
+    "city_id": "pondicherry",
+    "name": "Villa Shanti Restaurant",
+    "category": "dining",
+    "sub_category": "Contemporary French & Indian Fusion Courtyard",
+    "description": "Acclaimed stylish open-air courtyard restaurant in White Town featuring a vertical garden wall and serving refined French-Indian fusion cuisine.",
+    "highlights": [
+      "Soothing vertical garden courtyard",
+      "Fresh orange-glazed catch of the day",
+      "Romantic ambient lighting"
+    ],
+    "budget_tier": "luxury",
+    "estimated_cost_inr": 1100,
+    "duration_minutes": 75,
+    "coordinates": {
+      "lat": 11.9339,
+      "lng": 79.8335
+    },
+    "address": "Suffren St, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Dinner (7:30 PM - 10:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "adult",
+      "young_adult"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "dining",
+      "french",
+      "fusion",
+      "courtyard",
+      "cocktails"
+    ],
+    "rating": 4.7,
+    "review_count": 2100,
+    "source_url": "https://lavillashanti.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "12:00 PM - 03:00 PM, 07:00 PM - 11:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "pondy-23",
+    "city_id": "pondicherry",
+    "name": "Baker Street",
+    "category": "cafe",
+    "sub_category": "Authentic French Bakery & Patisserie",
+    "description": "Popular French artisan bakery offering authentic croissants, pain au chocolat, savory quiches, chocolate eclairs, and artisanal baguettes.",
+    "highlights": [
+      "Crisp buttery French croissants",
+      "Artisan sourdough and baguettes",
+      "Classic French pastries"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 350,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 11.937,
+      "lng": 79.8291
+    },
+    "address": "Bussy St, MG Road Area, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Breakfast (7:30 AM - 10:00 AM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "cafe",
+      "bakery",
+      "croissant",
+      "pastry",
+      "breakfast"
+    ],
+    "rating": 4.5,
+    "review_count": 2900,
+    "source_url": "https://bakerstreetpuducherry.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "07:00 AM - 09:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "pondy-24",
+    "city_id": "pondicherry",
+    "name": "Ousteri Lake & Bird Sanctuary",
+    "category": "nature",
+    "sub_category": "Freshwater Wetland Sanctuary & Boating",
+    "description": "Centuries-old freshwater man-made lake and designated bird sanctuary covering 800 hectares, providing winter roosting grounds for over 40 species of migratory waterbirds.",
+    "highlights": [
+      "Migratory birdwatching spot",
+      "Peaceful motor and paddle boating",
+      "Spectacular tranquil wetland sunsets"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 50,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 11.9501,
+      "lng": 79.7455
+    },
+    "address": "Oussudu, Villianur, Puducherry 605110",
+    "image_url": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Early Morning (6:30 AM - 9:00 AM) or Late Afternoon (4:00 PM - 6:00 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "family",
+      "senior",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 3,
+    "tags": [
+      "nature",
+      "lake",
+      "birds",
+      "boating",
+      "wildlife"
+    ],
+    "rating": 4.4,
+    "review_count": 1200,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:00 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-25",
+    "city_id": "pondicherry",
+    "name": "Eglise de Notre Dame des Anges",
+    "category": "heritage",
+    "sub_category": "Greco-Roman Catholic Church & Seafront Spire",
+    "description": "A stunning 1855 Catholic church designed in Greco-Roman style with pink limestone and egg-white plaster facade facing the sea, modeled after the Basilica of St. Peter in Rome.",
+    "highlights": [
+      "Pastel pink neoclassical facade",
+      "Statue of Joan of Arc in adjacent square",
+      "Only church celebrating mass in French, Tamil & English"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 11.9304,
+      "lng": 79.8347
+    },
+    "address": "Rue Dumas, White Town, Puducherry 605001",
+    "image_url": "https://images.unsplash.com/photo-1548625361-195fe579043e?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (7:00 AM - 11:00 AM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "christian_catholic",
+    "accessibility_rating": 4,
+    "tags": [
+      "church",
+      "heritage",
+      "greco_roman",
+      "white_town",
+      "architecture"
+    ],
+    "rating": 4.6,
+    "review_count": 1500,
+    "source_url": "https://pondytourism.py.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:30 AM - 07:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "pondy-26",
+    "city_id": "pondicherry",
+    "name": "Auroville Visitor Centre & Artisan Workshops",
+    "category": "culture",
+    "sub_category": "Sustainable Community & Artisan Boutiques",
+    "description": "The welcoming gateway to the universal township of Auroville featuring sustainable architecture, organic cafes, pottery and marbling demonstrations, and local boutique craft centers.",
+    "highlights": [
+      "Introductory film & Matrimandir viewing token center",
+      "Handmade paper & ceramic boutiques",
+      "Organic garden solar cafe"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 12.0071,
+      "lng": 79.8118
+    },
+    "address": "Auroville Main Rd, Kuilapalayam, Auroville 605101",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (9:00 AM - 1:00 PM) or Afternoon (2:30 PM - 5:00 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "vegan"
+    ],
+    "belief_affiliation": "interfaith_spiritual",
+    "accessibility_rating": 4,
+    "tags": [
+      "auroville",
+      "crafts",
+      "sustainable",
+      "culture",
+      "exhibition"
+    ],
+    "rating": 4.5,
+    "review_count": 2800,
+    "source_url": "https://auroville.org",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:00 AM - 05:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   }
 ]

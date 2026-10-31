@@ -6,21 +6,48 @@
     "category": "beach",
     "sub_category": "Natural Urban Beach & Promenade",
     "description": "The second longest urban beach in the world, stretching over 13 km along the Coromandel Coast of the Bay of Bengal. Famous for evening lighthouse panoramas, street food crisps, and sea breeze walks.",
-    "highlights": ["13 km long coastline", "Historic Chennai Lighthouse", "Memorials and local seafood shacks"],
+    "highlights": [
+      "13 km long coastline",
+      "Historic Chennai Lighthouse",
+      "Memorials and local seafood shacks"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 0,
     "duration_minutes": 120,
-    "coordinates": {"lat": 13.0499, "lng": 80.2824},
+    "coordinates": {
+      "lat": 13.0499,
+      "lng": 80.2824
+    },
     "address": "Marina Beach Road, Triplicane, Chennai, Tamil Nadu 600005",
     "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Early morning (5:30 AM - 7:30 AM) or Evening (5:00 PM - 8:30 PM)",
     "crowd_tendency": "high",
-    "recommended_age_groups": ["young_adult", "adult", "family", "all"],
-    "dietary_options": ["all"],
+    "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
     "accessibility_rating": 4,
-    "tags": ["beach", "sea", "walk", "sunset", "free"],
+    "tags": [
+      "beach",
+      "sea",
+      "walk",
+      "sunset",
+      "free"
+    ],
     "rating": 4.6,
-    "review_count": 5400
+    "review_count": 5400,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "chennai-02",
@@ -29,22 +56,51 @@
     "category": "spiritual",
     "sub_category": "Ancient Dravidian Temple & Sacred Tank",
     "description": "A 7th-century historic Hindu temple dedicated to Lord Shiva, renowned for its towering 37-meter gopuram, stucco mythological sculptures, and massive sacred temple tank in Mylapore cultural hub.",
-    "highlights": ["Classic Dravidian architectural gopuram", "Sacred temple pond (Theppakulam)", "Mylapore cultural heritage quarter"],
+    "highlights": [
+      "Classic Dravidian architectural gopuram",
+      "Sacred temple pond (Theppakulam)",
+      "Mylapore cultural heritage quarter"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 0,
     "duration_minutes": 60,
-    "coordinates": {"lat": 13.0334, "lng": 80.2697},
+    "coordinates": {
+      "lat": 13.0334,
+      "lng": 80.2697
+    },
     "address": "12, Vadannadha St, Mylapore, Chennai, Tamil Nadu 600004",
     "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Morning (6:30 AM - 11:30 AM) or Evening (5:00 PM - 8:30 PM)",
     "crowd_tendency": "high",
-    "recommended_age_groups": ["senior", "family", "adult", "all"],
-    "dietary_options": ["all", "vegetarian", "pure_veg_jain"],
+    "recommended_age_groups": [
+      "senior",
+      "family",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "pure_veg_jain"
+    ],
     "dress_code_advisory": "Traditional or modest temple attire required. Footwear deposited outside.",
     "accessibility_rating": 4,
-    "tags": ["spiritual", "temple", "dravidian", "heritage", "mylapore"],
+    "tags": [
+      "spiritual",
+      "temple",
+      "dravidian",
+      "heritage",
+      "mylapore"
+    ],
     "rating": 4.8,
-    "review_count": 6200
+    "review_count": 6200,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "chennai-03",
@@ -53,21 +109,48 @@
     "category": "heritage",
     "sub_category": "Neo-Gothic Cathedral & Apostolic Tomb",
     "description": "A rare 16th-century Portuguese Neo-Gothic cathedral built over the historic tomb of Saint Thomas, one of the twelve apostles of Jesus Christ. Features pristine white spires and a museum.",
-    "highlights": ["One of only three apostolic basilicas worldwide", "Neo-Gothic stained glass and spire", "Underground apostle tomb chapel"],
+    "highlights": [
+      "One of only three apostolic basilicas worldwide",
+      "Neo-Gothic stained glass and spire",
+      "Underground apostle tomb chapel"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 0,
     "duration_minutes": 45,
-    "coordinates": {"lat": 13.0339, "lng": 80.2783},
+    "coordinates": {
+      "lat": 13.0339,
+      "lng": 80.2783
+    },
     "address": "38, San Thome High Rd, Dummingkuppam, Mylapore, Chennai 600004",
     "image_url": "https://images.unsplash.com/photo-1548625361-16eb164227ec?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Morning (8:00 AM - 12:00 PM) or Late Afternoon (4:00 PM - 6:00 PM)",
     "crowd_tendency": "low",
-    "recommended_age_groups": ["senior", "adult", "family", "all"],
-    "dietary_options": ["all"],
+    "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
     "accessibility_rating": 5,
-    "tags": ["heritage", "church", "gothic", "architecture", "peaceful"],
+    "tags": [
+      "heritage",
+      "church",
+      "gothic",
+      "architecture",
+      "peaceful"
+    ],
     "rating": 4.7,
-    "review_count": 2900
+    "review_count": 2900,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "chennai-04",
@@ -76,21 +159,48 @@
     "category": "heritage",
     "sub_category": "First British Fortress & Museum in India",
     "description": "Founded in 1644 by the British East India Company, Fort St. George was the nucleus around which modern Chennai grew. Houses St. Mary's Church (oldest Anglican church in India) and Fort Museum.",
-    "highlights": ["Oldest Anglican church in India (1680)", "Fort Museum artifacts & colonial paintings", "Historic ramparts and colonial offices"],
+    "highlights": [
+      "Oldest Anglican church in India (1680)",
+      "Fort Museum artifacts & colonial paintings",
+      "Historic ramparts and colonial offices"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 50,
     "duration_minutes": 90,
-    "coordinates": {"lat": 13.0805, "lng": 80.2878},
+    "coordinates": {
+      "lat": 13.0805,
+      "lng": 80.2878
+    },
     "address": "Rajaji Salai, Near Secretariat, Chennai, Tamil Nadu 600009",
     "image_url": "https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Morning (9:00 AM - 1:00 PM)",
     "crowd_tendency": "medium",
-    "recommended_age_groups": ["adult", "young_adult", "family", "senior"],
-    "dietary_options": ["all"],
+    "recommended_age_groups": [
+      "adult",
+      "young_adult",
+      "family",
+      "senior"
+    ],
+    "dietary_options": [
+      "all"
+    ],
     "accessibility_rating": 4,
-    "tags": ["heritage", "history", "fort", "museum", "colonial"],
+    "tags": [
+      "heritage",
+      "history",
+      "fort",
+      "museum",
+      "colonial"
+    ],
     "rating": 4.4,
-    "review_count": 1850
+    "review_count": 1850,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "chennai-05",
@@ -99,21 +209,48 @@
     "category": "nature",
     "sub_category": "Protected Urban National Park",
     "description": "One of the very few national parks situated entirely inside an Indian city. Home to spotted deer, blackbucks, over 130 bird species, lush tropical dry evergreen forest canopy, and nature trails.",
-    "highlights": ["Lush urban jungle canopy", "Spotted deer & blackbuck sightings", "Children's nature park & aviary"],
+    "highlights": [
+      "Lush urban jungle canopy",
+      "Spotted deer & blackbuck sightings",
+      "Children's nature park & aviary"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 30,
     "duration_minutes": 120,
-    "coordinates": {"lat": 13.0076, "lng": 80.2206},
+    "coordinates": {
+      "lat": 13.0076,
+      "lng": 80.2206
+    },
     "address": "Rangeguindy, Guindy, Chennai, Tamil Nadu 600025",
     "image_url": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Morning (9:00 AM - 11:30 AM) or Afternoon (3:30 PM - 5:30 PM)",
     "crowd_tendency": "medium",
-    "recommended_age_groups": ["family", "senior", "young_adult", "all"],
-    "dietary_options": ["all"],
+    "recommended_age_groups": [
+      "family",
+      "senior",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
     "accessibility_rating": 4,
-    "tags": ["nature", "wildlife", "deer", "park", "family-friendly"],
+    "tags": [
+      "nature",
+      "wildlife",
+      "deer",
+      "park",
+      "family-friendly"
+    ],
     "rating": 4.3,
-    "review_count": 2100
+    "review_count": 2100,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   },
   {
     "id": "chennai-06",
@@ -122,20 +259,1085 @@
     "category": "beach",
     "sub_category": "Calm Promenade & Trendy Beach Cafes",
     "description": "A tranquil beach located in Besant Nagar. Known for the iconic Karl Schmidt Memorial, clean sandy walkways, open sea breeze, and vibrant surrounding cafes and gelato parlors.",
-    "highlights": ["Karl Schmidt Memorial monument", "Vibrant Besant Nagar cafe strip", "Relaxed evening sea breeze"],
+    "highlights": [
+      "Karl Schmidt Memorial monument",
+      "Vibrant Besant Nagar cafe strip",
+      "Relaxed evening sea breeze"
+    ],
     "budget_tier": "budget",
     "estimated_cost_inr": 0,
     "duration_minutes": 90,
-    "coordinates": {"lat": 12.9998, "lng": 80.2718},
+    "coordinates": {
+      "lat": 12.9998,
+      "lng": 80.2718
+    },
     "address": "6th Ave, Besant Nagar, Chennai, Tamil Nadu 600090",
     "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     "best_time_to_visit": "Late afternoon or Evening (4:30 PM - 8:30 PM)",
     "crowd_tendency": "high",
-    "recommended_age_groups": ["young_adult", "adult", "family", "all"],
-    "dietary_options": ["all"],
+    "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
     "accessibility_rating": 4,
-    "tags": ["beach", "cafes", "sunset", "besant-nagar", "youth"],
+    "tags": [
+      "beach",
+      "cafes",
+      "sunset",
+      "besant-nagar",
+      "youth"
+    ],
     "rating": 4.6,
-    "review_count": 3800
+    "review_count": 3800,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-07",
+    "city_id": "chennai",
+    "name": "Government Museum & National Art Gallery, Egmore",
+    "category": "heritage",
+    "sub_category": "Historic Museum Complex & Chola Bronzes",
+    "description": "Established in 1851, India's second oldest museum complex built in Indo-Saracenic style, renowned globally for the world's finest collection of Chola bronzes and Amaravati Buddhist sculptures.",
+    "highlights": [
+      "Iconic Chola bronze gallery (Nataraja masterpiece)",
+      "Rare Amaravati limestone Buddhist carvings",
+      "Victorian Indo-Saracenic rotunda architecture"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 50,
+    "duration_minutes": 120,
+    "coordinates": {
+      "lat": 13.0732,
+      "lng": 80.258
+    },
+    "address": "Pantheon Rd, Egmore, Chennai, Tamil Nadu 600008",
+    "image_url": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (10:00 AM - 1:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "museum",
+      "heritage",
+      "bronzes",
+      "art",
+      "history"
+    ],
+    "rating": 4.6,
+    "review_count": 4800,
+    "source_url": "https://govtmuseumchennai.org",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:30 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Friday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-08",
+    "city_id": "chennai",
+    "name": "Kalakshetra Foundation, Thiruvanmiyur",
+    "category": "culture",
+    "sub_category": "Classical Dance Academy & Arts Center",
+    "description": "Prestigious 100-acre cultural academy founded by Rukmini Devi Arundale, dedicated to preserving classical Bharatanatyam dance, Carnatic music, natural dye handloom weaving, and heritage arts.",
+    "highlights": [
+      "Open-air thatched classrooms under banyan trees",
+      "Traditional Bharatanatyam morning training sessions",
+      "Craft weaving and block-printing atelier"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 100,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 12.9902,
+      "lng": 80.2608
+    },
+    "address": "Kalakshetra Rd, Thiruvanmiyur, Chennai, Tamil Nadu 600041",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (9:00 AM - 11:30 AM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "interfaith_spiritual",
+    "accessibility_rating": 4,
+    "tags": [
+      "culture",
+      "dance",
+      "bharatanatyam",
+      "music",
+      "arts"
+    ],
+    "rating": 4.8,
+    "review_count": 2100,
+    "source_url": "https://kalakshetra.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:00 AM - 04:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Sunday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-09",
+    "city_id": "chennai",
+    "name": "Theosophical Society International Headquarters, Adyar",
+    "category": "nature",
+    "sub_category": "Historic Botanical Sanctuary & Great Banyan Tree",
+    "description": "Tranquil 260-acre green woodland sanctuary situated along the southern banks of the Adyar River estuary, featuring a historic 450-year-old banyan tree with canopies covering thousands of square meters.",
+    "highlights": [
+      "Majestic 450-year-old Great Banyan Tree",
+      "Peaceful woodland trails & river estuary views",
+      "Universal spiritual library and shrines"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 90,
+    "coordinates": {
+      "lat": 13.0108,
+      "lng": 80.2642
+    },
+    "address": "Adyar, Chennai, Tamil Nadu 600020",
+    "image_url": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Afternoon (3:00 PM - 5:00 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "interfaith_spiritual",
+    "accessibility_rating": 3,
+    "tags": [
+      "nature",
+      "banyan",
+      "forest",
+      "tranquil",
+      "spiritual"
+    ],
+    "rating": 4.6,
+    "review_count": 3100,
+    "source_url": "https://ts-adyar.org",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "08:30 AM - 10:00 AM, 02:00 PM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Sunday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-10",
+    "city_id": "chennai",
+    "name": "DakshinaChitra Heritage Museum",
+    "category": "heritage",
+    "sub_category": "Living-History South Indian Heritage Village",
+    "description": "Spectacular living-history museum along the East Coast Road recreating 18 authentic traditional vernacular houses from Tamil Nadu, Kerala, Karnataka and Andhra Pradesh, with folk artisans at work.",
+    "highlights": [
+      "18 authentic transplanted historic homes",
+      "Live glass blowing, silk weaving and folk performances",
+      "Traditional Chettinad and Syrian Christian architecture"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 175,
+    "duration_minutes": 150,
+    "coordinates": {
+      "lat": 12.8239,
+      "lng": 80.2415
+    },
+    "address": "East Coast Road, Muttukadu, Chennai, Tamil Nadu 603112",
+    "image_url": "https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (10:00 AM - 1:30 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "family",
+      "adult",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "architecture",
+      "folklore",
+      "crafts",
+      "museum"
+    ],
+    "rating": 4.7,
+    "review_count": 4200,
+    "source_url": "https://dakshinachitra.net",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 06:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Tuesday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-11",
+    "city_id": "chennai",
+    "name": "Valluvar Kottam, Nungambakkam",
+    "category": "heritage",
+    "sub_category": "Monumental Temple Chariot & Cultural Hall",
+    "description": "A monumental 39-meter stone replica of the historic Thiruvarur temple chariot, built in honor of the revered classical Tamil philosopher and poet Thiruvalluvar.",
+    "highlights": [
+      "39m high stone chariot structure",
+      "All 1,330 Thirukkural couplets inscribed in marble",
+      "Asia's largest column-free auditorium hall"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 10,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 13.0538,
+      "lng": 80.2419
+    },
+    "address": "Valluvar Kottam High Rd, Nungambakkam, Chennai, Tamil Nadu 600034",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (8:30 AM - 11:00 AM) or Sunset (4:30 PM - 6:30 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "monument",
+      "poet",
+      "architecture",
+      "chariot"
+    ],
+    "rating": 4.4,
+    "review_count": 3100,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "08:30 AM - 06:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-12",
+    "city_id": "chennai",
+    "name": "Parthasarathy Temple, Triplicane",
+    "category": "spiritual",
+    "sub_category": "8th-Century Pallava Vishnu Temple",
+    "description": "One of the oldest surviving temples in Chennai, an 8th-century Vaishnavite shrine constructed by the Pallavas, dedicated to Lord Krishna as the charioteer Parthasarathy.",
+    "highlights": [
+      "Intricate 8th-century Pallava and Chola stone inscriptions",
+      "Scared temple tank (Allikeni) with temple gopurams",
+      "Rare iconography of Krishna with a moustache"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 13.0538,
+      "lng": 80.2762
+    },
+    "address": "Car St, Triplicane, Chennai, Tamil Nadu 600005",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (6:30 AM - 11:30 AM) or Evening (5:00 PM - 8:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "senior",
+      "adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "hindu",
+    "dress_code_advisory": "Modest traditional attire. Footwear deposited outside.",
+    "accessibility_rating": 3,
+    "tags": [
+      "temple",
+      "spiritual",
+      "vishnu",
+      "pallava",
+      "heritage"
+    ],
+    "rating": 4.8,
+    "review_count": 5100,
+    "source_url": "https://hrce.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "05:30 AM - 12:00 PM, 04:00 PM - 09:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-13",
+    "city_id": "chennai",
+    "name": "Cholamandal Artists' Village, Injambakkam",
+    "category": "culture",
+    "sub_category": "Modern Art Colony & Sculpture Park",
+    "description": "India's largest self-supporting artists' community founded in 1966 by KCS Paniker, showcasing contemporary Indian paintings, terracottas, and open-air sculpture galleries by the beach.",
+    "highlights": [
+      "Open-air sculpture walk under tropical trees",
+      "Contemporary Indian visual art galleries",
+      "Resident painter and sculptor studios"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 30,
+    "duration_minutes": 75,
+    "coordinates": {
+      "lat": 12.915,
+      "lng": 80.252
+    },
+    "address": "East Coast Road, Injambakkam, Chennai, Tamil Nadu 600115",
+    "image_url": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Afternoon (2:00 PM - 5:30 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "young_adult",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "art",
+      "sculpture",
+      "galleries",
+      "village",
+      "contemporary"
+    ],
+    "rating": 4.5,
+    "review_count": 1800,
+    "source_url": "https://cholamandalartistsvillage.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:30 AM - 06:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-14",
+    "city_id": "chennai",
+    "name": "Madras War Cemetery, Nandambakkam",
+    "category": "heritage",
+    "sub_category": "WWII Commonwealth War Memorial Garden",
+    "description": "An immaculately preserved Commonwealth cemetery garden containing the graves of over 850 soldiers of the Allied forces who perished in World War II operations.",
+    "highlights": [
+      "Pristine manicured lawns and Cross of Sacrifice",
+      "Tranquil reflective setting amidst city bustle",
+      "Historical bronze memorial plaques"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 13.0182,
+      "lng": 80.1852
+    },
+    "address": "Mount Poonamallee High Rd, Nandambakkam, Chennai 600089",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (8:00 AM - 11:00 AM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "memorial",
+      "garden",
+      "history",
+      "tranquil"
+    ],
+    "rating": 4.7,
+    "review_count": 1400,
+    "source_url": "https://cwgc.org",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "08:00 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-15",
+    "city_id": "chennai",
+    "name": "Besant Nagar Ashtalakshmi Temple",
+    "category": "spiritual",
+    "sub_category": "Multi-Tiered Sea-Facing Lakshmi Shrine",
+    "description": "A magnificent oceanfront Hindu temple with four distinct multi-tiered sanctums on the sands of Elliot's Beach, honoring the eight forms of Goddess Lakshmi.",
+    "highlights": [
+      "Multi-tiered coastal shrine overlooking Bay of Bengal",
+      "Gentle ocean breeze and rhythmic sound of waves",
+      "Spectacular temple gopuram illuminated at dusk"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 12.995,
+      "lng": 80.2715
+    },
+    "address": "Beach Rd, Besant Nagar, Chennai, Tamil Nadu 600090",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Evening (4:30 PM - 8:00 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "senior",
+      "family",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "hindu",
+    "accessibility_rating": 3,
+    "tags": [
+      "temple",
+      "spiritual",
+      "coastal",
+      "beach",
+      "lakshmi"
+    ],
+    "rating": 4.7,
+    "review_count": 6200,
+    "source_url": "https://hrce.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:30 AM - 12:00 PM, 04:00 PM - 08:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-16",
+    "city_id": "chennai",
+    "name": "Semmozhi Poonga Botanical Garden",
+    "category": "nature",
+    "sub_category": "Urban Botanical Garden & Flora Conservatory",
+    "description": "A lush 20-acre landscaped botanical oasis in central Chennai featuring over 500 species of flora, vertical garden walls, aromatic herbs, and serene duck ponds.",
+    "highlights": [
+      "Aesthetic vertical gardens and rockeries",
+      "Shaded canopy walkways amidst exotic plants",
+      "Peaceful central urban greenery"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 25,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 13.0503,
+      "lng": 80.2505
+    },
+    "address": "Cathedral Rd, Teynampet, Chennai, Tamil Nadu 600086",
+    "image_url": "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (6:30 AM - 9:30 AM) or Evening (4:00 PM - 6:30 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "family",
+      "senior",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "nature",
+      "garden",
+      "botanical",
+      "walk",
+      "greenery"
+    ],
+    "rating": 4.3,
+    "review_count": 3400,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 07:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Tuesday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-17",
+    "city_id": "chennai",
+    "name": "Connemara Public Library, Egmore",
+    "category": "heritage",
+    "sub_category": "Victorian Indo-Saracenic National Depository Library",
+    "description": "Founded in 1896, one of India's four National Depository Libraries, celebrated for its soaring timber ceilings, Victorian stained glass windows, and century-old teak galleries.",
+    "highlights": [
+      "Victorian stained-glass cupola ceiling",
+      "Elaborate teak woodwork and reading gallery",
+      "National heritage architecture"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 13.074,
+      "lng": 80.2588
+    },
+    "address": "Pantheon Rd, Egmore, Chennai, Tamil Nadu 600008",
+    "image_url": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Morning (10:00 AM - 12:30 PM)",
+    "crowd_tendency": "low",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "library",
+      "architecture",
+      "books",
+      "history"
+    ],
+    "rating": 4.7,
+    "review_count": 2200,
+    "source_url": "https://connemaralibrary.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "09:00 AM - 05:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [
+      "Sunday"
+    ],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-18",
+    "city_id": "chennai",
+    "name": "Rayar's Mess, Mylapore",
+    "category": "dining",
+    "sub_category": "Legendary Heritage South Indian Tiffin House",
+    "description": "Historic 1930s narrow alleyway mess in Mylapore beloved for piping-hot golden medu vadai, ghee pongal, and aromatic filter kaapi poured in brass davarah-tumblers.",
+    "highlights": [
+      "Piping-hot crisp medu vadai & pongal",
+      "Authentic Mylapore brass tumbler filter coffee",
+      "Authentic 1930s nostalgic ambiance"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 120,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 13.0337,
+      "lng": 80.268
+    },
+    "address": "Arundale St, Mylapore, Chennai, Tamil Nadu 600004",
+    "image_url": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Breakfast (7:00 AM - 9:30 AM) or Tiffin (3:30 PM - 6:00 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "pure_veg_jain"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 3,
+    "tags": [
+      "dining",
+      "tiffin",
+      "filter_coffee",
+      "vadai",
+      "mylapore"
+    ],
+    "rating": 4.8,
+    "review_count": 3900,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "07:00 AM - 10:30 AM, 03:00 PM - 06:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-19",
+    "city_id": "chennai",
+    "name": "Murugan Idli Shop, Besant Nagar",
+    "category": "dining",
+    "sub_category": "Traditional Tamil Idli & Dosa Landmark",
+    "description": "Renowned South Indian dining institution famous for melt-in-mouth steamed idlis, ghee podi dosa, sweet sakkarai pongal, and four freshly prepared coconut and mint chutneys.",
+    "highlights": [
+      "Famous soft steamed mallipoo idlis",
+      "Crisp spicy podi dosas on banana leaves",
+      "Four fresh signature chutneys"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 200,
+    "duration_minutes": 50,
+    "coordinates": {
+      "lat": 13.0003,
+      "lng": 80.2662
+    },
+    "address": "4th Main Rd, Besant Nagar, Chennai, Tamil Nadu 600090",
+    "image_url": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Breakfast (7:30 AM - 10:30 AM) or Dinner (7:00 PM - 10:00 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "pure_veg_jain"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "dining",
+      "idli",
+      "dosa",
+      "chutney",
+      "besant_nagar"
+    ],
+    "rating": 4.6,
+    "review_count": 5200,
+    "source_url": "https://muruganidlishop.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "07:00 AM - 11:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-20",
+    "city_id": "chennai",
+    "name": "Amethyst Cafe, Royapettah",
+    "category": "cafe",
+    "sub_category": "Colonial Heritage Garden Cafe & Boutique",
+    "description": "An oasis of calm located in an antique colonial garden mansion, featuring lush verandah tables under century-old trees, specialty teas, artisanal pastries, and a boutique bookstore.",
+    "highlights": [
+      "Verandah seating surrounded by tropical foliage",
+      "Handcrafted desserts & gourmet coffee",
+      "Artisan flower boutique & indie books"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 650,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 13.0526,
+      "lng": 80.2562
+    },
+    "address": "Whites Rd, Royapettah, Chennai, Tamil Nadu 600014",
+    "image_url": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Afternoon (3:00 PM - 6:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "adult",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian",
+      "vegan"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "cafe",
+      "colonial",
+      "garden",
+      "coffee",
+      "pastry"
+    ],
+    "rating": 4.6,
+    "review_count": 3800,
+    "source_url": "https://amethystchennai.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 11:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-21",
+    "city_id": "chennai",
+    "name": "Annalakshmi Restaurant, Egmore",
+    "category": "dining",
+    "sub_category": "Sanctuary of South Indian Vegetarian Fine Dining",
+    "description": "Renowned cultural dining institution operated by the Temple of Fine Arts, offering grand South Indian vegetarian thalis and traditional multi-course culinary feasts in a temple-like ambiance.",
+    "highlights": [
+      "Traditional brass thali dining experience",
+      "Authentic satvik zero-onion zero-garlic options",
+      "Classical Indian aesthetic and philanthropic heritage"
+    ],
+    "budget_tier": "luxury",
+    "estimated_cost_inr": 750,
+    "duration_minutes": 75,
+    "coordinates": {
+      "lat": 13.0718,
+      "lng": 80.2575
+    },
+    "address": "Mayor Ramanathan Salai, Spur Tank Rd, Egmore, Chennai 600031",
+    "image_url": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Lunch (12:00 PM - 2:45 PM) or Dinner (7:00 PM - 9:45 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "senior",
+      "family",
+      "adult",
+      "all"
+    ],
+    "dietary_options": [
+      "vegetarian",
+      "pure_veg_jain"
+    ],
+    "belief_affiliation": "hindu",
+    "accessibility_rating": 4,
+    "tags": [
+      "dining",
+      "vegetarian",
+      "jain",
+      "thali",
+      "satvik"
+    ],
+    "rating": 4.8,
+    "review_count": 3100,
+    "source_url": "https://annalakshmi.com.sg",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "12:00 PM - 02:45 PM, 07:00 PM - 09:45 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-22",
+    "city_id": "chennai",
+    "name": "Mylapore Tank & Temple Bazaar",
+    "category": "shopping",
+    "sub_category": "Sacred Heritage Bazaar & Temple Market",
+    "description": "Vibrant traditional street bazaar encircling the sacred Kapaleeshwarar temple tank, filled with temple brassware, musical instruments, traditional silks, and fragrant jasmine garlands.",
+    "highlights": [
+      "Brass oil lamps and handcrafted bronze deities",
+      "Fresh Madurai jasmine flower market",
+      "Atmospheric temple tank perimeter walk"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 60,
+    "coordinates": {
+      "lat": 13.0335,
+      "lng": 80.269
+    },
+    "address": "North Mada St, Mylapore, Chennai, Tamil Nadu 600004",
+    "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Evening (5:00 PM - 8:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "adult",
+      "senior",
+      "all"
+    ],
+    "dietary_options": [
+      "all",
+      "vegetarian"
+    ],
+    "belief_affiliation": "hindu",
+    "accessibility_rating": 3,
+    "tags": [
+      "shopping",
+      "bazaar",
+      "heritage",
+      "flowers",
+      "brass"
+    ],
+    "rating": 4.6,
+    "review_count": 2700,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "07:00 AM - 09:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-23",
+    "city_id": "chennai",
+    "name": "Express Avenue & Royapettah Handicrafts",
+    "category": "shopping",
+    "sub_category": "Modern Mall & Regional Crafts Hub",
+    "description": "Contemporary urban shopping destination featuring South Indian state emporiums, Khadi Gramodyog textiles, artisan leathercrafts, and central indoor entertainment.",
+    "highlights": [
+      "Regional handloom and Khadi stores",
+      "Air-conditioned modern shopping comfort",
+      "Diverse dining and cafe options"
+    ],
+    "budget_tier": "moderate",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 75,
+    "coordinates": {
+      "lat": 13.059,
+      "lng": 80.264
+    },
+    "address": "Whites Rd, Royapettah, Chennai, Tamil Nadu 600014",
+    "image_url": "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Afternoon (1:00 PM - 4:00 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "young_adult",
+      "family",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 5,
+    "tags": [
+      "shopping",
+      "mall",
+      "handicrafts",
+      "modern"
+    ],
+    "rating": 4.5,
+    "review_count": 7100,
+    "source_url": "https://expressavenue.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 10:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": false
+  },
+  {
+    "id": "chennai-24",
+    "city_id": "chennai",
+    "name": "Covelong Point Surf School, Kovalam",
+    "category": "adventure",
+    "sub_category": "Coastal Surfing & Ocean Recreation",
+    "description": "Renowned surf school and water sports center situated on the crescent bay of Kovalam village on the East Coast Road, offering guided beginner surfing lessons and paddleboarding.",
+    "highlights": [
+      "Certified ISA surfing instructors",
+      "Gentle ocean swell ideal for beginners",
+      "Scenic coastal crescent beach"
+    ],
+    "budget_tier": "luxury",
+    "estimated_cost_inr": 1200,
+    "duration_minutes": 120,
+    "coordinates": {
+      "lat": 12.7915,
+      "lng": 80.252
+    },
+    "address": "Kovalam Beach Rd, Covelong, Chennai 603112",
+    "image_url": "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Early Morning (6:00 AM - 9:00 AM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "young_adult",
+      "adult"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 3,
+    "tags": [
+      "adventure",
+      "surf",
+      "beach",
+      "watersports",
+      "ecr"
+    ],
+    "rating": 4.7,
+    "review_count": 1800,
+    "source_url": "https://covelongpoint.com",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:00 AM - 06:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-25",
+    "city_id": "chennai",
+    "name": "VGP Universal Kingdom & Marine Kingdom",
+    "category": "adventure",
+    "sub_category": "Coastal Amusement Park & Aquarium",
+    "description": "Large seaside amusement complex on the East Coast Road featuring India's first walk-through underwater tunnel aquarium with over 150 species of marine life and family thrill rides.",
+    "highlights": [
+      "Walk-through underwater shark and ray tunnel",
+      "Family-friendly theme rides and wave pools",
+      "Seaside coastal park setting"
+    ],
+    "budget_tier": "luxury",
+    "estimated_cost_inr": 650,
+    "duration_minutes": 150,
+    "coordinates": {
+      "lat": 12.894,
+      "lng": 80.2485
+    },
+    "address": "East Coast Rd, Injambakkam, Chennai, Tamil Nadu 600115",
+    "image_url": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Afternoon (1:00 PM - 5:30 PM)",
+    "crowd_tendency": "high",
+    "recommended_age_groups": [
+      "family",
+      "young_adult",
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "adventure",
+      "aquarium",
+      "theme_park",
+      "family",
+      "ecr"
+    ],
+    "rating": 4.4,
+    "review_count": 8200,
+    "source_url": "https://vgp.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "10:00 AM - 06:30 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
+  },
+  {
+    "id": "chennai-26",
+    "city_id": "chennai",
+    "name": "MGR Memorial & Marina Promenade Park",
+    "category": "heritage",
+    "sub_category": "Coastal Monument & Oceanfront Park",
+    "description": "Expansive seaside landscaped memorial garden with monumental arched pavilion dedicated to legendary Chief Minister M.G. Ramachandran, situated on northern Marina Beach.",
+    "highlights": [
+      "Monumental lotus-flame archway",
+      "Landscaped sea-facing gardens and fountains",
+      "Direct access to Marina sands"
+    ],
+    "budget_tier": "budget",
+    "estimated_cost_inr": 0,
+    "duration_minutes": 45,
+    "coordinates": {
+      "lat": 13.0645,
+      "lng": 80.2835
+    },
+    "address": "Marina Beach Rd, Chepauk, Chennai, Tamil Nadu 600005",
+    "image_url": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80",
+    "best_time_to_visit": "Sunset (4:30 PM - 7:00 PM)",
+    "crowd_tendency": "medium",
+    "recommended_age_groups": [
+      "all"
+    ],
+    "dietary_options": [
+      "all"
+    ],
+    "belief_affiliation": "secular",
+    "accessibility_rating": 4,
+    "tags": [
+      "heritage",
+      "memorial",
+      "beach",
+      "marina",
+      "monument"
+    ],
+    "rating": 4.5,
+    "review_count": 3600,
+    "source_url": "https://tamilnadutourism.tn.gov.in",
+    "source_verified_at": "2026-10-31T00:00:00",
+    "verification_status": "verified",
+    "last_updated_at": "2026-10-31T00:00:00",
+    "opening_hours": "06:00 AM - 09:00 PM",
+    "opening_hours_verified": true,
+    "weekly_closing_days": [],
+    "is_major_attraction": true
   }
 ]

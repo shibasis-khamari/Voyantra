@@ -11,6 +11,7 @@ from ...services.ranking_service import ranking_service
 from ...services.gemini_service import gemini_service
 from ...services.vector_store_service import vector_store_service
 from ...services.places_service import places_service
+from ...services.conversation.itinerary_service import itinerary_service
 
 router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
 
@@ -326,17 +327,6 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
 
     catalog_places = filtered_places + [p for p in all_city_places if p.id not in [x.id for x in filtered_places]]
 
-    # 3. Synthesize with Gemini API
-    itinerary = gemini_service.generate_rag_itinerary(
-        query_text=req.query_text,
-        retrieved_places=catalog_places,
-        user_age=req.age_group or AgeGroupEnum.YOUNG_ADULT,
-        user_diet=DietaryOptionEnum.PURE_VEG_JAIN if is_strict_jain else (req.dietary_preference or DietaryOptionEnum.ALL),
-        duration_days=req.duration_days,
-        city_name=resolved_name,
-        existing_days=prev_days
-    )
-
     available_alternatives = [
         {
             "id": p.id,
@@ -348,6 +338,49 @@ def generate_ai_itinerary(req: ItineraryRequest, request: Request):
         }
         for p in catalog_places
     ]
+
+    # Use unified V2 engine for supported destinations (Pondicherry, Chennai, Both)
+    if resolved_slug in ["pondicherry", "chennai", "both"]:
+        age_str = req.age_group.value if hasattr(req.age_group, "value") else str(req.age_group or "young_adult")
+        diet_str = req.dietary_preference.value if hasattr(req.dietary_preference, "value") else str(req.dietary_preference or "all")
+
+        if req.existing_days:
+            cur_itin = {
+                "itinerary_title": f"{resolved_name} Curated Tour",
+                "summary": "Existing itinerary",
+                "city_id": resolved_slug,
+                "days": req.existing_days,
+                "total_estimated_budget_inr": sum(d.get("day_budget_inr", 0) for d in req.existing_days)
+            }
+            itin_data = itinerary_service.modify_itinerary_conversationally(cur_itin, req.query_text)
+        else:
+            itin_data = itinerary_service.generate_itinerary_alternatives(
+                city_slug=resolved_slug,
+                duration_days=req.duration_days,
+                age_group=age_str,
+                dietary=diet_str,
+                requested_places=[req.query_text]
+            )
+
+        itin_dict = itin_data.model_dump()
+        return {
+            "city_id": resolved_slug,
+            "query_text": req.query_text,
+            "retrieved_places_count": len(filtered_places),
+            "available_alternatives": available_alternatives,
+            "itinerary": itin_dict
+        }
+
+    # 3. Fallback Synthesize with Gemini API for outside destinations
+    itinerary = gemini_service.generate_rag_itinerary(
+        query_text=req.query_text,
+        retrieved_places=catalog_places,
+        user_age=req.age_group or AgeGroupEnum.YOUNG_ADULT,
+        user_diet=DietaryOptionEnum.PURE_VEG_JAIN if is_strict_jain else (req.dietary_preference or DietaryOptionEnum.ALL),
+        duration_days=req.duration_days,
+        city_name=resolved_name,
+        existing_days=prev_days
+    )
 
     return {
         "city_id": resolved_slug,

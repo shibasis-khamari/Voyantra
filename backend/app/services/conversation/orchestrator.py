@@ -198,13 +198,32 @@ class ConversationOrchestrator:
                     "Suggest places across Pondicherry & Chennai"
                 ]
             else:
-                # Generate multi-alternative itinerary
+                # Extract duration_days from message if not explicitly provided or if default
+                days_count = req.duration_days or 2
+                day_match = re.search(r"\b(\d+)\s*-?\s*days?\b", req.message.lower())
+                if day_match:
+                    try:
+                        extracted_days = int(day_match.group(1))
+                        if 1 <= extracted_days <= 7:
+                            days_count = extracted_days
+                    except Exception:
+                        pass
+
+                # Generate multi-alternative itinerary with full criteria
                 itinerary_data = itinerary_service.generate_itinerary_alternatives(
                     city_slug=city_slug or "both",
-                    duration_days=req.duration_days or 2,
+                    duration_days=days_count,
                     pace=user_pref.get("travel_pace", "relaxed"),
                     budget=user_pref.get("budget_tier", "moderate"),
-                    dietary=user_pref.get("dietary_preference", "all")
+                    dietary=user_pref.get("dietary_preference", "all"),
+                    age_group=user_pref.get("age_group", "young_adult"),
+                    interests=user_pref.get("interests", []),
+                    requested_places=[req.message],
+                    travel_date=req.travel_date,
+                    transport_mode=req.transport_mode or "car",
+                    starting_location=req.starting_location,
+                    ending_location=req.ending_location,
+                    party_size=req.party_size or 1
                 )
                 city_title = city_name or "Pondicherry & Chennai"
                 if final_lang == "hi":

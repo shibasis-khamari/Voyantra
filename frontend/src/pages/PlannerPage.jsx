@@ -939,6 +939,11 @@ export function PlannerPage({ setActiveTab }) {
                   <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
                     Est. Budget ₹{aiItinerary.total_estimated_budget_inr || 0}
                   </span>
+                  {aiItinerary.quality_score && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
+                      Quality: {aiItinerary.quality_score}/100
+                    </span>
+                  )}
                 </div>
                 <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight mt-1 line-clamp-1">
                   {aiItinerary.itinerary_title || "Custom Coastal Itinerary"}
@@ -987,6 +992,43 @@ export function PlannerPage({ setActiveTab }) {
                 <div className="p-3.5 rounded-2xl bg-white/80 border border-slate-200 text-xs text-slate-700 leading-relaxed shadow-2xs">
                   <span className="font-bold text-slate-900">Summary: </span>
                   {aiItinerary.summary}
+                </div>
+              )}
+
+              {/* Itemized Budget Breakdown Card */}
+              {aiItinerary.budget_breakdown && (
+                <div className="p-3.5 rounded-2xl bg-white border border-slate-200 text-xs text-slate-700 space-y-2 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-extrabold uppercase tracking-wider text-[10px] text-slate-500">
+                      Transparent Budget Breakdown
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-600">
+                      ₹{aiItinerary.budget_breakdown.cost_per_person_inr || 0} / person
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                    <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Entry Fees</span>
+                      <span className="font-bold text-slate-900">₹{aiItinerary.budget_breakdown.entry_fees_inr || 0}</span>
+                    </div>
+                    <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Est. Dining</span>
+                      <span className="font-bold text-slate-900">₹{aiItinerary.budget_breakdown.food_dining_inr || 0}</span>
+                    </div>
+                    <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Est. Transit</span>
+                      <span className="font-bold text-slate-900">₹{aiItinerary.budget_breakdown.local_transit_inr || 0}</span>
+                    </div>
+                    <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-slate-400 block text-[9px] uppercase font-bold">Miscellaneous</span>
+                      <span className="font-bold text-slate-900">₹{aiItinerary.budget_breakdown.miscellaneous_inr || 0}</span>
+                    </div>
+                  </div>
+                  {aiItinerary.budget_disclaimer && (
+                    <p className="text-[10px] text-slate-400 leading-tight italic">
+                      * {aiItinerary.budget_disclaimer}
+                    </p>
+                  )}
                 </div>
               )}
 

@@ -57,6 +57,11 @@ export function ItineraryAlternativesPicker({
 
               <div className="mt-1 flex items-center justify-between text-[10px] font-semibold text-slate-600">
                 <span>{alt.days?.length || 1} Days</span>
+                {alt.quality_score && (
+                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    {alt.quality_score}/100
+                  </span>
+                )}
                 <span className="font-bold text-slate-900">₹{alt.total_estimated_budget_inr || 0}</span>
               </div>
             </button>
