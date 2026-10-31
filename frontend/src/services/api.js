@@ -46,7 +46,7 @@ export const VoyantraAPI = {
 
   // 1. Fetch Places
   async getPlaces(filters = {}) {
-    const cityId = filters.city_id || 'pondicherry';
+    const cityId = filters.city_id || 'all';
     try {
       const queryParams = new URLSearchParams();
       queryParams.append('city_id', cityId);
@@ -104,27 +104,35 @@ export const VoyantraAPI = {
     }
   },
 
-  // Conversational AI Travel Concierge (Worldwide Q&A, Places, Hotels & Flexible Itinerary)
-  async chatWithAi({ city_id = null, message, conversation_history = [], current_itinerary = null, age_group, dietary_preference, duration_days = 2 }) {
+  // Conversational AI Travel Concierge (Voyantra 2.0 Unified Router: /api/v1/chat/message)
+  async sendChatMessage({ 
+    message, 
+    conversation_id = null, 
+    language = null, 
+    voice_mode = 'text', 
+    current_itinerary = null, 
+    user_preferences = null, 
+    duration_days = 2 
+  }) {
     try {
-      const res = await fetch(`${BACKEND_URL}/recommendations/chat`, {
+      const res = await fetch(`${BACKEND_URL}/chat/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          city_id,
           message,
-          conversation_history,
+          conversation_id,
+          language,
+          voice_mode,
           current_itinerary,
-          age_group,
-          dietary_preference,
+          user_preferences,
           duration_days
         }),
-        signal: AbortSignal.timeout(35000)
+        signal: AbortSignal.timeout(45000)
       });
       if (res.ok) {
         return await res.json();
       }
-      const errData = await res.json();
+      const errData = await res.json().catch(() => ({}));
       throw new Error(errData.detail || `Server status ${res.status}`);
     } catch (e) {
       if (e.message.includes('Server status') || e.name === 'TimeoutError' || e.message.includes('Failed to fetch')) {
@@ -134,6 +142,139 @@ export const VoyantraAPI = {
     }
   },
 
+  // List saved conversations for user
+  async getConversations(userId = 'demo_user') {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/conversations?user_id=${encodeURIComponent(userId)}`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res.ok) return await res.json();
+      return [];
+    } catch (e) {
+      console.warn('[VoyantraAPI] getConversations error:', e.message);
+      return [];
+    }
+  },
+
+  // Load a single conversation session
+  async getConversation(conversationId) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/conversations/${encodeURIComponent(conversationId)}`, {
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) return await res.json();
+      throw new Error(`Failed to load conversation ${conversationId}`);
+    } catch (e) {
+      console.warn('[VoyantraAPI] getConversation error:', e.message);
+      throw e;
+    }
+  },
+
+  // Delete conversation
+  async deleteConversation(conversationId) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/conversations/${encodeURIComponent(conversationId)}`, {
+        method: 'DELETE',
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) return await res.json();
+      throw new Error(`Failed to delete conversation ${conversationId}`);
+    } catch (e) {
+      console.warn('[VoyantraAPI] deleteConversation error:', e.message);
+      throw e;
+    }
+  },
+
+  // Get user memory profile
+  async getMemoryProfile(userId = 'demo_user') {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+        signal: AbortSignal.timeout(5000)
+      });
+      if (res.ok) return await res.json();
+      return null;
+    } catch (e) {
+      console.warn('[VoyantraAPI] getMemoryProfile error:', e.message);
+      return null;
+    }
+  },
+
+  // Update memory profile
+  async updateMemoryProfile(updates, userId = 'demo_user') {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) return await res.json();
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to update memory');
+    } catch (e) {
+      console.warn('[VoyantraAPI] updateMemoryProfile error:', e.message);
+      throw e;
+    }
+  },
+
+  // Clear memory profile
+  async clearMemoryProfile(userId = 'demo_user') {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) return await res.json();
+      throw new Error('Failed to clear memory');
+    } catch (e) {
+      console.warn('[VoyantraAPI] clearMemoryProfile error:', e.message);
+      throw e;
+    }
+  },
+
+  // Audio transcription fallback
+  async transcribeSpeech(formData) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/transcribe`, {
+        method: 'POST',
+        body: formData,
+        signal: AbortSignal.timeout(15000)
+      });
+      if (res.ok) return await res.json();
+      throw new Error('Transcription failed');
+    } catch (e) {
+      console.warn('[VoyantraAPI] transcribeSpeech error:', e.message);
+      throw e;
+    }
+  },
+
+  // Audio synthesis metadata fallback
+  async synthesizeSpeech({ text, language = 'en', speed = 1.0 }) {
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat/synthesize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, language, speed }),
+        signal: AbortSignal.timeout(6000)
+      });
+      if (res.ok) return await res.json();
+      return null;
+    } catch (e) {
+      console.warn('[VoyantraAPI] synthesizeSpeech error:', e.message);
+      return null;
+    }
+  },
+
+  // Legacy compatibility wrapper for chatWithAi
+  async chatWithAi({ city_id = null, message, conversation_history = [], current_itinerary = null, age_group, dietary_preference, duration_days = 2 }) {
+    return this.sendChatMessage({
+      message,
+      current_itinerary,
+      duration_days,
+      user_preferences: { age_group, dietary_preference }
+    });
+  },
+
   // 4. Generate AI Itinerary (RAG + Gemini)
   async generateAiItinerary({ city_id, query_text, age_group, dietary_preference, duration_days = 2, existing_days = null }) {
     try {
@@ -141,7 +282,7 @@ export const VoyantraAPI = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          city_id: city_id || 'pondicherry',
+          city_id: city_id || 'all',
           query_text,
           age_group,
           dietary_preference,

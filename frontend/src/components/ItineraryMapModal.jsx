@@ -145,10 +145,9 @@ export function ItineraryMapModal({
     );
   };
 
+  // GPS is accessed strictly when user clicks the routing button, not automatically on modal open.
   useEffect(() => {
-    if (isOpen) {
-      requestUserLocation();
-    }
+    // Geolocation only accessed on explicit user action
   }, [isOpen, itinerary?.city_id]);
 
   // Reset target index and route when day changes

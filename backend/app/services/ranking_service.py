@@ -51,7 +51,8 @@ def resolve_budget(raw_budget: Any) -> BudgetTierEnum:
 
 class RankingService:
     def rank_places(self, req: RecommendationRequest) -> RecommendationResponse:
-        city_id = (req.city_id or req.city or "pondicherry").strip().lower()
+        raw_city = (req.city_id or req.city or "").strip().lower()
+        city_id = raw_city if raw_city and raw_city not in ["all", "both", "any"] else None
         places = places_service.get_all_places(city_id)
 
         user_age_group = resolve_age_group(req.age, req.age_group)

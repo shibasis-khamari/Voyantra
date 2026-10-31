@@ -18,7 +18,7 @@ function calculateDistanceKm(lat1, lon1, lat2, lon2) {
 
 export function PreferencesProvider({ children }) {
   const [selectedCity, setSelectedCity] = useState(() => {
-    return localStorage.getItem('voyantra_city') || 'pondicherry';
+    return localStorage.getItem('voyantra_city') || 'all';
   });
 
   const [ageGroup, setAgeGroup] = useState(() => {
@@ -111,9 +111,10 @@ export function PreferencesProvider({ children }) {
     );
   };
 
+  // Geolocation is intentionally accessed ONLY during explicit routing actions,
+  // not on initial page visit.
   useEffect(() => {
-    // Run optional GPS detection on first visit for location features
-    detectCurrentLocation(false);
+    // No automatic GPS access on page load
   }, []);
 
   useEffect(() => {

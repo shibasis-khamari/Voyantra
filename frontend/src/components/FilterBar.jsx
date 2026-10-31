@@ -5,6 +5,8 @@ import { CATEGORIES, BUDGET_TIERS, AGE_GROUPS, DIETARY_OPTIONS } from '../types/
 export function FilterBar({
   search,
   setSearch,
+  cityFilter = 'all',
+  setCityFilter,
   selectedCategory,
   setSelectedCategory,
   selectedBudget,
@@ -15,7 +17,7 @@ export function FilterBar({
   setSelectedAgeGroup,
   onReset
 }) {
-  const hasActiveFilters = search || selectedCategory !== 'all' || selectedBudget !== '' || selectedDietary !== 'all';
+  const hasActiveFilters = search || cityFilter !== 'all' || selectedCategory !== 'all' || selectedBudget !== '' || selectedDietary !== 'all';
 
   return (
     <div className="bg-white rounded-3xl p-4 sm:p-5 border border-sandstone shadow-2xs space-y-4">
@@ -28,7 +30,7 @@ export function FilterBar({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search cafes, beaches, heritage spots..."
+            placeholder="Search Pondicherry, Chennai, Marina, French Quarter..."
             className="w-full pl-10 pr-4 py-2.5 rounded-full border border-sandstone bg-sandstone-canvas focus:bg-white focus:border-brand-700 text-xs font-semibold outline-none transition-all placeholder:text-slate-400"
           />
           {search && (
@@ -43,6 +45,44 @@ export function FilterBar({
 
         {/* Quick Selectors */}
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
+          {/* City Segmented Toggle (Pondicherry, Chennai, All) */}
+          {setCityFilter && (
+            <div className="flex items-center p-0.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => setCityFilter('all')}
+                className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${
+                  cityFilter === 'all'
+                    ? 'bg-white text-slate-950 font-bold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                All Destinations
+              </button>
+              <button
+                type="button"
+                onClick={() => setCityFilter('pondicherry')}
+                className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${
+                  cityFilter === 'pondicherry'
+                    ? 'bg-white text-slate-950 font-bold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Pondicherry
+              </button>
+              <button
+                type="button"
+                onClick={() => setCityFilter('chennai')}
+                className={`px-3 py-1.5 rounded-full transition-all cursor-pointer ${
+                  cityFilter === 'chennai'
+                    ? 'bg-white text-slate-950 font-bold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Chennai
+              </button>
+            </div>
+          )}
           {/* Budget Selector */}
           <select
             value={selectedBudget}

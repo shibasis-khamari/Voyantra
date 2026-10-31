@@ -27,9 +27,15 @@ export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
         <img src={imageSrc} alt={place.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/10" />
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between gap-3">
-          <span className="max-w-[70%] truncate text-[10px] font-bold tracking-[0.12em] uppercase px-3 py-1.5 rounded-full bg-white/95 text-brand-700 shadow-sm">
-            {place.category}
-          </span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[10px] font-bold uppercase px-2.5 py-1 rounded-full bg-slate-950/80 text-white backdrop-blur-md shadow-sm flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-amber-300" />
+              {place.city_id === 'chennai' ? 'Chennai' : 'Pondicherry'}
+            </span>
+            <span className="max-w-[120px] truncate text-[10px] font-bold tracking-[0.12em] uppercase px-2.5 py-1 rounded-full bg-white/95 text-brand-700 shadow-sm">
+              {place.category}
+            </span>
+          </div>
           <button
             aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
             onClick={(e) => { e.stopPropagation(); toggleFavorite(place.id); }}

@@ -18,7 +18,8 @@ def list_places(
     max_cost: Optional[int] = Query(None, description="Maximum estimated cost in INR"),
     search: Optional[str] = Query(None, description="Keyword search in name, description, tags")
 ):
-    resolved_city = (city_id or city or "pondicherry").strip().lower()
+    raw_city = (city_id or city or "").strip().lower()
+    resolved_city = raw_city if raw_city and raw_city not in ["all", "both", "any"] else None
     filters = PlaceFilter(
         city_id=resolved_city,
         categories=category,
@@ -61,7 +62,8 @@ def get_place(
     city_id: Optional[str] = Query(None),
     city: Optional[str] = Query(None)
 ):
-    resolved_city = (city_id or city or "pondicherry").strip().lower()
+    raw_city = (city_id or city or "").strip().lower()
+    resolved_city = raw_city if raw_city and raw_city not in ["all", "both"] else None
     place = places_service.get_place_by_id(place_id, resolved_city)
     if not place:
         raise HTTPException(status_code=404, detail="Place not found")

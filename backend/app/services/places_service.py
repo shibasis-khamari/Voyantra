@@ -36,21 +36,31 @@ class PlacesService:
         except Exception:
             return [{"id": "pondicherry", "name": "Pondicherry", "country": "India"}]
 
-    def get_all_places(self, city_id: str = "pondicherry") -> List[Place]:
-        if city_id not in self._places_cache:
+    def get_all_places(self, city_id: Optional[str] = None) -> List[Place]:
+        if not self._places_cache:
             self._load_all_data()
-        return self._places_cache.get(city_id, [])
+        if not city_id or city_id.lower() in ["all", "both", "all_cities"]:
+            all_places: List[Place] = []
+            for plist in self._places_cache.values():
+                all_places.extend(plist)
+            return all_places
+        return self._places_cache.get(city_id.lower(), [])
 
-    def get_place_by_id(self, place_id: str, city_id: str = "pondicherry") -> Optional[Place]:
+    def get_place_by_id(self, place_id: str, city_id: Optional[str] = None) -> Optional[Place]:
         places = self.get_all_places(city_id)
         for p in places:
             if p.id == place_id:
                 return p
+        # If not found in specified city, search all cities
+        if city_id and city_id.lower() not in ["all", "both"]:
+            all_places = self.get_all_places(None)
+            for p in all_places:
+                if p.id == place_id:
+                    return p
         return None
 
     def filter_places(self, filters: PlaceFilter) -> List[Place]:
-        city_id = filters.city_id or "pondicherry"
-        places = self.get_all_places(city_id)
+        places = self.get_all_places(filters.city_id)
         filtered: List[Place] = []
 
         for p in places:
@@ -99,7 +109,8 @@ class PlacesService:
             # 7. Search Query
             if filters.search_query:
                 q = filters.search_query.lower()
-                text_to_search = f"{p.name} {p.description} {p.category} {p.sub_category or ''} {' '.join(p.tags)}".lower()
+                city_name = "chennai" if p.city_id == "chennai" else "pondicherry puducherry"
+                text_to_search = f"{p.name} {p.description} {p.category} {p.sub_category or ''} {p.city_id or ''} {city_name} {' '.join(p.tags)}".lower()
                 if q not in text_to_search:
                     continue
 

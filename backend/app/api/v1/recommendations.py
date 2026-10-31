@@ -96,13 +96,27 @@ def get_preset_suggestions():
         },
         {
             "id": "sugg-6",
+            "title": "Chennai Heritage, Mylapore & Marina Trail",
+            "prompt": "2-day Chennai itinerary featuring Marina Beach sunrise, Kapaleeshwarar Temple Dravidian architecture, and filter coffee in Mylapore",
+            "category": "heritage",
+            "icon": "🏛️"
+        },
+        {
+            "id": "sugg-7",
+            "title": "Pondicherry & Chennai Coastal Grand Tour",
+            "prompt": "3-day coastal tour exploring best destinations across both Pondicherry and Chennai: French Quarter, Promenade, Marina Beach, and ancient temples",
+            "category": "coastal",
+            "icon": "🌊"
+        },
+        {
+            "id": "sugg-8",
             "title": "Vintage Polaroid Yellow Walls Walk (Niche)",
             "prompt": "Where can I take aesthetic vintage polaroid photos with mustard yellow French walls and bougainvillea streets?",
             "category": "heritage",
             "icon": "📸"
         },
         {
-            "id": "sugg-7",
+            "id": "sugg-9",
             "title": "Silent 4 AM Meditation & Reflection (Unusual)",
             "prompt": "Where can I sit in total silence for early morning meditation without any crowds or mobile phones?",
             "category": "spiritual",
@@ -147,6 +161,17 @@ def detect_target_destination(
     """
     msg_clean = (message or "").strip()
     msg_lower = msg_clean.lower()
+
+    # Check for both Pondicherry and Chennai in the query
+    has_chennai = bool(re.search(r"\b(chennai|madras)\b", msg_lower))
+    has_pondy = bool(re.search(r"\b(pondy|puducherry|pondicherry)\b", msg_lower))
+
+    if has_chennai and has_pondy:
+        return "both", "Pondicherry & Chennai"
+    if has_chennai and not has_pondy:
+        return "chennai", "Chennai"
+    if has_pondy and not has_chennai:
+        return "pondicherry", "Pondicherry"
 
     # 1. Direct match in dictionary of common world & Indian destinations
     for dest in COMMON_WORLD_DESTINATIONS:
@@ -198,8 +223,10 @@ def detect_target_destination(
                         return "himachal-pradesh", "Himachal Pradesh"
                     return dest.replace(" ", "-"), dest.title()
 
-    # 4. Fallback to passed default city or Pondicherry
-    fallback = (default_city or "pondicherry").strip().lower()
+    # 4. Fallback to passed default city or both
+    fallback = (default_city or "both").strip().lower()
+    if fallback in ["all", "both", "any"]:
+        return "both", "Pondicherry & Chennai"
     return fallback.replace(" ", "-"), fallback.replace("-", " ").title()
 
 @router.post("/chat", response_model=ConversationalChatResponse)

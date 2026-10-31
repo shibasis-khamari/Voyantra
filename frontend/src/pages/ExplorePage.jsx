@@ -16,10 +16,11 @@ import { AccordionFaq } from '../components/landing/AccordionFaq';
 import { FramerCtaBanner } from '../components/landing/FramerCtaBanner';
 
 export function ExplorePage({ setActiveTab }) {
-  const { ageGroup, dietaryPreference, budgetTier, selectedCity } = usePreferences();
+  const { ageGroup, dietaryPreference, budgetTier } = usePreferences();
 
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cityFilter, setCityFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBudget, setSelectedBudget] = useState('');
@@ -32,13 +33,13 @@ export function ExplorePage({ setActiveTab }) {
 
   useEffect(() => {
     loadPlaces();
-  }, [selectedCategory, selectedBudget, selectedDietary, search, selectedAgeGroup, selectedCity]);
+  }, [selectedCategory, selectedBudget, selectedDietary, search, selectedAgeGroup, cityFilter]);
 
   const loadPlaces = async () => {
     setLoading(true);
     try {
       const data = await VoyantraAPI.getPlaces({
-        city_id: selectedCity,
+        city_id: cityFilter,
         category: selectedCategory,
         budget: selectedBudget,
         dietary: selectedDietary,
@@ -57,6 +58,7 @@ export function ExplorePage({ setActiveTab }) {
 
   const handleReset = () => {
     setSearch('');
+    setCityFilter('all');
     setSelectedCategory('all');
     setSelectedBudget('');
     setSelectedDietary('all');
@@ -74,7 +76,7 @@ export function ExplorePage({ setActiveTab }) {
   return (
     <div className="space-y-0">
       {/* 1. Framer-Inspired Editorial Hero - IMAGE BACKGROUND */}
-      <FramerHero setActiveTab={setActiveTab} selectedCity={selectedCity} />
+      <FramerHero setActiveTab={setActiveTab} selectedCity={cityFilter} />
 
       {/* 2. Seamless Infinite Marquee of Real Catalog Places - WHITE DIVIDER */}
       <InfiniteMarquee />
@@ -98,13 +100,13 @@ export function ExplorePage({ setActiveTab }) {
               </div>
               <h2 className="font-serif text-4xl sm:text-5xl text-slate-900 leading-tight">Find your next stop</h2>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                Discover places that match your interests, budget, and preferred pace.
+                Discover places that match your interests, budget, and preferred pace across Pondicherry and Chennai.
               </p>
             </div>
           </div>
 
           {/* Phase 3 Festival & Road Closure Advisory Banner */}
-          <FestivalAdvisoryBanner selectedCity={selectedCity} />
+          <FestivalAdvisoryBanner selectedCity={cityFilter === 'all' ? 'pondicherry' : cityFilter} />
 
         {/* Backend Disconnected Notice */}
         {backendError && (
@@ -127,6 +129,8 @@ export function ExplorePage({ setActiveTab }) {
         <FilterBar
           search={search}
           setSearch={setSearch}
+          cityFilter={cityFilter}
+          setCityFilter={setCityFilter}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
           selectedBudget={selectedBudget}

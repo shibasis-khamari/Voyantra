@@ -49,6 +49,7 @@ export function Navbar({ activeTab, setActiveTab }) {
   const navItems = [
     { id: 'explore', label: 'Explore', icon: Compass },
     { id: 'planner', label: 'Planner', icon: Sparkles },
+    { id: 'basket', label: 'Basket', icon: Luggage, badge: tripPlan.length },
     { id: 'hotels', label: 'Hotels', icon: Hotel },
     { id: 'map', label: 'Map', icon: Map },
     { id: 'profile', label: 'Preferences', icon: User }
@@ -71,7 +72,7 @@ export function Navbar({ activeTab, setActiveTab }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             
-            {/* Left: Brand Logo & Manual City Selector */}
+            {/* Left: Brand Logo */}
             <div className="flex items-center gap-3">
               <div 
                 onClick={() => setActiveTab('explore')}
@@ -86,28 +87,11 @@ export function Navbar({ activeTab, setActiveTab }) {
                   Voyantra
                 </span>
               </div>
-
-              {/* Manual City Selector Pill (Glass finish preserved) */}
-              <div className="flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 px-3 py-1.5 rounded-full backdrop-blur-md transition-colors text-white shadow-xs">
-                <MapPin className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-                <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="bg-transparent text-xs font-semibold font-sans tracking-wider text-white outline-none cursor-pointer [&>option]:bg-slate-900 [&>option]:text-white"
-                  title="Select destination city manually"
-                >
-                  {cities.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
 
             {/* Center: Organized & Minimal Nav Dock (Glass finish preserved) */}
             <nav className="hidden md:flex items-center gap-1 bg-white/10 border border-white/20 px-2 py-1 rounded-full backdrop-blur-md shadow-xs">
-              {navItems.map(item => {
+              {navItems.filter(item => item.id !== 'basket').map(item => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 return (
@@ -190,9 +174,13 @@ export function Navbar({ activeTab, setActiveTab }) {
 
               {/* Trip Plan Basket Pill */}
               <button
-                onClick={() => setActiveTab('planner')}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold font-sans tracking-wider transition-all backdrop-blur-md cursor-pointer shadow-xs"
-                title="Open Trip Basket"
+                onClick={() => setActiveTab('basket')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold font-sans tracking-wider transition-all backdrop-blur-md cursor-pointer shadow-xs ${
+                  activeTab === 'basket'
+                    ? 'bg-amber-400/25 text-amber-300 border-amber-300/50 shadow-md ring-1 ring-amber-300/40'
+                    : 'bg-white/10 hover:bg-white/20 border-white/20 text-white'
+                }`}
+                title="Open Saved Trip Basket"
               >
                 <Luggage className="w-3.5 h-3.5 text-amber-300" />
                 <span className="hidden sm:inline">Basket</span>
@@ -213,11 +201,18 @@ export function Navbar({ activeTab, setActiveTab }) {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex-1 min-w-[65px] py-1.5 flex flex-col items-center gap-1 rounded-xl text-[10px] transition-colors ${
+                className={`flex-1 min-w-[65px] py-1.5 flex flex-col items-center gap-1 rounded-xl text-[10px] transition-colors relative ${
                   isActive ? 'text-amber-300 font-bold bg-white/10' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <div className="relative">
+                  <Icon className="w-3.5 h-3.5" />
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1 -right-2.5 w-3.5 h-3.5 rounded-full bg-terracotta text-white flex items-center justify-center text-[8px] font-bold">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
                 <span>{item.label}</span>
               </button>
             );
