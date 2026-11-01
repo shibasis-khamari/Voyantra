@@ -4,11 +4,14 @@ Executes grounded discovery for places, hotels, and restaurants in Pondicherry a
 Never invents details, prices, or fake properties.
 """
 from typing import List, Optional, Dict, Any
+from ...core.config import settings
 from ...schemas.chat import PlaceCardData, HotelCardData, RestaurantCardData
 from ...schemas.place import PlaceFilter, CategoryEnum, BudgetTierEnum, DietaryOptionEnum
 from ...services.places_service import places_service
 from ...services.hotels_service import hotels_service
 from ...schemas.hotel import HotelFilter
+from ..knowledge.retrieval.hybrid_retriever import hybrid_retriever
+from ...schemas.knowledge import KnowledgeEntity
 
 class DiscoveryService:
     def search_places(
@@ -18,7 +21,7 @@ class DiscoveryService:
         category: Optional[str] = None,
         limit: int = 4
     ) -> List[PlaceCardData]:
-        """Discovers verified places in Pondicherry or Chennai."""
+        """Discovers verified places in Pondicherry or Chennai using Hybrid Retrieval and Places Service."""
         target_city = city_id if city_id and city_id not in ["all", "both"] else None
         
         parsed_category = None
@@ -28,6 +31,7 @@ class DiscoveryService:
             except Exception:
                 pass
 
+        # 1. Query Places Catalog
         f = PlaceFilter(
             city_id=target_city,
             categories=parsed_category,
@@ -36,7 +40,10 @@ class DiscoveryService:
         places = places_service.filter_places(f)
 
         results: List[PlaceCardData] = []
+        seen_ids = set()
+
         for p in places[:limit]:
+            seen_ids.add(p.id)
             results.append(PlaceCardData(
                 id=p.id,
                 name=p.name,
@@ -50,6 +57,37 @@ class DiscoveryService:
                 highlights=p.highlights or [],
                 image_url=p.image_url
             ))
+
+        # 2. Enrich with VTKE Hybrid Knowledge Engine if enabled and more slots available
+        if getattr(settings, "KNOWLEDGE_RAG_ENABLED", True) and len(results) < limit:
+            try:
+                k_results = hybrid_retriever.search(
+                    query=query or "",
+                    city_id=target_city,
+                    category=category,
+                    top_k=limit
+                )
+                for ent, _score in k_results:
+                    if len(results) >= limit:
+                        break
+                    if isinstance(ent, KnowledgeEntity) and ent.id not in seen_ids and ent.entity_type == "place":
+                        seen_ids.add(ent.id)
+                        results.append(PlaceCardData(
+                            id=ent.id,
+                            name=ent.name,
+                            city_id=ent.city_id or "pondicherry",
+                            category=ent.category or "heritage",
+                            sub_category=ent.sub_category,
+                            estimated_cost_inr=ent.estimated_cost_inr or 0,
+                            duration_minutes=ent.duration_minutes or 60,
+                            rating=ent.rating or 4.5,
+                            address=ent.address or f"{ent.name}, {ent.city_id.capitalize() if ent.city_id else ''}",
+                            highlights=ent.highlights or [],
+                            image_url=ent.image_url or "https://images.unsplash.com/photo-1582510003544-4d00b7f74220"
+                        ))
+            except Exception:
+                pass
+
         return results
 
     def search_hotels(
@@ -127,7 +165,10 @@ class DiscoveryService:
         dining_places = places_service.filter_places(f)
 
         results: List[RestaurantCardData] = []
+        seen_ids = set()
+
         for p in dining_places[:limit]:
+            seen_ids.add(p.id)
             diet_opts = [d.value if hasattr(d, "value") else str(d) for d in p.dietary_options]
             results.append(RestaurantCardData(
                 id=p.id,
@@ -140,6 +181,36 @@ class DiscoveryService:
                 address=p.address,
                 image_url=p.image_url
             ))
+
+        # Enrich with VTKE if needed
+        if getattr(settings, "KNOWLEDGE_RAG_ENABLED", True) and len(results) < limit:
+            try:
+                k_results = hybrid_retriever.search(
+                    query=query or "",
+                    city_id=target_city,
+                    category="cafe",
+                    dietary_preference=dietary,
+                    top_k=limit
+                )
+                for ent, _score in k_results:
+                    if len(results) >= limit:
+                        break
+                    if isinstance(ent, KnowledgeEntity) and ent.id not in seen_ids and (ent.category in ["cafe", "dining"] or ent.entity_type == "restaurant"):
+                        seen_ids.add(ent.id)
+                        results.append(RestaurantCardData(
+                            id=ent.id,
+                            name=ent.name,
+                            city_id=ent.city_id or "pondicherry",
+                            category=ent.category or "dining",
+                            budget_tier=ent.budget_tier or "moderate",
+                            dietary_options=ent.dietary_options or ["all"],
+                            estimated_cost_inr=ent.estimated_cost_inr or 0,
+                            address=ent.address or f"{ent.name}, {ent.city_id.capitalize() if ent.city_id else ''}",
+                            image_url=ent.image_url or "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
+                        ))
+            except Exception:
+                pass
+
         return results
 
 discovery_service = DiscoveryService()

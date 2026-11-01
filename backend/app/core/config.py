@@ -46,4 +46,21 @@ class Settings(BaseModel):
     OSRM_PUBLIC_DEMO_URL: str = os.getenv("OSRM_PUBLIC_DEMO_URL", "http://router.project-osrm.org")
     OSRM_TIMEOUT_SECONDS: float = float(os.getenv("OSRM_TIMEOUT_SECONDS", "3.0"))
 
+    # Knowledge Engine (VTKE)
+    KNOWLEDGE_RAG_ENABLED: bool = os.getenv("KNOWLEDGE_RAG_ENABLED", "True").lower() == "true"
+    KNOWLEDGE_GEMINI_EMBEDDING_MODEL: str = os.getenv("KNOWLEDGE_GEMINI_EMBEDDING_MODEL", "models/gemini-embedding-001")
+    KNOWLEDGE_VECTOR_INDEX_DIR: str = os.getenv(
+        "KNOWLEDGE_VECTOR_INDEX_DIR",
+        str(Path(__file__).resolve().parent.parent / "data" / "knowledge_vectors")
+    )
+    KNOWLEDGE_CRAWL_ALLOWED_DOMAINS: list[str] = [
+        "voyantra.com",
+        "localhost",
+        "127.0.0.1"
+    ]
+    KNOWLEDGE_MAX_REDIRECT_HOPS: int = 3
+    KNOWLEDGE_WORKER_LEASE_SECONDS: int = 120
+    KNOWLEDGE_WORKER_HEARTBEAT_SECONDS: int = 30
+    KNOWLEDGE_WORKER_MAX_RETRIES: int = 3
+
 settings = Settings()

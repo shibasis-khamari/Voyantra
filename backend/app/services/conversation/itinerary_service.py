@@ -77,7 +77,23 @@ class ItineraryService:
         # Resolve available places
         all_pondicherry = places_service.get_all_places("pondicherry")
         all_chennai = places_service.get_all_places("chennai")
-        all_places = all_pondicherry + all_chennai
+        all_places = list(all_pondicherry + all_chennai)
+        seen_place_ids = {p.id for p in all_places}
+
+        # Enrich with candidate places from Knowledge Engine via CandidatePlaceAdapter
+        try:
+            from ...core.config import settings
+            if getattr(settings, "KNOWLEDGE_RAG_ENABLED", True):
+                from .candidate_place_adapter import candidate_place_adapter
+                from ..knowledge.storage.knowledge_repository import knowledge_repository
+                k_entities = knowledge_repository.find_entities(limit=100)
+                adapted_candidates = candidate_place_adapter.adapt_entities(k_entities)
+                for cand in adapted_candidates:
+                    if cand.id not in seen_place_ids:
+                        seen_place_ids.add(cand.id)
+                        all_places.append(cand)
+        except Exception as k_err:
+            logger.warning(f"[ItineraryService] Knowledge candidate enrichment notice: {k_err}")
 
         # Detect mandatory places from requested_places or text
         mandatory_ids: Set[str] = set()

@@ -8,10 +8,12 @@ from .festivals import router as festivals_router
 from .crowd import router as crowd_router
 from .routes import router as routes_router
 from .chat import router as chat_router
+from .knowledge import router as knowledge_router
 
 api_router = APIRouter()
 
 api_router.include_router(chat_router)
+api_router.include_router(knowledge_router)
 api_router.include_router(places_router)
 api_router.include_router(hotels_router)
 api_router.include_router(preferences_router)

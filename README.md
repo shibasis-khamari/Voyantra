@@ -49,6 +49,14 @@ Voyantra is an intelligent, full-stack travel platform designed to help traveler
   - UI & Body: `"Plus Jakarta Sans"`, sans-serif (clean, modern legibility).
 - **Aesthetic Palette**: Sandstone canvas (`#FAF8F5`), amber highlights (`#FCD34D`), terracotta accents, and frosted glassmorphism.
 
+### 🏛️ Voyantra Unified Tourism Knowledge Engine (VTKE)
+- **Multi-Source Knowledge Ingestion**: Ingests and standardizes records from Wikidata, OpenStreetMap, Wikipedia, and official State Tourism bodies (PTDC & TTDC) with field-level provenance and licence tracking.
+- **SSRF-Hardened Crawler**: Socket-level IP pinning, private IP and loopback blocking, redirect revalidation (max 3 hops), and content-hash diffing for Voyantra documentation and pages.
+- **Hybrid Multi-Channel Retrieval**: Combines hard constraint filters, independent lexical BM25 token matching, geospatial radius search, and multilingual vector similarity via Reciprocal Rank Fusion (RRF).
+- **Process-Safe Vector Indexing**: Single-writer architecture, cross-process atomic file locking (`index.lock`), generation tracking (`index.meta.json`), and atomic shadow swaps (`index_{version}.bin`).
+- **Conversational RAG Grounding**: Grounds chat turns with verified citations in English, Hindi, and Tamil, with anti-prompt-injection sanitization and instant rollback via `KNOWLEDGE_RAG_ENABLED`.
+- **Candidate Place Adapter**: Feeds candidate knowledge entities to Itinerary Engine V2 with conservative missing-data fallbacks while preserving all 40 scheduling and duplicate elimination rules.
+
 ---
 
 ## 🏛️ System Architecture
