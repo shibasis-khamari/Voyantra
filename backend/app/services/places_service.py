@@ -108,11 +108,34 @@ class PlacesService:
 
             # 7. Search Query
             if filters.search_query:
-                q = filters.search_query.lower()
+                raw_q = filters.search_query.lower()
                 city_name = "chennai" if p.city_id == "chennai" else "pondicherry puducherry"
-                text_to_search = f"{p.name} {p.description} {p.category} {p.sub_category or ''} {p.city_id or ''} {city_name} {' '.join(p.tags)}".lower()
-                if q not in text_to_search:
-                    continue
+                text_to_search = f"{p.name} {p.description} {p.category.value if hasattr(p.category, 'value') else str(p.category)} {p.sub_category or ''} {p.city_id or ''} {city_name} {' '.join(p.tags)}".lower()
+
+                if raw_q in text_to_search:
+                    pass
+                else:
+                    # Clean generic filler phrases to find substantive keywords
+                    filler_phrases = [
+                        "places to visit in", "place to visit in", "places to see in", "things to do in",
+                        "tourist spots in", "tourist spot in", "attractions in", "where to go in", "tell me about",
+                        "in pondicherry", "in puducherry", "in chennai", "pondicherry", "puducherry", "chennai"
+                    ]
+                    cleaned_q = raw_q
+                    for phrase in filler_phrases:
+                        cleaned_q = cleaned_q.replace(phrase, " ")
+                    search_tokens = [
+                        w.strip() for w in cleaned_q.split() 
+                        if len(w.strip()) > 2 and w.strip() not in {"and", "the", "for", "best", "good", "some", "near"}
+                    ]
+
+                    if search_tokens:
+                        # Match if any significant token is found in the place data
+                        if not any(token in text_to_search for token in search_tokens):
+                            continue
+                    else:
+                        # If query consisted entirely of city/filler phrases, keep place
+                        pass
 
             filtered.append(p)
 

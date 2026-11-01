@@ -60,7 +60,7 @@ class ConversationOrchestrator:
         ]):
             return "itinerary_edit"
 
-        # 2. Explicit Itinerary Planning Request (MUST clearly ask for planning)
+        # 3. Explicit Itinerary Planning Request (MUST clearly ask for planning)
         planning_triggers = [
             r"\bplan a\b", r"\bplan my\b", r"\bmake an itinerary\b", r"\bcreate an itinerary\b",
             r"\bgenerate itinerary\b", r"\bday trip\b", r"\bweekend trip\b", r"\b\d+\s*-?\s*days?\s*trip\b",
@@ -69,19 +69,69 @@ class ConversationOrchestrator:
         if any(re.search(p, msg) for p in planning_triggers):
             return "itinerary_planning"
 
-        # 3. Hotel Discovery
-        if any(re.search(rf"\b{w}\b", msg) for w in ["hotel", "hotels", "resort", "resorts", "stay", "accommodation", "room", "rooms", "lodge"]):
+        # 4. Hotel & Accommodation Discovery (Comprehensive Hostels, Homestays, Lodgings)
+        hotel_triggers = [
+            # English nouns
+            r"\bhotels?\b", r"\bhostels?\b", r"\bresorts?\b", r"\bstays?\b", r"\bstaying\b",
+            r"\baccommodations?\b", r"\brooms?\b", r"\blodges?\b", r"\blodging\b",
+            r"\bhomestays?\b", r"\bhome\s*stays?\b", r"\bguest\s*houses?\b", r"\bguesthouses?\b",
+            r"\binns?\b", r"\bmotels?\b", r"\bdorms?\b", r"\bdormitor(?:y|ies)\b",
+            r"\bbackpackers?\b", r"\bvillas?\b", r"\bcottages?\b", r"\bb&b\b", r"\bbed\s*and\s*breakfast\b",
+            r"\bpaying\s*guest\b", r"\bpg\b",
+            # English phrases
+            r"\bwhere\s+to\s+stay\b", r"\bplaces?\s+to\s+stay\b", r"\bbudget\s+stay\b", r"\bcheap\s+stay\b",
+            r"\bwhere\s+can\s+i\s+stay\b",
+            # Hindi
+            "होटल", "हॉस्टल", "ठहरने", "रुकने", "आवास", "कमरा", "कमरे", "धर्मशाला", "लॉज", "होमस्टे",
+            # Tamil
+            "ஹோட்டல்", "ஹோஸ்டல்", "தங்குமிடம்", "தங்குவதற்கு", "விடுதி", "விடுதிகள்", "அறை", "அறைகள்"
+        ]
+        if any(re.search(p, msg) if p.startswith(r"\b") else p in msg for p in hotel_triggers):
             return "hotel_discovery"
 
-        # 4. Restaurant Discovery
-        if any(re.search(rf"\b{w}\b", msg) for w in ["restaurant", "restaurants", "cafe", "cafes", "dining", "food", "eat", "eating", "breakfast", "lunch", "dinner", "jain food", "veg food"]):
+        # 5. Dining, Cafes & Restaurant Discovery
+        restaurant_triggers = [
+            # English nouns
+            r"\brestaurants?\b", r"\bcafes?\b", r"\bcoffee\b", r"\bcoffeeshop\b", r"\bcoffee\s+shop\b",
+            r"\bdining\b", r"\bfoods?\b", r"\beat\b", r"\beats\b", r"\beating\b", r"\beater(?:y|ies)\b",
+            r"\bbreakfast\b", r"\blunch\b", r"\bdinner\b", r"\bbrunch\b", r"\bbaker(?:y|ies)\b",
+            r"\bpubs?\b", r"\bbars?\b", r"\bbrewer(?:y|ies)\b", r"\bbistros?\b",
+            r"\bdhabas?\b", r"\bmess\b", r"\btiffin\b", r"\bsnacks?\b", r"\bdesserts?\b",
+            r"\bice\s*cream\b", r"\bsweets?\b", r"\bcuisines?\b", r"\bdishes\b",
+            # Dietary / specials
+            r"\bjain\s+food\b", r"\bveg\s+food\b", r"\bvegetarian\s+food\b", r"\bseafood\b",
+            # English phrases
+            r"\bplaces?\s+to\s+eat\b", r"\bwhere\s+to\s+eat\b", r"\bcheap\s+eats\b", r"\bstreet\s+food\b",
+            # Hindi
+            "खाना", "रेस्तरां", "ढाबा", "भोजन", "नाश्ता", "कैफे", "चाय", "कॉफ़ी", "मिठाई", "खाने की जगह",
+            # Tamil
+            "உணவகம்", "சாப்பாடு", "உணவு", "சிற்றுண்டி", "காபி", "தேநீர்", "சாப்பிட"
+        ]
+        if any(re.search(p, msg) if p.startswith(r"\b") else p in msg for p in restaurant_triggers):
             return "restaurant_discovery"
 
-        # 5. Place Discovery
-        if any(w in msg for w in ["tell me about", "places to visit", "tourist spot", "attractions", "sightseeing", "beach", "temple", "museum"]):
+        # 6. Tourist Sights & Place Discovery
+        place_triggers = [
+            # Phrases
+            r"\bplaces?\s+to\s+visit\b", r"\bplaces?\s+to\s+see\b", r"\bthings?\s+to\s+do\b",
+            r"\bthings?\s+to\s+see\b", r"\bwhat\s+to\s+do\b", r"\bwhat\s+to\s+see\b",
+            r"\btourist\s+spots?\b", r"\battractions?\b", r"\bsightseeings?\b", r"\bsights\b",
+            r"\bwhere\s+to\s+go\b", r"\bmust\s+visit\b", r"\btop\s+spots?\b", r"\btell\s+me\s+about\b",
+            # Specific place categories / types
+            r"\bbeach(?:es)?\b", r"\btemples?\b", r"\bmuseums?\b", r"\bchurch(?:es)?\b",
+            r"\bcathedrals?\b", r"\bbasilicas?\b", r"\bashrams?\b", r"\bmonuments?\b",
+            r"\bheritage\s+sites?\b", r"\bparks?\b", r"\bgardens?\b", r"\blakes?\b",
+            r"\bforts?\b", r"\bmarkets?\b", r"\bbazaars?\b", r"\bviewpoints?\b",
+            r"\bsunset\s+point\b", r"\bsunrise\s+point\b",
+            # Hindi
+            "घूमने की जगह", "दर्शनीय स्थल", "पर्यटन स्थल", "पर्यटन", "आकर्षण", "मंदिर", "बीच", "समुद्र तट", "किला", "संग्रहालय",
+            # Tamil
+            "பார்க்க வேண்டிய இடங்கள்", "சுற்றுலா தலங்கள்", "சுற்றுலா", "கோவில்", "கடற்கரை", "அருங்காட்சியகம்"
+        ]
+        if any(re.search(p, msg) if p.startswith(r"\b") else p in msg for p in place_triggers):
             return "place_discovery"
 
-        # 6. Default to General Conversational Q&A
+        # 7. Default to General Conversational Q&A
         return "general_qa"
 
     def process_turn(
@@ -152,6 +202,37 @@ class ConversationOrchestrator:
             ]
 
         elif intent == "hotel_discovery":
+            # Detect explicit accommodation sub-type for personalized labels and followups
+            msg_low = effective_message.lower()
+            if any(w in msg_low for w in ["hostel", "backpacker", "dorm", "हॉस्टल", "ஹோஸ்டல்"]):
+                item_label = "hostel"
+                followups = [
+                    "Are lockers and dorms available?",
+                    "Show budget homestays near Auroville",
+                    "Hostels near Rock Beach"
+                ]
+            elif any(w in msg_low for w in ["homestay", "home stay", "cottage", "retreat", "होमस्टे"]):
+                item_label = "homestay"
+                followups = [
+                    "Homestays near Auroville",
+                    "Eco-friendly bamboo cottages",
+                    "Family homestays in White Town"
+                ]
+            elif any(w in msg_low for w in ["resort", "luxury", "5 star", "5-star", "palace"]):
+                item_label = "luxury resort"
+                followups = [
+                    "Resorts with oceanfront view",
+                    "Heritage palace hotels in Chennai",
+                    "Palais de Mahe luxury amenities"
+                ]
+            else:
+                item_label = "hotel"
+                followups = [
+                    "Which area is best to stay in Pondicherry?",
+                    "Show beachfront boutique hotels",
+                    "Are vegetarian options available?"
+                ]
+
             budget_val = user_pref.get("budget_tier", "moderate")
             hotels_data = discovery_service.search_hotels(
                 query=effective_message,
@@ -159,13 +240,8 @@ class ConversationOrchestrator:
                 budget_tier=budget_val
             )
             reply_text = self._generate_discovery_reply(
-                effective_message, "hotel", hotels_data, final_lang, city_name
+                effective_message, item_label, hotels_data, final_lang, city_name
             )
-            followups = [
-                "Which area is best to stay in Pondicherry?",
-                "Show beachfront boutique hotels",
-                "Are vegetarian options available?"
-            ]
 
         elif intent == "restaurant_discovery":
             dietary_val = user_pref.get("dietary_preference", "all")
@@ -351,36 +427,140 @@ class ConversationOrchestrator:
             except Exception as e:
                 logger.warning(f"[Orchestrator] Gemini general answer notice: {e}")
 
-        # Grounded Fallback using retrieved evidence if available
+        # Grounded Fallback using retrieved evidence ONLY if top_item is relevant to query
         if rag_enabled and retrieved_items:
             top_item, _score = retrieved_items[0]
             if isinstance(top_item, KnowledgeEntity):
-                cit_md = rag_context_builder.format_citations_markdown(citations, lang)
-                if lang == "hi":
-                    return (
-                        f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) "
-                        f"के बारे में जानकारी [1]:\n\n"
-                        f"{top_item.description or 'यह एक प्रसिद्ध दर्शनीय स्थल है।'}\n"
-                        f"{('- प्रमुख आकर्षण: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
-                        f"{cit_md}"
-                    )
-                elif lang == "ta":
-                    return (
-                        f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) "
-                        f"பற்றிய விவரங்கள் [1]:\n\n"
-                        f"{top_item.description or 'இது ஒரு புகழ்பெற்ற சுற்றுலாத் தலம் ஆகும்.'}\n"
-                        f"{('- முக்கிய சிறப்புகள்: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
-                        f"{cit_md}"
-                    )
-                else:
-                    return (
-                        f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) [1]:\n\n"
-                        f"{top_item.description}\n\n"
-                        f"{('• Highlights: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
-                        f"{cit_md}"
-                    )
+                # Verify that top_item actually matches the query subject
+                ent_words = set(re.findall(r"\w+", top_item.name.lower())) - {"beach", "temple", "church", "hotel", "park", "road"}
+                q_words = set(re.findall(r"\w+", q_lower)) - {"in", "at", "near", "the", "a", "an", "of", "to", "what", "is", "history", "tell", "me", "about", "pondicherry", "puducherry", "chennai"}
+                
+                is_subject_match = bool(ent_words & q_words) or (top_item.name.lower() in q_lower)
+                
+                if is_subject_match:
+                    cit_md = rag_context_builder.format_citations_markdown(citations, lang)
+                    if lang == "hi":
+                        return (
+                            f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) "
+                            f"के बारे में जानकारी [1]:\n\n"
+                            f"{top_item.description or 'यह एक प्रसिद्ध दर्शनीय स्थल है।'}\n"
+                            f"{('- प्रमुख आकर्षण: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
+                            f"{cit_md}"
+                        )
+                    elif lang == "ta":
+                        return (
+                            f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) "
+                            f"பற்றிய விவரங்கள் [1]:\n\n"
+                            f"{top_item.description or 'இது ஒரு புகழ்பெற்ற சுற்றுலாத் தலம் ஆகும்.'}\n"
+                            f"{('- முக்கிய சிறப்புகள்: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
+                            f"{cit_md}"
+                        )
+                    else:
+                        return (
+                            f"**{top_item.name}** ({top_item.city_id.capitalize() if top_item.city_id else ''}) [1]:\n\n"
+                            f"{top_item.description}\n\n"
+                            f"{('• Highlights: ' + ', '.join(top_item.highlights)) if top_item.highlights else ''}"
+                            f"{cit_md}"
+                        )
 
-        # Deterministic Grounded Fallbacks (Legacy)
+        # Deterministic Grounded Fallbacks (Accurate Travel Intelligence)
+        q_lower = query.lower()
+
+        # 1. Accommodations / Hostels / Stays fallback safety net
+        if any(w in q_lower for w in ["hostel", "hostels", "backpacker", "dorm", "where to stay", "places to stay", "homestay"]):
+            if lang == "hi":
+                return (
+                    "**पुडुचेरी में ठहरने के प्रमुख विकल्प:**\n\n"
+                    "- **हॉस्टल और बैकपैकर:** **Micasa Hostels & Backpacker Haven** (मिशन स्ट्रीट) — साफ़-सुथरे डॉर्म, को-वर्किंग लाउंज, लॉकर्स और साइकिल रेंटल (~₹850/रात)।\n"
+                    "- **इको होमस्टे:** **Auroville Eco Homestay & Retreat** — ऑरोविले के पास बांस की कॉटेज और प्राकृतिक वातावरण (~₹1,200/रात)।\n"
+                    "- **हेरिटेज होटल:** **Hotel Surguru Heritage** (~₹2,800/रात) और **Villa Shanti** (~₹8,500/रात)।"
+                )
+            elif lang == "ta":
+                return (
+                    "**பாண்டிச்சேரியில் தங்குமிடம் பற்றிய பரிந்துரைகள்:**\n\n"
+                    "- **ஹோஸ்டல் & பட்ஜெட்:** **Micasa Hostels & Backpacker Haven** (மிஷன் தெரு) — சுத்தமான டார்ம்கள், வைஃபை மற்றும் சைக்கிள் வாடகை (~₹850/இரவு).\n"
+                    "- **ஹோம்ஸ்டே:** **Auroville Eco Homestay & Retreat** — அமைதியான சூழல் மற்றும் இயற்கை தங்குமிடம் (~₹1,200/இரவு).\n"
+                    "- **ஹெரிட்டேஜ்:** **Villa Shanti** மற்றும் **The Promenade**."
+                )
+            return (
+                "**Top Verified Accommodations in Pondicherry:**\n\n"
+                "- **Hostel & Backpacker Haven:** **Micasa Hostels & Backpacker Haven** (Mission Street) — Spotless dorms, private rooms, lockers, co-working lounge, and bicycle rentals (~₹850/night).\n"
+                "- **Eco-Friendly Homestay:** **Auroville Eco Homestay & Retreat** (Auroville Road) — Peaceful bamboo & clay cottages with organic gardens (~₹1,200/night).\n"
+                "- **Comfortable Moderate:** **Hotel Surguru Heritage** (~₹2,800/night) & **The Promenade** beachfront (~₹5,500/night).\n"
+                "- **Luxury French Heritage:** **Palais de Mahe (CGH Earth)** (~₹14,500/night) & **Villa Shanti** (~₹8,500/night)."
+            )
+
+        # 2. Best time to visit / Weather / Seasons
+        if any(w in q_lower for w in ["best time", "when to visit", "season", "weather", "climate", "monsoon", "summer", "winter", "temperature", "मौसम", "பருவம்"]):
+            if lang == "hi":
+                return (
+                    "**घूमने का सबसे अच्छा समय:** पुडुचेरी और चेन्नई की यात्रा के लिए सबसे उत्तम समय **अक्टूबर से मार्च** के बीच है।\n\n"
+                    "- **सर्दियां (अक्टूबर - मार्च):** मौसम बेहद सुहावना (20°C - 30°C) और शामें ठंडी होती हैं। समुद्र तट पर टहलने और दर्शनीय स्थलों के लिए यह सबसे बेहतरीन समय है।\n"
+                    "- **गर्मियां (अप्रैल - जून):** तापमान 38°C तक पहुंच जाता है और उमस अधिक रहती है। इस मौसम में सुबह या शाम को ही बाहर निकलना बेहतर होता है।\n"
+                    "- **मानसून (अक्टूबर - नवंबर):** पूर्वोत्तर मानसून के कारण कभी-कभी तेज तटीय बारिश होती है।"
+                )
+            elif lang == "ta":
+                return (
+                    "**பாண்டிச்சேரி மற்றும் சென்னைக்கு செல்ல சிறந்த பருவம் அக்டோபர் முதல் மார்ச் வரை ஆகும்.**\n\n"
+                    "- **குளிர்காலம் (அக்டோபர் - மார்ச்):** மிதமான வெப்பநிலையும் (20°C - 30°C) இதமான கடற்காற்றும் வீசும் சிறப்பான காலம்.\n"
+                    "- **கோடைகாலம் (ஏப்ரல் - ஜூன்):** அதிக வெப்பம் மற்றும் புழுக்கம் நிலவும் (38°C வரை).\n"
+                    "- **மழைக்காலம் (அக்டோபர் - நவம்பர்):** வடகிழக்கு பருவமழையால் இதமான மழைப்பொழிவு இருக்கும்."
+                )
+            return (
+                "**Best Time to Visit Pondicherry & Chennai:**\n\n"
+                "- **Peak Season (October to March):** The ideal travel window with pleasant coastal temperatures (20°C to 30°C), low humidity, and refreshing sea breezes — perfect for walking French Quarter boulevards and beach visits.\n"
+                "- **Summer (April to June):** Warm and humid with temperatures reaching 38°C; best suited for early morning sightseeing or relaxed afternoon cafe visits.\n"
+                "- **Monsoon (October to November):** The Northeast monsoon brings refreshing coastal rain showers that make the surrounding landscape lush and green."
+            )
+
+        # 3. How to reach / Transit / Road / Train / Flight
+        if any(w in q_lower for w in ["how to reach", "how to get", "distance", "airport", "railway", "train", "bus", "driving", "ecr", "route", "taxi", "cab", "पहुंचे", "எப்படி செல்வது"]):
+            if lang == "hi":
+                return (
+                    "**पुडुचेरी कैसे पहुंचे (Chennai to Pondicherry):**\n\n"
+                    "- **सड़क मार्ग (ECR):** चेन्नई से पुडुचेरी (~150 किमी) मनोरम **ईस्ट कोस्ट रोड (ECR)** द्वारा जुड़ा है। टैक्सी या सरकारी बस (SETC/PRTC) से लगभग 3 से 3.5 घंटे लगते हैं।\n"
+                    "- **हवाई मार्ग:** निकटतम प्रमुख अंतरराष्ट्रीय हवाई अड्डा **चेन्नई (MAA)** है (~135 किमी)। पुडुचेरी हवाई अड्डे (PNY) पर भी सीमित क्षेत्रीय उड़ानें आती हैं।\n"
+                    "- **रेल मार्ग:** पुडुचेरी रेलवे स्टेशन (PDY) से चेन्नई, बेंगलुरु और अन्य शहरों के लिए ट्रेनें उपलब्ध हैं।"
+                )
+            elif lang == "ta":
+                return (
+                    "**பாண்டிச்சேரி செல்வதற்கான வழிகள்:**\n\n"
+                    "- **சாலை வழி:** சென்னையிலிருந்து எழில்மிகு கிழக்கு கடற்கரை சாலை (ECR) வழியாக 150 கி.மீ (3 முதல் 3.5 மணி நேர பயணம்).\n"
+                    "- **விமான வழி:** அருகிலுள்ள விமான நிலையம் சென்னை சர்வதேச விமான நிலையம் (MAA) ஆகும் (~135 கி.மீ).\n"
+                    "- **ரயில் வழி:** பாண்டிச்சேரி ரயில் நிலையம் (PDY) சென்னை மற்றும் பிற முக்கிய நகரங்களுடன் நேரடி ரயில் வசதி கொண்டுள்ளது."
+                )
+            return (
+                "**How to Reach Pondicherry from Chennai & Major Cities:**\n\n"
+                "- **By Road (Scenic ECR):** The most popular route is the picturesque **East Coast Road (ECR)** from Chennai (~150 km, 3 to 3.5 hours drive by taxi or AC bus), offering stunning Bay of Bengal coastal views.\n"
+                "- **By Flight:** The nearest major airport is **Chennai International Airport (MAA)** (~135 km away). Puducherry Airport (PNY) also operates select regional flights.\n"
+                "- **By Train:** Puducherry Railway Station (PDY) has direct express connections to Chennai Egmore, Bengaluru, and Tirupati."
+            )
+
+        # 4. Safety & Solo Travel
+        if any(w in q_lower for w in ["safe", "safety", "solo traveler", "solo female", "solo travel", "सुरक्षित", "பாதுகாப்பு"]):
+            return (
+                "**Safety & Solo Traveler Guide:**\n\n"
+                "Both **Pondicherry** and **Chennai** are ranked among the safest travel destinations in India for solo, family, and female travelers:\n\n"
+                "- **White Town & Beachfront:** Extremely walkable, well-lit, and actively patrolled by tourist police late into the evening.\n"
+                "- **Local Hospitality:** Locals and shopkeepers are courteous, and English/French/Hindi are widely understood in tourist hubs.\n"
+                "- **Tips:** For solo travelers, staying near Mission Street or White Town provides effortless access to cafes, bike rentals, and coastal walks."
+            )
+
+        # 5. Local Commute & Rentals
+        if any(w in q_lower for w in ["bike rental", "scooter rental", "rent a bike", "cycle", "auto rickshaw", "metro", "local transport", "getting around"]):
+            return (
+                "**Local Transport & Rentals:**\n\n"
+                "- **Pondicherry:** Renting an **automatic scooter (Activa @ ₹350–₹500/day)** or a **geared bicycle (₹100–₹150/day)** on Mission Street or MG Road is the most fun and convenient way to explore White Town and Auroville.\n"
+                "- **Chennai:** Use the modern **Chennai Metro** for fast air-conditioned city transit, or app cabs (Uber/Ola) and metered auto-rickshaws."
+            )
+
+        # 6. Trip Duration
+        if any(w in q_lower for w in ["how many days", "how long", "duration", "कितने दिन"]):
+            return (
+                "**Recommended Trip Duration:**\n\n"
+                "- **Pondicherry Only:** A **2 to 3-day itinerary** is ideal to experience the French Quarter, Auroville Matrimandir, Paradise Beach, and local cafes.\n"
+                "- **Combined Chennai + Pondicherry:** A **4 to 5-day itinerary** gives you ample time to explore Chennai's temple architecture and Marina Beach along with Pondicherry."
+            )
         q_lower = query.lower()
         if "pondicherry" in q_lower and ("famous" in q_lower or "why" in q_lower):
             if lang == "hi":
