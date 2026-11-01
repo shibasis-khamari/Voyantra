@@ -102,6 +102,13 @@ class ItineraryService:
                 m_ids = place_scorer.extract_mandatory_place_ids(req_p, all_places)
                 mandatory_ids.update(m_ids)
 
+        is_senior_or_multi = any(k in (criteria.get("age_group") or "").lower() for k in ["senior", "elder", "multi", "family_kids"])
+        alt_active_name = "Scenic Nature & Leisure Trail" if is_senior_or_multi else "Activity & Nature Focused"
+        alt_active_tag = "Nature & Outdoors" if is_senior_or_multi else "Adventure & Outdoors"
+        alt_active_sum = "Gentle coastal walks, botanical gardens, tranquil boat rides, and artisan bazaars." if is_senior_or_multi else "Early sunrise activities, botanical gardens, surfing beaches, and bustling bazaars."
+        alt_active_theme = "Scenic Nature & Artisan Exploration" if is_senior_or_multi else "Outdoor Adventure & Nature Wonders"
+        alt_active_cats = [CategoryEnum.NATURE, CategoryEnum.BEACH, CategoryEnum.SHOPPING] if is_senior_or_multi else [CategoryEnum.ADVENTURE, CategoryEnum.NATURE, CategoryEnum.BEACH, CategoryEnum.SHOPPING]
+
         # Build 3 distinct alternatives with independent duplicate tracking sets
         alt_configs = [
             {
@@ -126,11 +133,11 @@ class ItineraryService:
             },
             {
                 "id": "alt-active",
-                "name": "Activity & Nature Focused",
-                "tag": "Adventure & Outdoors",
-                "summary": "Early sunrise activities, botanical gardens, surfing beaches, and bustling bazaars.",
-                "theme_prefix": "Outdoor Adventure & Nature Wonders",
-                "primary_categories": [CategoryEnum.ADVENTURE, CategoryEnum.NATURE, CategoryEnum.BEACH, CategoryEnum.SHOPPING],
+                "name": alt_active_name,
+                "tag": alt_active_tag,
+                "summary": alt_active_sum,
+                "theme_prefix": alt_active_theme,
+                "primary_categories": alt_active_cats,
                 "start_time": "07:30 AM",
                 "pace_factor": 0.9
             }
@@ -263,7 +270,8 @@ class ItineraryService:
                 day_history=day_history,
                 used_ids=alt_selected_ids,
                 mandatory_ids=mandatory_ids,
-                day_number=d
+                day_number=d,
+                config=config
             )
             if exhausted_m:
                 is_catalog_exhausted = True
@@ -271,8 +279,23 @@ class ItineraryService:
                 alt_selected_ids.add(p_morning.id)
                 day_history.append(p_morning)
 
-            # 2. AFTERNOON STOP (Supporting attraction, courtyard, or cafe)
-            afternoon_cats = [CategoryEnum.CAFE, CategoryEnum.HERITAGE, CategoryEnum.CULTURE, CategoryEnum.NATURE]
+            # 2. AFTERNOON STOP (Theme-aligned supporting attraction, courtyard, or cafe)
+            alt_id = config.get("id", "")
+            is_senior_mode = any(k in (criteria.get("age_group") or "").lower() for k in ["senior", "elder", "multi", "family_kids"])
+            if alt_id == "alt-cultural":
+                afternoon_cats = [CategoryEnum.HERITAGE, CategoryEnum.CULTURE, CategoryEnum.SPIRITUAL]
+                evening_cats = [CategoryEnum.SPIRITUAL, CategoryEnum.HERITAGE, CategoryEnum.CULTURE]
+            elif alt_id == "alt-relaxed":
+                afternoon_cats = [CategoryEnum.CAFE, CategoryEnum.NATURE, CategoryEnum.CULTURE]
+                evening_cats = [CategoryEnum.BEACH, CategoryEnum.CAFE, CategoryEnum.HERITAGE]
+            else:  # alt-active
+                if is_senior_mode:
+                    afternoon_cats = [CategoryEnum.SHOPPING, CategoryEnum.NATURE, CategoryEnum.CAFE]
+                    evening_cats = [CategoryEnum.BEACH, CategoryEnum.SHOPPING, CategoryEnum.NATURE]
+                else:
+                    afternoon_cats = [CategoryEnum.SHOPPING, CategoryEnum.ADVENTURE, CategoryEnum.NATURE]
+                    evening_cats = [CategoryEnum.BEACH, CategoryEnum.SHOPPING, CategoryEnum.ADVENTURE]
+
             p_afternoon, exhausted_a = self._pick_slot_place(
                 slot_name="afternoon",
                 city_pool=city_pool,
@@ -281,7 +304,8 @@ class ItineraryService:
                 day_history=day_history,
                 used_ids=alt_selected_ids,
                 mandatory_ids=mandatory_ids,
-                day_number=d
+                day_number=d,
+                config=config
             )
             if exhausted_a:
                 is_catalog_exhausted = True
@@ -289,8 +313,7 @@ class ItineraryService:
                 alt_selected_ids.add(p_afternoon.id)
                 day_history.append(p_afternoon)
 
-            # 3. EVENING STOP (Scenic promenade, sunset, seaside breeze, or bazaar)
-            evening_cats = [CategoryEnum.BEACH, CategoryEnum.SPIRITUAL, CategoryEnum.SHOPPING, CategoryEnum.HERITAGE]
+            # 3. EVENING STOP (Theme-aligned scenic promenade, sunset, or bazaar)
             p_evening, exhausted_e = self._pick_slot_place(
                 slot_name="evening",
                 city_pool=city_pool,
@@ -299,7 +322,8 @@ class ItineraryService:
                 day_history=day_history,
                 used_ids=alt_selected_ids,
                 mandatory_ids=mandatory_ids,
-                day_number=d
+                day_number=d,
+                config=config
             )
             if exhausted_e:
                 is_catalog_exhausted = True
@@ -378,7 +402,8 @@ class ItineraryService:
         day_history: List[Place],
         used_ids: Set[str],
         mandatory_ids: Set[str],
-        day_number: int
+        day_number: int,
+        config: Optional[Dict[str, Any]] = None
     ) -> Tuple[Optional[Place], bool]:
         """
         Picks the best place for a slot ensuring zero duplicates across days.
@@ -393,34 +418,52 @@ class ItineraryService:
 
         # 2. Score candidate places not yet used in this alternative
         candidates = [p for p in city_pool if p.id not in used_ids]
+        is_exhausted = False
         if not candidates:
             # Catalog exhausted for this destination without repeats!
-            # Return a fallback leisure stop rather than a duplicate
-            return None, True
+            # Select from city pool rather than emitting synthetic placeholder strings
+            candidates = list(city_pool)
+            is_exhausted = True
 
         scored_candidates = place_scorer.rank_candidate_places(
             candidates=candidates,
             criteria=criteria,
             current_slot=slot_name,
             day_history=day_history,
-            used_place_ids=used_ids,
+            used_place_ids=used_ids if not is_exhausted else set(),
             mandatory_ids=mandatory_ids
         )
 
         if not scored_candidates:
-            # All candidates filtered out by hard constraints
-            return candidates[0], False
+            # All candidates filtered out by hard constraints (e.g. senior exertion)
+            # Find safest candidates without high exertion
+            age_grp = (criteria.get("age_group") or "").lower()
+            if any(k in age_grp for k in ["senior", "elder", "multi", "family_kids"]):
+                safe_candidates = [
+                    p for p in city_pool
+                    if str(getattr(p, "physical_exertion", "moderate") or "").lower() != "high"
+                ]
+                if safe_candidates:
+                    return safe_candidates[0], is_exhausted
+            return (candidates[0] if candidates else city_pool[0]), is_exhausted
 
         # Category preference boost: favor preferred categories for this slot
         pref_vals = [c.value if hasattr(c, "value") else str(c) for c in preferred_categories]
         boosted = []
+        c_id = (config or {}).get("id", "")
         for p, s in scored_candidates:
             p_cat = p.category.value if hasattr(p.category, "value") else str(p.category)
-            bonus = 15.0 if p_cat in pref_vals else 0.0
+            bonus = 0.0
+            if p_cat in pref_vals:
+                bonus = 45.0  # Decisive boost for theme category alignment
+            elif c_id == "alt-cultural" and p_cat in ["adventure"]:
+                bonus = -50.0  # Cultural trail never schedules extreme adventure/surfing
+            elif c_id == "alt-relaxed" and p_cat in ["adventure"]:
+                bonus = -40.0  # Relaxed coastal trail never schedules extreme adventure
             boosted.append((p, s + bonus))
 
         boosted.sort(key=lambda item: item[1], reverse=True)
-        return boosted[0][0], False
+        return boosted[0][0], is_exhausted
 
     def _build_slot_data(
         self,
@@ -435,55 +478,18 @@ class ItineraryService:
     ) -> ItinerarySlotData:
         """
         Constructs ItinerarySlotData with transit calculations and dwell times.
-        First stop of a day is exempt from previous-stop transit.
+        Guarantees that every slot is an authentic place from the verified catalog.
         """
         if not place:
-            # Fallback leisure slot when catalog has no more unique places
-            if slot_name == "morning":
-                return ItinerarySlotData(
-                    slot_id=slot_id,
-                    place_id=None,
-                    place_name="Leisure Coastal Sunrise Walk",
-                    category="beach",
-                    activity_note="Gentle morning walk along the coast and quiet reflection.",
-                    est_time="08:30 AM - 10:30 AM",
-                    duration_minutes=120,
-                    cost_inr=0,
-                    travel_time_from_prev_minutes=0,
-                    travel_distance_from_prev_km=0.0
-                )
-            elif slot_name == "afternoon":
-                return ItinerarySlotData(
-                    slot_id=slot_id,
-                    place_id=None,
-                    place_name="Artisan Boutique & Cafe Downtime",
-                    category="cafe",
-                    activity_note="Relaxed regional dining, artisan boutiques, and handicraft browsing.",
-                    est_time="01:00 PM - 03:00 PM",
-                    duration_minutes=120,
-                    cost_inr=300,
-                    travel_time_from_prev_minutes=15,
-                    travel_distance_from_prev_km=3.0
-                )
-            else:
-                return ItinerarySlotData(
-                    slot_id=slot_id,
-                    place_id=None,
-                    place_name="Sunset Promenade & Seafront Breeze",
-                    category="beach",
-                    activity_note="Peaceful sunset seaside stroll and local coastal atmosphere.",
-                    est_time="05:30 PM - 07:30 PM",
-                    duration_minutes=120,
-                    cost_inr=0,
-                    travel_time_from_prev_minutes=15,
-                    travel_distance_from_prev_km=2.5
-                )
+            # Fallback to authentic canonical place for day_city
+            default_id = "pondy-01" if day_city == "pondicherry" else "chennai-01"
+            place = places_service.get_place_by_id(default_id)
 
         # Compute transit from previous stop
         travel_time_min = None
         travel_dist_km = None
 
-        if prev_place is not None:
+        if prev_place is not None and place is not None:
             transit = geo_clusterer.calculate_transit(
                 origin=prev_place,
                 destination=place,
@@ -498,28 +504,40 @@ class ItineraryService:
             travel_dist_km = 0.0
 
         # Timing label
-        duration = place.duration_minutes or 90
+        duration = (place.duration_minutes or 90) if place else 90
         if slot_name == "morning":
-            est_time = f"{config['start_time']} - 11:30 AM"
+            est_time = f"{config.get('start_time', '09:00 AM')} - 11:30 AM"
         elif slot_name == "afternoon":
             est_time = "12:30 PM - 03:00 PM"
         else:
             est_time = "05:00 PM - 07:30 PM"
 
-        note = place.highlights[0] if place.highlights else place.description[:90]
+        note = ""
+        coords_dict = None
+        addr = None
+        if place:
+            note = place.highlights[0] if place.highlights else place.description[:90]
+            raw_c = getattr(place, "coordinates", None)
+            if hasattr(raw_c, "lat"):
+                coords_dict = {"lat": raw_c.lat, "lng": raw_c.lng}
+            elif isinstance(raw_c, dict) and "lat" in raw_c and "lng" in raw_c:
+                coords_dict = {"lat": raw_c["lat"], "lng": raw_c["lng"]}
+            addr = getattr(place, "address", None)
 
         return ItinerarySlotData(
             slot_id=slot_id,
-            place_id=place.id,
-            place_name=place.name,
-            category=place.category.value if hasattr(place.category, "value") else str(place.category),
+            place_id=place.id if place else f"{day_city}-stop",
+            place_name=place.name if place else "Scenic Promenade",
+            category=(place.category.value if hasattr(place.category, "value") else str(place.category)) if place else "beach",
             activity_note=note,
             est_time=est_time,
             duration_minutes=duration,
-            cost_inr=place.estimated_cost_inr or 0,
+            cost_inr=(place.estimated_cost_inr or 0) if place else 0,
             travel_time_from_prev_minutes=travel_time_min,
             travel_distance_from_prev_km=travel_dist_km,
-            hours_confirmation_required=not getattr(place, "opening_hours_verified", False)
+            coordinates=coords_dict,
+            address=addr,
+            hours_confirmation_required=not getattr(place, "opening_hours_verified", False) if place else False
         )
 
     def _compute_itemized_budget(

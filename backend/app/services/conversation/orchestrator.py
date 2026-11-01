@@ -54,11 +54,35 @@ class ConversationOrchestrator:
         ]):
             return "general_qa"
 
-        # 2. Itinerary Edit (if an active itinerary exists and user requests modification)
-        if current_itinerary and any(w in msg for w in [
-            "add ", "remove ", "replace ", "make it more relaxed", "change day", "swap", "delete"
-        ]):
-            return "itinerary_edit"
+        # 2. Itinerary Edit & Conversational Refinement (when an active itinerary exists)
+        if current_itinerary:
+            edit_verbs = [
+                "add ", "remove ", "replace ", "delete ", "swap ", "change ", "modify ",
+                "update ", "make ", "set ", "adjust ", "switch ", "include ", "exclude ",
+                "keep ", "reduce "
+            ]
+            if any(w in msg for w in edit_verbs):
+                return "itinerary_edit"
+
+            refinement_triggers = [
+                # Demographics
+                r"\bparents?\b", r"\bkids?\b", r"\bchildrens?\b", r"\bchild\b", r"\btoddlers?\b",
+                r"\bbab(?:y|ies)\b", r"\binfants?\b", r"\bsenior(?:\s+citizens?)?\b", r"\belderly\b",
+                r"\belders?\b", r"\bgrandparents?\b", r"\buncles?\b", r"\baunts?\b",
+                r"\bthis is for\b", r"\bit is for\b", r"\bfor my\b", r"\bfor our\b",
+                r"\btraveling with\b", r"\btravelling with\b", r"\bgoing with\b",
+                r"\bbujurg\b", r"\bbuzurg\b", r"\bbacche\b", r"\bkuzhandhai\b",
+                # Budget
+                r"\bbudget\b", r"\brs\.?\s*:?\s*[0-9]+", r"₹\s*[0-9]+", r"\b[0-9]+\s*inr\b",
+                r"\bcheaper\b", r"\bcheap\b", r"\bluxury\b", r"\baffordable\b", r"\blow\s+cost\b",
+                # Dietary
+                r"\bpure\s+veg\b", r"\bvegetarian\b", r"\bveg\b", r"\bjain\b", r"\bvegan\b", r"\bhalal\b",
+                # Pacing & Duration
+                r"\brelaxed\b", r"\bleisurely\b", r"\bslow\b", r"\bfaster\b", r"\bpacked\b",
+                r"\b\d+\s*-?\s*days?\b"
+            ]
+            if any(re.search(p, msg) for p in refinement_triggers):
+                return "itinerary_edit"
 
         # 3. Explicit Itinerary Planning Request (MUST clearly ask for planning)
         planning_triggers = [
@@ -133,6 +157,134 @@ class ConversationOrchestrator:
 
         # 7. Default to General Conversational Q&A
         return "general_qa"
+
+    def extract_demographics_and_constraints(self, message: str) -> Dict[str, Any]:
+        """
+        Extracts age group, relationship demographics, dietary preferences,
+        budget tiers, travel pace, duration, and specific interests from natural language.
+        Recognizes synonyms for seniors/elders (parents, grandparents, uncle, aunt, in-laws, bujurg, thaatha, etc.),
+        children (kids, toddlers, infants, nephew, niece, bacche, etc.), youth, and multi-generational groups.
+        """
+        msg = (message or "").lower()
+        constraints: Dict[str, Any] = {}
+
+        # 1. Age Group & Relationship Demographics
+        elder_patterns = [
+            r"\bsenior(?:\s+citizens?)?\b", r"\belderly\b", r"\belders?\b",
+            r"\bag(?:ed|ing)\s+parents?\b", r"\bparents?\b",
+            r"\bgrandparents?\b", r"\bgrandfathers?\b", r"\bgrandmothers?\b",
+            r"\bgrandpa\b", r"\bgrandma\b", r"\bgranny\b",
+            r"\buncles?\b", r"\baunts?\b", r"\baunties?\b",
+            r"\bfather\b", r"\bmother\b", r"\bdad\b", r"\bmom\b",
+            r"\bin-laws?\b", r"\bfather-in-law\b", r"\bmother-in-law\b",
+            r"\bretirees?\b", r"\bpensioners?\b", r"\bold\s+age\b",
+            # Indic / transliterated terms
+            r"\bbujurg\b", r"\bbuzurg\b", r"\bvridh\b", r"\bvriddha\b",
+            r"\bperiyavargal\b", r"\bthaatha\b", r"\bpaati\b",
+            r"\bdadaji\b", r"\bdadiji\b", r"\bnanaji\b", r"\bnaniji\b"
+        ]
+
+        kid_patterns = [
+            r"\bkids?\b", r"\bchildrens?\b", r"\bchild\b",
+            r"\btoddlers?\b", r"\bbab(?:y|ies)\b", r"\binfants?\b",
+            r"\blittle\s+ones?\b", r"\byoung\s+ones?\b",
+            r"\bsons?\b", r"\bdaughters?\b",
+            r"\bnephews?\b", r"\bnieces?\b",
+            r"\bgrandchildren\b", r"\bgrandchild\b", r"\bgrandsons?\b", r"\bgranddaughters?\b",
+            # Indic / transliterated terms
+            r"\bbacche\b", r"\bbachhe\b", r"\bbache\b", r"\bchotte\s+bacche\b",
+            r"\bkuzhandhai(?:gal)?\b", r"\bchinna\s+pasanga\b", r"\bpillalu\b", r"\bkuttikal\b"
+        ]
+
+        youth_patterns = [
+            r"\byoung\s+adults?\b", r"\bteens?\b", r"\bteenagers?\b",
+            r"\bcollege\s+(?:students?|friends?)\b", r"\bbackpackers?\b",
+            r"\bbachelors?\b", r"\byouth\b", r"\byoungsters?\b"
+        ]
+
+        has_elder = any(re.search(pat, msg) for pat in elder_patterns)
+        has_kid = any(re.search(pat, msg) for pat in kid_patterns)
+        has_youth = any(re.search(pat, msg) for pat in youth_patterns)
+
+        if has_elder and has_kid:
+            constraints["age_group"] = "multi_generational"
+            constraints["demographic_label"] = "multi_generational"
+        elif has_elder:
+            constraints["age_group"] = "senior"
+            constraints["demographic_label"] = "seniors / parents"
+        elif has_kid:
+            constraints["age_group"] = "family_kids"
+            constraints["demographic_label"] = "family with children"
+        elif has_youth:
+            constraints["age_group"] = "young_adult"
+            constraints["demographic_label"] = "young adults"
+
+        # 2. Dietary Preferences
+        if re.search(r"\bjain\b", msg):
+            constraints["dietary"] = "jain"
+        elif re.search(r"\bvegan\b", msg):
+            constraints["dietary"] = "vegan"
+        elif re.search(r"\bhalal\b", msg):
+            constraints["dietary"] = "halal"
+        elif re.search(r"\b(?:pure\s+veg|pure\s+vegetarian|shudh\s+shakahari)\b", msg):
+            constraints["dietary"] = "pure_veg"
+        elif re.search(r"\b(?:veg|vegetarian|shakahari)\b", msg):
+            constraints["dietary"] = "vegetarian"
+
+        # 3. Budget Tier & Explicit Monetary Amounts
+        budget_regex = (
+            r"(?:budget|cost)\s*(?:of|is|to|under|around)?\s*:?\s*(?:rs\.?|₹|inr|rupees)?\s*:?\s*([0-9]+(?:,[0-9]+)*)"
+            r"|(?:rs\.?|₹|inr|rupees)\s*:?\s*([0-9]+(?:,[0-9]+)*)"
+        )
+        budget_num_match = re.search(budget_regex, msg, re.IGNORECASE)
+        if budget_num_match:
+            try:
+                raw_amt_str = (budget_num_match.group(1) or budget_num_match.group(2)).replace(",", "")
+                raw_amt = int(raw_amt_str)
+                constraints["budget_inr"] = raw_amt
+                if raw_amt <= 4000:
+                    constraints["budget"] = "budget"
+                elif raw_amt >= 12000:
+                    constraints["budget"] = "luxury"
+                else:
+                    constraints["budget"] = "moderate"
+            except Exception:
+                pass
+
+        if "budget" not in constraints:
+            if re.search(r"\b(?:low\s+budget|budget|cheap|affordable|economical|low\s+cost)\b", msg):
+                constraints["budget"] = "budget"
+            elif re.search(r"\b(?:luxury|5\s*star|five\s*star|premium|expensive|high\s+end)\b", msg):
+                constraints["budget"] = "luxury"
+            elif re.search(r"\b(?:moderate|mid\s*range|standard)\b", msg):
+                constraints["budget"] = "moderate"
+
+        # 4. Travel Pace
+        if has_elder or (has_elder and has_kid):
+            constraints["pace"] = "relaxed"
+        elif re.search(r"\b(?:relaxed|leisurely|slow|chill|peaceful|peace)\b", msg):
+            constraints["pace"] = "relaxed"
+        elif re.search(r"\b(?:fast|packed|busy|active|full)\b", msg):
+            constraints["pace"] = "fast"
+
+        # 5. Specific Interests
+        extracted_interests = []
+        interest_map = {
+            "temple": ["temple", "temples", "spiritual", "darshan", "pooja"],
+            "heritage": ["heritage", "history", "historical", "monument", "french", "french quarter", "white town"],
+            "beach": ["beach", "beaches", "coast", "coastal", "sea", "seaside"],
+            "nature": ["nature", "garden", "gardens", "botanical", "park", "lake"],
+            "cafe": ["cafe", "cafes", "coffee", "bakery", "bakeries", "french bakery"],
+            "adventure": ["adventure", "surfing", "surf", "watersports", "boating", "boat"],
+            "shopping": ["shopping", "bazaar", "market", "souvenirs", "handicrafts"]
+        }
+        for category, keywords in interest_map.items():
+            if any(re.search(rf"\b{kw}\b", msg) for kw in keywords):
+                extracted_interests.append(category)
+        if extracted_interests:
+            constraints["interests"] = extracted_interests
+
+        return constraints
 
     def process_turn(
         self,
@@ -233,7 +385,8 @@ class ConversationOrchestrator:
                     "Are vegetarian options available?"
                 ]
 
-            budget_val = user_pref.get("budget_tier", "moderate")
+            msg_constraints = self.extract_demographics_and_constraints(effective_message)
+            budget_val = msg_constraints.get("budget") or user_pref.get("budget_tier", "moderate")
             hotels_data = discovery_service.search_hotels(
                 query=effective_message,
                 city_id=city_slug or "pondicherry",
@@ -244,7 +397,8 @@ class ConversationOrchestrator:
             )
 
         elif intent == "restaurant_discovery":
-            dietary_val = user_pref.get("dietary_preference", "all")
+            msg_constraints = self.extract_demographics_and_constraints(effective_message)
+            dietary_val = msg_constraints.get("dietary") or user_pref.get("dietary_preference", "all")
             restaurants_data = discovery_service.search_restaurants(
                 query=effective_message,
                 city_id=city_slug or "pondicherry",
@@ -264,11 +418,34 @@ class ConversationOrchestrator:
             # If user explicitly asked for an unsupported destination outside Pondy & Chennai
             is_unsupported = False
             unsupported_target = ""
-            for word in ["tokyo", "paris", "london", "dubai", "bali", "new york", "mumbai", "delhi"]:
-                if word in req.message.lower() and not city_slug:
-                    is_unsupported = True
-                    unsupported_target = word
-                    break
+
+            # 1. Regex capture: "trip to X", "itinerary for X", "visit X"
+            dest_match = re.search(
+                r"\b(?:trip|travel|itinerary|vacation|tour|visit|holiday)\s+(?:to|for|in)\s+([a-zA-Z\s]+?)(?:\s+(?:for|with|in|on|at|\d+)|$|,|\.)",
+                req.message,
+                re.IGNORECASE
+            )
+            if dest_match:
+                candidate_dest = dest_match.group(1).strip().lower()
+                # Check if candidate_dest contains pondy or chennai
+                if not any(k in candidate_dest for k in ["pondy", "pondicherry", "puducherry", "chennai", "madras", "mylapore", "white town"]):
+                    # Avoid false match with general words
+                    if candidate_dest not in ["a", "the", "my", "our", "two", "three", "weekend"]:
+                        is_unsupported = True
+                        unsupported_target = candidate_dest.title()
+
+            # 2. Known unsupported destinations fallback
+            if not is_unsupported:
+                for word in [
+                    "jaipur", "mumbai", "delhi", "bangalore", "bengaluru", "goa", "kerala",
+                    "ooty", "kodaikanal", "munnar", "shimla", "manali", "agra", "varanasi",
+                    "tokyo", "paris", "london", "dubai", "bali", "new york", "singapore",
+                    "rome", "kolkata", "hyderabad", "barcelona", "bangkok"
+                ]:
+                    if re.search(rf"\b{word}\b", req.message.lower()) and not city_slug:
+                        is_unsupported = True
+                        unsupported_target = word.title()
+                        break
 
             if is_unsupported:
                 reply_text = destination_service.get_unsupported_destination_message(unsupported_target, final_lang)
@@ -278,6 +455,20 @@ class ConversationOrchestrator:
                     "Suggest places across Pondicherry & Chennai"
                 ]
             else:
+                # Extract constraints and demographics from message
+                extracted = self.extract_demographics_and_constraints(req.message)
+
+                # Merge in-message constraints over stored preferences
+                age_val = extracted.get("age_group") or user_pref.get("age_group", "young_adult")
+                diet_val = extracted.get("dietary") or user_pref.get("dietary_preference", "all")
+                budget_val = extracted.get("budget") or user_pref.get("budget_tier", "moderate")
+                pace_val = extracted.get("pace") or user_pref.get("travel_pace", "relaxed")
+
+                base_interests = user_pref.get("interests", [])
+                if isinstance(base_interests, str):
+                    base_interests = [i.strip() for i in base_interests.split(",") if i.strip()]
+                interests_val = list(set(base_interests + extracted.get("interests", [])))
+
                 # Extract duration_days from message if not explicitly provided or if default
                 days_count = req.duration_days or 2
                 day_match = re.search(r"\b(\d+)\s*-?\s*days?\b", req.message.lower())
@@ -293,11 +484,11 @@ class ConversationOrchestrator:
                 itinerary_data = itinerary_service.generate_itinerary_alternatives(
                     city_slug=city_slug or "both",
                     duration_days=days_count,
-                    pace=user_pref.get("travel_pace", "relaxed"),
-                    budget=user_pref.get("budget_tier", "moderate"),
-                    dietary=user_pref.get("dietary_preference", "all"),
-                    age_group=user_pref.get("age_group", "young_adult"),
-                    interests=user_pref.get("interests", []),
+                    pace=pace_val,
+                    budget=budget_val,
+                    dietary=diet_val,
+                    age_group=age_val,
+                    interests=interests_val,
                     requested_places=[req.message],
                     travel_date=req.travel_date,
                     transport_mode=req.transport_mode or "car",
@@ -306,21 +497,47 @@ class ConversationOrchestrator:
                     party_size=req.party_size or 1
                 )
                 city_title = city_name or "Pondicherry & Chennai"
+
+                demo_label = extracted.get("demographic_label")
+                if demo_label == "seniors / parents":
+                    if final_lang == "hi":
+                        demo_note = " बुजुर्गों एवं माता-पिता के लिए सुगम रास्तों और शांत आध्यात्मिक स्थलों को प्राथमिकता दी गई है।"
+                    elif final_lang == "ta":
+                        demo_note = " பெரியவர்கள் மற்றும் பெற்றோர்களின் வசதிக்காக அமைதியான, எளிதில் செல்லக்கூடிய இடங்கள் சேர்க்கப்பட்டுள்ளன."
+                    else:
+                        demo_note = " Tailored with high accessibility, shaded gardens, and serene heritage stops (with zero strenuous activities) for elders."
+                elif demo_label == "family with children":
+                    if final_lang == "hi":
+                        demo_note = " बच्चों के अनुकूल सुरक्षित समुद्र तटों और खुले पार्कों को प्राथमिकता दी गई है।"
+                    elif final_lang == "ta":
+                        demo_note = " குழந்தைகளுக்கான பாதுகாப்பான கடற்கரைகள் மற்றும் பூங்காக்கள் சேர்க்கப்பட்டுள்ளன."
+                    else:
+                        demo_note = " Curated with child-friendly open parks, safe beaches, and engaging sights."
+                elif demo_label == "multi_generational":
+                    if final_lang == "hi":
+                        demo_note = " बड़े-बुजुर्गों और बच्चों दोनों की सुविधा का पूरा ध्यान रखा गया है।"
+                    elif final_lang == "ta":
+                        demo_note = " பெரியவர்கள் மற்றும் குழந்தைகள் இருவருக்குமான வசதிகள் சமநிலைப்படுத்தப்பட்டுள்ளன."
+                    else:
+                        demo_note = " Balanced for both elder comfort and child safety with accessible walks and open spaces."
+                else:
+                    demo_note = ""
+
                 if final_lang == "hi":
                     reply_text = (
-                        f"मैंने आपके लिए **{city_title}** का एक संतुलित {req.duration_days or 2}-दिवसीय यात्रा कार्यक्रम तैयार किया है। "
+                        f"मैंने आपके लिए **{city_title}** का एक संतुलित {days_count}-दिवसीय यात्रा कार्यक्रम तैयार किया है।{demo_note} "
                         f"दाहिनी ओर आप 3 अलग-अलग विकल्प (आरामदायक, सांस्कृतिक धरोहर, एवं साहसिक गतिविधि) देख सकते हैं। "
                         f"आप बातचीत में कोई भी बदलाव करने के लिए कह सकते हैं!"
                     )
                 elif final_lang == "ta":
                     reply_text = (
-                        f"**{city_title}** க்கான {req.duration_days or 2} நாள் தனிப்பயனாக்கப்பட்ட பயணத்திட்டத்தை உருவாக்கியுள்ளேன். "
+                        f"**{city_title}** க்கான {days_count} நாள் தனிப்பயனாக்கப்பட்ட பயணத்திட்டத்தை உருவாக்கியுள்ளேன்.{demo_note} "
                         f"வலதுபுறத்தில் நீங்கள் அமைதியான, கலாச்சார அல்லது சாகச மாற்றுத் திட்டங்களை ஆராயலாம். "
                         f"இதில் ஏதேனும் மாற்றங்கள் செய்ய விரும்பினால் என்னிடம் தாராளமாக கேட்கலாம்!"
                     )
                 else:
                     reply_text = (
-                        f"I have created a personalized {req.duration_days or 2}-day itinerary for **{city_title}**. "
+                        f"I have created a personalized {days_count}-day itinerary for **{city_title}**.{demo_note} "
                         f"On the right pane, you can review 3 distinct alternatives (Relaxed Coastal, Cultural Heritage, and Activity-Focused). "
                         f"Feel free to ask me to modify any day or stop!"
                     )
@@ -332,18 +549,117 @@ class ConversationOrchestrator:
 
         elif intent == "itinerary_edit":
             if req.current_itinerary:
-                itinerary_data = itinerary_service.modify_itinerary_conversationally(
-                    req.current_itinerary,
-                    req.message
+                extracted = self.extract_demographics_and_constraints(req.message)
+
+                # Check if this turn specifies constraint updates (demographics, budget, diet, pace, duration, interests)
+                is_constraint_refinement = bool(
+                    extracted.get("age_group") or 
+                    extracted.get("budget") or 
+                    extracted.get("budget_inr") or 
+                    extracted.get("dietary") or 
+                    extracted.get("pace") or 
+                    extracted.get("interests") or
+                    re.search(r"\b\d+\s*-?\s*days?\b", req.message.lower())
                 )
-                if final_lang == "hi":
-                    reply_text = "मैंने आपके अनुरोध के अनुसार यात्रा कार्यक्रम को अद्यतन (update) कर दिया है। आप दाहिनी ओर नए बदलाव देख सकते हैं।"
-                elif final_lang == "ta":
-                    reply_text = "உங்கள் விருப்பப்படி பயணத்திட்டத்தில் மாற்றங்களை செய்துள்ளேன். வலதுபுறத்தில் புதுப்பிக்கப்பட்ட விவரங்களைக் காணலாம்."
+
+                if is_constraint_refinement:
+                    city_slug = req.current_itinerary.get("city_id") or "pondicherry"
+                    days_count = len(req.current_itinerary.get("days", [])) or req.duration_days or 2
+                    day_match = re.search(r"\b(\d+)\s*-?\s*days?\b", req.message.lower())
+                    if day_match:
+                        try:
+                            d_cand = int(day_match.group(1))
+                            if 1 <= d_cand <= 7:
+                                days_count = d_cand
+                        except Exception:
+                            pass
+
+                    # Merge new constraints over user preferences
+                    age_val = extracted.get("age_group") or user_pref.get("age_group", "young_adult")
+                    budget_val = extracted.get("budget") or user_pref.get("budget_tier", "moderate")
+                    diet_val = extracted.get("dietary") or user_pref.get("dietary_preference", "all")
+                    pace_val = extracted.get("pace") or user_pref.get("travel_pace", "relaxed")
+                    base_interests = user_pref.get("interests", [])
+                    if isinstance(base_interests, str):
+                        base_interests = [i.strip() for i in base_interests.split(",") if i.strip()]
+                    interests_val = list(set(base_interests + extracted.get("interests", [])))
+
+                    itinerary_data = itinerary_service.generate_itinerary_alternatives(
+                        city_slug=city_slug,
+                        duration_days=days_count,
+                        pace=pace_val,
+                        budget=budget_val,
+                        dietary=diet_val,
+                        age_group=age_val,
+                        interests=interests_val,
+                        requested_places=[req.message],
+                        travel_date=req.travel_date,
+                        transport_mode=req.transport_mode or "car",
+                        starting_location=req.starting_location,
+                        ending_location=req.ending_location,
+                        party_size=req.party_size or 1
+                    )
+                    city_title = "Pondicherry & Chennai" if city_slug == "both" else city_slug.title()
+
+                    # Build detailed refinement confirmation
+                    adjustments = []
+                    demo_label = extracted.get("demographic_label")
+                    if demo_label == "seniors / parents":
+                        adjustments.append("tailored for parents/elders with high accessibility and relaxed pacing")
+                    elif demo_label == "family with children":
+                        adjustments.append("tailored for traveling with children, prioritizing safe parks and beaches")
+                    elif demo_label == "multi_generational":
+                        adjustments.append("balanced for multi-generational travel accommodating both elders and kids")
+
+                    if extracted.get("budget_inr"):
+                        adjustments.append(f"optimized to fit your budget of ₹{extracted['budget_inr']:,}")
+                    elif extracted.get("budget"):
+                        adjustments.append(f"updated for {extracted['budget']} budget tier")
+
+                    if extracted.get("dietary"):
+                        diet_name = extracted["dietary"].replace("_", " ")
+                        adjustments.append(f"filtered for {diet_name} dining")
+
+                    if adjustments:
+                        adj_str = ", ".join(adjustments)
+                        if final_lang == "hi":
+                            reply_text = f"मैंने आपके **{city_title}** के यात्रा कार्यक्रम को आपके नए अनुरोध ({adj_str}) के अनुसार पूरी तरह से अद्यतन कर दिया है। आप दाहिनी ओर नए विकल्प देख सकते हैं।"
+                        elif final_lang == "ta":
+                            reply_text = f"உங்கள் புதிய தேவைகளுக்கேற்ப ({adj_str}) **{city_title}** பயணத்திட்டத்தை மாற்றி அமைத்துள்ளேன். வலதுபுறத்தில் புதிய திட்டங்களைக் காணலாம்."
+                        else:
+                            reply_text = f"I have updated your itinerary for **{city_title}** ({adj_str}). You can review the refreshed schedules on the right panel!"
+                    else:
+                        reply_text = f"I have updated your active itinerary for **{city_title}** based on your request. Unaffected stops have been preserved, and you can see the updated schedule on the right."
+
                 else:
-                    reply_text = "I have updated your active itinerary based on your request. Unaffected stops have been preserved, and you can see the updated schedule on the right."
+                    itinerary_data = itinerary_service.modify_itinerary_conversationally(
+                        req.current_itinerary,
+                        req.message
+                    )
+                    if final_lang == "hi":
+                        reply_text = "मैंने आपके अनुरोध के अनुसार यात्रा कार्यक्रम को अद्यतन कर दिया है। आप दाहिनी ओर नए बदलाव देख सकते हैं।"
+                    elif final_lang == "ta":
+                        reply_text = "உங்கள் விருப்பப்படி பயணத்திட்டத்தில் மாற்றங்களை செய்துள்ளேன். வலதுபுறத்தில் புதுப்பிக்கப்பட்ட விவரங்களைக் காணலாம்."
+                    else:
+                        reply_text = "I have updated your active itinerary based on your request. Unaffected stops have been preserved, and you can see the updated schedule on the right."
             else:
-                reply_text = "Please generate or select an itinerary first so I can modify it for you."
+                city_slug, city_name = destination_service.detect_destination(effective_message)
+                city_target = city_slug or "pondicherry"
+                extracted = self.extract_demographics_and_constraints(req.message)
+                days_count = req.duration_days or 2
+                itinerary_data = itinerary_service.generate_itinerary_alternatives(
+                    city_slug=city_target,
+                    duration_days=days_count,
+                    pace=extracted.get("pace") or "relaxed",
+                    budget=extracted.get("budget") or "moderate",
+                    dietary=extracted.get("dietary") or "all",
+                    age_group=extracted.get("age_group") or "young_adult",
+                    interests=extracted.get("interests", []),
+                    requested_places=[req.message],
+                    party_size=req.party_size or 1
+                )
+                city_title = city_name or city_target.title()
+                reply_text = f"I have created an itinerary for **{city_title}** based on your preferences. You can review the schedule on the right."
             followups = [
                 "View on Interactive Map",
                 "Save all stops to basket",

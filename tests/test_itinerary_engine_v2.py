@@ -516,3 +516,261 @@ def test_40_unsupported_destination_policy_preserved():
     assert data["itinerary"] is None
     assert "Tokyo" in data["reply_message"]
     assert "Pondicherry" in data["reply_message"]
+
+
+# ==============================================================================
+# SECTION 10: Age Group Synonyms, Demographic Safety & Real Places (Tests 41 - 48)
+# ==============================================================================
+
+def test_41_elder_synonyms_extraction():
+    """Test 41: Recognizes synonyms for elders (parents, grandparents, uncle, bujurg, etc.) and eliminates high exertion."""
+    for prompt in [
+        "Plan a 2-day trip to Pondicherry with my grandparents",
+        "Trip to Pondicherry with my elderly parents",
+        "Trip for my uncle and aunt to Pondicherry",
+        "Pondicherry trip for bujurg parents",
+        "Plan a 2-day trip to Pondicherry with dadaji"
+    ]:
+        constraints = orchestrator.extract_demographics_and_constraints(prompt)
+        assert constraints.get("age_group") == "senior"
+        assert constraints.get("pace") == "relaxed"
+
+    # Test that high exertion (surfing) is strictly excluded for seniors
+    res = orchestrator.process_turn(ChatTurnRequest(
+        message="Plan a 2-day trip to Pondicherry with my grandparents, budget low, pure veg"
+    ))
+    assert res.itinerary is not None
+    # Verify no high-exertion surfing school scheduled in any slot of any alternative
+    for alt in res.itinerary.alternatives:
+        for day in alt.days:
+            for slot in [day.morning, day.afternoon, day.evening]:
+                if slot:
+                    assert "surf" not in slot.place_name.lower()
+                    assert slot.place_name != "Destination"
+                    assert slot.place_id is not None
+
+
+def test_42_kid_synonyms_extraction():
+    """Test 42: Recognizes synonyms for children (kids, toddlers, infants, bacche, etc.) and sets family safety."""
+    for prompt in [
+        "Plan a 2-day trip to Pondicherry with my kids",
+        "Trip with children and toddlers to Pondicherry",
+        "Trip for family with infants and babies to Pondicherry",
+        "Pondicherry trip with chotte bacche",
+        "Vacation with my little ones in Pondicherry"
+    ]:
+        constraints = orchestrator.extract_demographics_and_constraints(prompt)
+        assert constraints.get("age_group") == "family_kids"
+
+
+def test_43_multi_generational_family_extraction():
+    """Test 43: When both elders and kids are mentioned, resolves to multi-generational family mode."""
+    prompt = "Plan a 2-day trip to Pondicherry with my parents and kids"
+    constraints = orchestrator.extract_demographics_and_constraints(prompt)
+    assert constraints.get("age_group") == "multi_generational"
+    assert constraints.get("pace") == "relaxed"
+
+    res = orchestrator.process_turn(ChatTurnRequest(message=prompt))
+    assert res.itinerary is not None
+    for alt in res.itinerary.alternatives:
+        for day in alt.days:
+            for slot in [day.morning, day.afternoon, day.evening]:
+                if slot:
+                    assert "surf" not in slot.place_name.lower()
+                    assert slot.place_id is not None
+
+
+def test_44_all_slots_have_authentic_places_and_coordinates():
+    """Test 44: Every slot across all 3 alternatives has real place_id, real name, and valid coordinates."""
+    res = orchestrator.process_turn(ChatTurnRequest(
+        message="Plan a 2-day trip to Pondicherry"
+    ))
+    assert res.itinerary is not None
+    assert len(res.itinerary.alternatives) == 3
+
+    for alt in res.itinerary.alternatives:
+        assert len(alt.days) == 2
+        for day in alt.days:
+            for slot in [day.morning, day.afternoon, day.evening]:
+                assert slot is not None
+                assert slot.place_id is not None
+                assert slot.place_id.startswith("pondy-") or slot.place_id.startswith("chennai-")
+                assert slot.place_name != "Destination"
+                assert "Leisure Coastal" not in slot.place_name
+                assert "Artisan Boutique & Cafe Downtime" not in slot.place_name
+                assert slot.coordinates is not None
+                assert "lat" in slot.coordinates and "lng" in slot.coordinates
+                assert isinstance(slot.coordinates["lat"], float)
+                assert isinstance(slot.coordinates["lng"], float)
+
+
+def test_45_alternatives_distinctness():
+    """Test 45: Cultural, Relaxed, and Nature/Active alternatives generate distinct schedules."""
+    res = orchestrator.process_turn(ChatTurnRequest(
+        message="Plan a 2-day trip to Pondicherry"
+    ))
+    assert res.itinerary is not None
+    alt_relaxed = next(a for a in res.itinerary.alternatives if a.id == "alt-relaxed")
+    alt_cultural = next(a for a in res.itinerary.alternatives if a.id == "alt-cultural")
+    alt_active = next(a for a in res.itinerary.alternatives if a.id == "alt-active")
+
+    relaxed_places = {s.place_name for d in alt_relaxed.days for s in [d.morning, d.afternoon, d.evening] if s}
+    cultural_places = {s.place_name for d in alt_cultural.days for s in [d.morning, d.afternoon, d.evening] if s}
+    active_places = {s.place_name for d in alt_active.days for s in [d.morning, d.afternoon, d.evening] if s}
+
+    # Cultural must have heritage/spiritual venues
+    has_spiritual_or_heritage = any("ashram" in p.lower() or "temple" in p.lower() or "church" in p.lower() or "manakula" in p.lower() or "aurobindo" in p.lower() for p in cultural_places)
+    assert has_spiritual_or_heritage is True
+
+    # Alternatives must not be 100% identical copies of each other
+    assert cultural_places != relaxed_places or cultural_places != active_places
+
+
+def test_46_unsupported_destinations_jaipur_goa_paris():
+    """Test 46: Non-catalog destinations return clear advisories and never generate fake itineraries."""
+    for unsupported_prompt in [
+        "Plan a 2-day trip to Jaipur",
+        "Plan a 3-day trip to Goa",
+        "Plan a trip to Paris"
+    ]:
+        res = orchestrator.process_turn(ChatTurnRequest(message=unsupported_prompt))
+        assert res.itinerary is None
+        assert "Pondicherry" in res.reply_message or "Chennai" in res.reply_message
+
+
+def test_47_senior_pure_veg_budget_query():
+    """Test 47: Specific constraints (senior, pure veg, low budget) are parsed and honored in the itinerary."""
+    req = ChatTurnRequest(
+        message="Plan a 2-day trip to Pondicherry for a senior citizen, budget low, pure veg"
+    )
+    res = orchestrator.process_turn(req)
+    assert res.itinerary is not None
+    # Confirmation text includes demographic acknowledgment
+    assert "elders" in res.reply_message.lower() or "senior" in res.reply_message.lower() or "parents" in res.reply_message.lower()
+
+    # All slots valid
+    for alt in res.itinerary.alternatives:
+        for day in alt.days:
+            for slot in [day.morning, day.afternoon, day.evening]:
+                assert slot is not None
+                assert slot.place_name != "Destination"
+                assert "surf" not in slot.place_name.lower()
+
+
+def test_48_itinerary_slot_coordinates_in_api():
+    """Test 48: POST /api/v1/chat/message returns coordinates directly on itinerary slots."""
+    payload = {
+        "message": "Plan a 2-day trip to Pondicherry",
+        "duration_days": 2
+    }
+    res = client.post("/api/v1/chat/message", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["itinerary"] is not None
+    day1 = data["itinerary"]["days"][0]
+    morning_slot = day1["morning"]
+    assert morning_slot["coordinates"] is not None
+    assert morning_slot["coordinates"]["lat"] > 0
+    assert morning_slot["coordinates"]["lng"] > 0
+    assert morning_slot["place_name"] != "Destination"
+
+
+def test_49_day_metadata_not_in_slots():
+    """Test 49: Day-level metadata (city_id, day_budget_inr, estimated_travel_time) are never slot stop names."""
+    payload = {
+        "message": "Plan a 2-day trip to Pondicherry & Chennai",
+        "duration_days": 2
+    }
+    res = client.post("/api/v1/chat/message", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["itinerary"] is not None
+
+    invalid_stop_names = {"chennai", "pondicherry", "attraction", "destination", "explore sights"}
+
+    for alt in data["itinerary"]["alternatives"]:
+        for day in alt["days"]:
+            # Confirm day-level metadata is present
+            assert "city_id" in day
+            assert day["city_id"] in ["pondicherry", "chennai"]
+            assert "day_budget_inr" in day
+
+            # Confirm real slots never have metadata or placeholder names
+            for slot_key in ["morning", "afternoon", "evening"]:
+                slot = day.get(slot_key)
+                if slot:
+                    pname = slot.get("place_name", "").lower()
+                    assert pname not in invalid_stop_names, f"Slot {slot_key} unexpectedly named {pname}"
+                    assert not pname.isdigit(), f"Slot {slot_key} has numeric budget as name: {pname}"
+                    assert len(pname) > 3
+                    assert slot.get("place_id") is not None
+
+
+# ==============================================================================
+# SECTION 11: Conversational Follow-Up Constraint Refinements (Tests 50 - 52)
+# ==============================================================================
+
+def test_50_followup_demographic_refinement():
+    """Test 50: Follow-up message 'this is for my parents/kids' triggers itinerary_edit and regenerates plan."""
+    # 1. Initial planning
+    init_res = client.post("/api/v1/chat/message", json={"message": "Plan a 2-day trip to Pondicherry", "duration_days": 2})
+    assert init_res.status_code == 200
+    init_data = init_res.json()
+    assert init_data["itinerary"] is not None
+
+    # 2. Follow-up demographic refinement with active itinerary passed
+    followup_payload = {
+        "message": "this is for my parents/kids",
+        "current_itinerary": init_data["itinerary"]
+    }
+    follow_res = client.post("/api/v1/chat/message", json=followup_payload)
+    assert follow_res.status_code == 200
+    follow_data = follow_res.json()
+    assert follow_data["intent"] == "itinerary_edit"
+    assert follow_data["itinerary"] is not None
+    assert len(follow_data["itinerary"]["alternatives"]) == 3
+    # Acknowledges multi-generational / elders
+    assert any(w in follow_data["reply_message"].lower() for w in ["elders", "parents", "kids", "children", "multi-generational"])
+
+
+def test_51_followup_budget_refinement_amount():
+    """Test 51: Follow-up message 'make the budget to Rs:3000' triggers itinerary_edit and updates budget."""
+    init_res = client.post("/api/v1/chat/message", json={"message": "Plan a 2-day trip to Pondicherry", "duration_days": 2})
+    assert init_res.status_code == 200
+    init_data = init_res.json()
+
+    followup_payload = {
+        "message": "make the budget to Rs:3000",
+        "current_itinerary": init_data["itinerary"]
+    }
+    follow_res = client.post("/api/v1/chat/message", json=followup_payload)
+    assert follow_res.status_code == 200
+    follow_data = follow_res.json()
+    assert follow_data["intent"] == "itinerary_edit"
+    assert follow_data["itinerary"] is not None
+    assert "3,000" in follow_data["reply_message"] or "3000" in follow_data["reply_message"]
+
+
+def test_52_followup_combined_parents_and_budget():
+    """Test 52: Combined follow-up 'this is for my parents, make the budget to Rs:3000' updates both."""
+    init_res = client.post("/api/v1/chat/message", json={"message": "Plan a 2-day trip to Pondicherry", "duration_days": 2})
+    assert init_res.status_code == 200
+    init_data = init_res.json()
+
+    followup_payload = {
+        "message": "this is for my parents, make the budget to Rs:3000",
+        "current_itinerary": init_data["itinerary"]
+    }
+    follow_res = client.post("/api/v1/chat/message", json=followup_payload)
+    assert follow_res.status_code == 200
+    follow_data = follow_res.json()
+    assert follow_data["intent"] == "itinerary_edit"
+    assert follow_data["itinerary"] is not None
+    # Verify no surfing lessons for parents
+    for day in follow_data["itinerary"]["days"]:
+        for slot in [day.get("morning"), day.get("afternoon"), day.get("evening")]:
+            if slot:
+                assert "surf" not in slot.get("place_name", "").lower()
+
+
+

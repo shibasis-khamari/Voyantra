@@ -19,6 +19,7 @@ import {
 import { usePreferences } from '../context/PreferencesContext';
 import { VoyantraAPI } from '../services/api';
 import { GoogleMapsRouteView } from '../components/GoogleMapsRouteView';
+import { isSlotKey } from '../utils/itineraryHelpers';
 
 export function MapPage({ setActiveTab }) {
   const { selectedCity, activeItinerary, addToTripPlan } = usePreferences();
@@ -190,19 +191,21 @@ export function MapPage({ setActiveTab }) {
   // Extract stops for current day
   const dayStops = useMemo(() => {
     if (!activeDay) return [];
-    const slotKeys = Object.keys(activeDay).filter(k => !['day_number', 'theme'].includes(k) && !!activeDay[k]);
+    const slotKeys = Object.keys(activeDay).filter(k => isSlotKey(k, activeDay[k]));
     const orderWeights = { morning: 1, afternoon: 2, evening: 3 };
     slotKeys.sort((a, b) => (orderWeights[a] || 4) - (orderWeights[b] || 4));
 
     return slotKeys.map((k, idx) => {
       const raw = activeDay[k];
-      const name = typeof raw === 'string' ? raw : (raw.place_name || 'Destination');
+      const name = typeof raw === 'string' ? raw : (raw.place_name || 'Attraction');
       const note = typeof raw === 'object' && raw.activity_note ? raw.activity_note : '';
       const timeTag = typeof raw === 'object' && raw.est_time ? raw.est_time : (k === 'morning' ? '8:30 AM' : k === 'afternoon' ? '12:30 PM' : '5:00 PM');
       const duration = typeof raw === 'object' && raw.duration_minutes ? `${(raw.duration_minutes / 60).toFixed(1)} hrs` : (k === 'evening' ? '2 hrs' : '2.5 hrs');
       const cost = typeof raw === 'object' && raw.cost_inr !== undefined ? (raw.cost_inr === 0 ? 'Free' : `₹${raw.cost_inr}`) : (raw.estimated_cost_inr !== undefined ? (raw.estimated_cost_inr === 0 ? 'Free' : `₹${raw.estimated_cost_inr}`) : 'Free');
       const crowd = typeof raw === 'object' && raw.crowd_level ? raw.crowd_level : (idx === 0 ? 'Low' : idx === 1 ? 'Moderate' : 'High');
-      const coords = findCoordinates(name);
+      const coords = (raw && typeof raw === 'object' && raw.coordinates?.lat && raw.coordinates?.lng)
+        ? raw.coordinates
+        : findCoordinates(name);
 
       return {
         order: idx + 1,
@@ -226,7 +229,7 @@ export function MapPage({ setActiveTab }) {
   // Total stops across all days
   const totalStopsCount = useMemo(() => {
     return days.reduce((acc, d) => {
-      const validSlots = Object.keys(d).filter(k => !['day_number', 'theme'].includes(k) && !!d[k]);
+      const validSlots = Object.keys(d).filter(k => isSlotKey(k, d[k]));
       return acc + validSlots.length;
     }, 0);
   }, [days]);

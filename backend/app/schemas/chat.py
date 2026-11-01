@@ -69,6 +69,8 @@ class ItinerarySlotData(BaseModel):
     cost_inr: Optional[int] = 0
     travel_time_from_prev_minutes: Optional[int] = None
     travel_distance_from_prev_km: Optional[float] = None
+    coordinates: Optional[Dict[str, float]] = None
+    address: Optional[str] = None
     hours_confirmation_required: bool = False
 
 class ItineraryDayData(BaseModel):

@@ -597,18 +597,6 @@ class GeminiService:
                         "activity_note": f"{note_prefix} {p_obj.name}.",
                         "est_time": time_str
                     }
-                elif not retrieved_places:
-                    # Provide realistic fallback slots for worldwide destinations when offline
-                    fallback_names = {
-                        "morning": f"Iconic Landmarks of {city_name}" if d_num == 1 else f"Scenic Panorama of {city_name}",
-                        "afternoon": f"{city_name} Cultural Heritage & Museums" if d_num == 1 else f"Local Artisan Markets & Cafes in {city_name}",
-                        "evening": f"Sunset Promenade & Dining in {city_name}" if d_num == 1 else f"Evening City Sights & Cuisine in {city_name}"
-                    }
-                    slots[s_key] = {
-                        "place_name": fallback_names[s_key],
-                        "activity_note": f"{note_prefix} prominent attractions in {city_name}.",
-                        "est_time": time_str
-                    }
                 else:
                     slots[s_key] = None
 

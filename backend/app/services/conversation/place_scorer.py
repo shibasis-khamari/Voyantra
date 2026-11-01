@@ -168,26 +168,42 @@ class PlaceScorer:
         acc_rating = getattr(place, "accessibility_rating", 0) or 0
         wheelchair_ok = acc_rating >= 4 or getattr(place, "wheelchair_accessible", False)
         kid_friendly = getattr(place, "kid_friendly", True)
-        exertion = getattr(place, "physical_exertion", "moderate")
+        exertion = str(getattr(place, "physical_exertion", "moderate") or "moderate").lower()
 
-        if "senior" in age_group:
-            if wheelchair_ok:
-                score += 15.0
+        # 1. Multi-Generational Family (Both Seniors and Kids present)
+        if "multi_gen" in age_group or "multi" in age_group:
+            if exertion == "high" or not kid_friendly:
+                return -100.0  # Strictly drop high exertion and kid-incompatible places
+            if "nightlife" in place_tags or p_cat == "adventure":
+                return -100.0
+            if wheelchair_ok or acc_rating >= 4:
+                score += 25.0
+            if p_cat in ["nature", "heritage", "spiritual", "culture"]:
+                score += 20.0
+
+        # 2. Senior / Elderly travelers (parents, grandparents, uncle)
+        elif "senior" in age_group or "elder" in age_group:
+            if exertion == "high" or p_cat == "adventure":
+                return -100.0  # Surf schools, strenuous climbing strictly excluded
+            if wheelchair_ok or acc_rating >= 4:
+                score += 25.0  # Strong boost for accessible places
             if exertion == "low":
-                score += 10.0
-            elif exertion == "high":
-                score -= 25.0
-            if p_cat in ["spiritual", "heritage", "nature"]:
-                score += 10.0
-            elif p_cat == "adventure":
-                score -= 30.0
-        elif "fam" in age_group or "kid" in age_group:
-            if kid_friendly or "kid_friendly" in place_tags:
                 score += 15.0
-            if p_cat in ["nature", "beach", "culture"]:
-                score += 10.0
+            if p_cat in ["spiritual", "heritage", "nature"]:
+                score += 20.0
+
+        # 3. Family with Kids / Children / Toddlers
+        elif "kid" in age_group or "child" in age_group or "fam" in age_group:
+            if not kid_friendly:
+                return -100.0  # Bars, dangerous cliffs excluded
+            if "nightlife" in place_tags:
+                return -100.0
             if exertion == "high":
-                score -= 10.0
+                score -= 35.0  # Avoid strenuous activities
+            if "kid_friendly" in place_tags or p_cat in ["nature", "beach", "culture"]:
+                score += 20.0
+
+        # 4. Young Adult / College / Students
         elif "young" in age_group:
             if p_cat in ["adventure", "beach", "cafe"]:
                 score += 15.0

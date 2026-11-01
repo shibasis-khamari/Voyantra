@@ -21,6 +21,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { GoogleMapsRouteView } from './GoogleMapsRouteView';
+import { isSlotKey } from '../utils/itineraryHelpers';
 
 export function ItineraryMapModal({
   isOpen,
@@ -77,7 +78,7 @@ export function ItineraryMapModal({
   const dayStops = useMemo(() => {
     if (!activeDay) return [];
 
-    const slotKeys = Object.keys(activeDay).filter(k => !['day_number', 'theme'].includes(k) && !!activeDay[k]);
+    const slotKeys = Object.keys(activeDay).filter(k => isSlotKey(k, activeDay[k]));
     
     // Sort slots by time: morning -> afternoon -> evening -> custom
     const orderWeights = { morning: 1, afternoon: 2, evening: 3 };
@@ -85,11 +86,14 @@ export function ItineraryMapModal({
 
     return slotKeys.map((slotKey, idx) => {
       const raw = activeDay[slotKey];
-      const placeName = typeof raw === 'string' ? raw : (raw.place_name || 'Destination');
+      const placeName = typeof raw === 'string' ? raw : (raw.place_name || 'Attraction');
       const timeTag = typeof raw === 'object' && raw.est_time ? raw.est_time : (slotKey === 'morning' ? '8:30 AM' : slotKey === 'afternoon' ? '12:30 PM' : '5:00 PM');
       const note = typeof raw === 'object' && raw.activity_note ? raw.activity_note : '';
       const duration = typeof raw === 'object' && raw.duration_minutes ? raw.duration_minutes : 60;
       const meta = findCoordinates(placeName);
+      const coords = (raw && typeof raw === 'object' && raw.coordinates?.lat && raw.coordinates?.lng)
+        ? raw.coordinates
+        : (meta ? { lat: meta.lat, lng: meta.lng } : null);
 
       return {
         order: idx + 1,
@@ -98,9 +102,9 @@ export function ItineraryMapModal({
         timeTag,
         activityNote: note,
         duration,
-        coordinates: meta ? { lat: meta.lat, lng: meta.lng } : null,
-        address: meta?.address || '',
-        category: meta?.category || 'sight'
+        coordinates: coords,
+        address: raw?.address || meta?.address || '',
+        category: raw?.category || meta?.category || 'sight'
       };
     }).filter(s => s.coordinates !== null);
   }, [activeDay, placesCatalog]);
