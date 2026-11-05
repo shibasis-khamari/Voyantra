@@ -83,7 +83,7 @@ export function Navbar({ activeTab, setActiveTab }) {
                   alt="Voyantra" 
                   className="w-9 h-9 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
                 />
-                <span className="font-sans text-xl font-extrabold tracking-[0.12em] uppercase text-white drop-shadow-xs group-hover:text-amber-300 transition-colors">
+                <span className="font-logo text-xl font-extrabold tracking-[0.12em] uppercase text-white drop-shadow-xs group-hover:text-amber-300 transition-colors">
                   Voyantra
                 </span>
               </div>

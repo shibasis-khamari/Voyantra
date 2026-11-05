@@ -99,11 +99,11 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
           {/* Main Editorial Headline */}
           <motion.h1 
             variants={itemVariants}
-            className="font-serif text-3xl sm:text-5xl lg:text-[40px] xl:text-[50px] 2xl:text-[56px] leading-[1.06] tracking-[-0.02em] text-white font-normal [text-shadow:0_2px_24px_rgba(0,0,0,.35)]"
+            className="font-sans font-bold text-3xl sm:text-5xl lg:text-[40px] xl:text-[50px] 2xl:text-[56px] leading-[1.08] tracking-tight text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)]"
           >
             Curated Journeys.<br />
             Intelligent Pacing.<br />
-            <span className="italic bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-transparent">
               Unhurried Coastlines.
             </span>
           </motion.h1>
@@ -184,7 +184,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
                       </span>
                       <span className="text-[10px] text-slate-300 font-medium hidden sm:inline">Morning Visit</span>
                     </div>
-                    <h4 className="text-sm sm:text-base font-serif font-normal text-white leading-snug group-hover:text-amber-200 transition-colors">
+                    <h4 className="text-sm sm:text-base font-sans font-bold text-white leading-snug group-hover:text-amber-200 transition-colors">
                       Sri Aurobindo Ashram
                     </h4>
                     <p className="text-[11px] text-slate-300 line-clamp-1">
@@ -213,7 +213,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
                       </span>
                       <span className="text-[10px] text-slate-300 font-medium hidden sm:inline">Heritage Walk</span>
                     </div>
-                    <h4 className="text-sm sm:text-base font-serif font-normal text-white leading-snug group-hover:text-brand-200 transition-colors">
+                    <h4 className="text-sm sm:text-base font-sans font-bold text-white leading-snug group-hover:text-brand-200 transition-colors">
                       White Town French Quarter
                     </h4>
                     <p className="text-[11px] text-slate-300 line-clamp-1">
@@ -242,7 +242,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
                       </span>
                       <span className="text-[10px] text-slate-300 font-medium hidden sm:inline">Sunset Walk</span>
                     </div>
-                    <h4 className="text-sm sm:text-base font-serif font-normal text-white leading-snug group-hover:text-orange-200 transition-colors">
+                    <h4 className="text-sm sm:text-base font-sans font-bold text-white leading-snug group-hover:text-orange-200 transition-colors">
                       Promenade Beach (Rock Beach)
                     </h4>
                     <p className="text-[11px] text-slate-300 line-clamp-1">

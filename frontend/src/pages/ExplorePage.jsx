@@ -98,7 +98,7 @@ export function ExplorePage({ setActiveTab }) {
                 <Compass className="w-4 h-4 text-terracotta" />
                 Explore destinations
               </div>
-              <h2 className="font-serif text-4xl sm:text-5xl text-slate-900 leading-tight">Find your next stop</h2>
+              <h2 className="font-sans font-bold text-3xl sm:text-4xl text-slate-900 leading-tight tracking-tight">Find your next stop</h2>
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                 Discover places that match your interests, budget, and preferred pace across Pondicherry and Chennai.
               </p>

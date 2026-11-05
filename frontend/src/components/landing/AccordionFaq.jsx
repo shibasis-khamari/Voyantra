@@ -52,7 +52,7 @@ export function AccordionFaq() {
             <HelpCircle className="w-3.5 h-3.5 text-terracotta" />
             <span>Frequently Asked Questions</span>
           </div>
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-[-0.01em]">
+          <h2 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[46px] text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-tight">
             Clarity & Travel Guidelines
           </h2>
           <p className="text-sm sm:text-base text-slate-100 font-sans max-w-xl mx-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium leading-relaxed">

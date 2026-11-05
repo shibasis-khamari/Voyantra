@@ -24,7 +24,7 @@ export function BentoGridFeatures({ setActiveTab }) {
             <Sparkles className="w-3.5 h-3.5 text-terracotta" />
             <span>Intelligent System Architecture</span>
           </div>
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-brand-700 leading-[1.08] tracking-[-0.01em]">
+          <h2 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[46px] text-brand-700 leading-[1.08] tracking-tight">
             Engineered for Coastal Travel Realities
           </h2>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-sans font-medium">

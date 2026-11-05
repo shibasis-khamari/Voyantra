@@ -61,7 +61,7 @@ export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
           </div>
         )}
         <button onClick={onSelect} className="text-left">
-          <h3 className="font-serif text-[24px] text-brand-700 leading-tight group-hover:text-terracotta transition-colors">{place.name}</h3>
+          <h3 className="font-sans font-bold text-lg sm:text-xl text-brand-700 leading-snug group-hover:text-terracotta transition-colors">{place.name}</h3>
         </button>
         <p className="mt-1.5 text-xs text-slate-500 flex items-start gap-1.5">
           <MapPin className="w-3.5 h-3.5 mt-0.5 text-terracotta shrink-0" />

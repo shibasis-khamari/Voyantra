@@ -15,7 +15,7 @@ export function PageHero({ eyebrow, title, description, image, children }) {
             {eyebrow}
           </div>
         )}
-        <h1 className="font-serif text-4xl leading-tight sm:text-5xl lg:text-[56px]">{title}</h1>
+        <h1 className="font-sans font-bold text-3xl leading-tight sm:text-4xl lg:text-[48px] tracking-tight">{title}</h1>
         {description && <p className="mt-4 max-w-xl text-sm leading-7 text-slate-200 sm:text-base">{description}</p>}
         {children && <div className="mt-6 flex flex-wrap gap-3">{children}</div>}
       </div>

@@ -99,7 +99,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
               <Compass className="w-3.5 h-3.5" />
               <span>Curated Trajectory Preview</span>
             </div>
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[52px] font-normal text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-[-0.01em]">
+            <h2 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[46px] text-white [text-shadow:0_2px_24px_rgba(0,0,0,.35)] leading-[1.08] tracking-tight">
               A Day in the Coast
             </h2>
             <p className="text-sm sm:text-base text-slate-100 font-sans max-w-xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] font-medium leading-relaxed">
@@ -143,7 +143,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
             className="space-y-8"
           >
             <div className="space-y-1">
-              <h3 className="text-2xl sm:text-3xl font-serif font-normal text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">{activeJourney.title}</h3>
+              <h3 className="text-xl sm:text-2xl font-sans font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] tracking-tight">{activeJourney.title}</h3>
               <p className="text-xs sm:text-sm text-amber-200 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] font-medium">{activeJourney.tagline}</p>
             </div>
 
@@ -164,7 +164,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
                       </span>
                     </div>
 
-                    <h4 className="text-[22px] font-serif font-normal text-slate-900 leading-snug">
+                    <h4 className="text-lg sm:text-xl font-sans font-bold text-slate-900 leading-snug">
                       {stop.title}
                     </h4>
 

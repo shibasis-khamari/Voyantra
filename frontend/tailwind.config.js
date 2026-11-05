@@ -7,9 +7,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
-        display: ['"Instrument Serif"', 'Georgia', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        logo: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans: ['"Gubera Mono"', '"Plus Jakarta Sans"', 'system-ui', 'monospace', 'sans-serif'],
+        display: ['"Gubera Mono"', '"Plus Jakarta Sans"', 'system-ui', 'monospace', 'sans-serif'],
+        serif: ['"Gubera Mono"', '"Plus Jakarta Sans"', 'system-ui', 'monospace', 'sans-serif'],
+        mono: ['"Gubera Mono"', 'monospace'],
+        gubera: ['"Gubera Mono"', '"Plus Jakarta Sans"', 'monospace', 'sans-serif'],
       },
       colors: {
         brand: {
