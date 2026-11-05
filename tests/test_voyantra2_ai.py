@@ -23,7 +23,10 @@ from backend.app.services.conversation.itinerary_service import itinerary_servic
 from backend.app.services.conversation.orchestrator import orchestrator
 from backend.app.schemas.chat import ChatTurnRequest
 
-client = TestClient(app)
+from helpers import auth_headers
+
+# /chat/* now requires a signed-in user
+client = TestClient(app, headers=auth_headers())
 
 # ---------------------------------------------------------------------------
 # 1. Geographic Scope & Destination Service

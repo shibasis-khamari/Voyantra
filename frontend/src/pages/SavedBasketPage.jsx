@@ -68,7 +68,7 @@ export function SavedBasketPage({ setActiveTab }) {
         aria-hidden="true"
       >
         <img
-          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg"
+          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.webp"
           alt="Scenic Coastal Horizon"
           className="w-full h-full object-cover object-center fixed scale-105 filter brightness-[0.98] contrast-[1.04] saturate-[1.12]"
         />

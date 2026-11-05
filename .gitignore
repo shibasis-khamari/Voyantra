@@ -58,3 +58,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Generated vector indexes / caches
+backend/app/data/knowledge_vectors/
+*.bin

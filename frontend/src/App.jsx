@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { ExplorePage } from './pages/ExplorePage';
-import { PlannerPage } from './pages/PlannerPage';
-import { SavedBasketPage } from './pages/SavedBasketPage';
-import { HotelsPage } from './pages/HotelsPage';
-import { MapPage } from './pages/MapPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { AdminPortal } from './components/AdminPortal';
-import { SignUpPage } from './pages/SignUpPage';
+const PlannerPage = lazy(() => import('./pages/PlannerPage').then((m) => ({ default: m.PlannerPage })));
+const SavedBasketPage = lazy(() => import('./pages/SavedBasketPage').then((m) => ({ default: m.SavedBasketPage })));
+const HotelsPage = lazy(() => import('./pages/HotelsPage').then((m) => ({ default: m.HotelsPage })));
+const MapPage = lazy(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage })));
+const AdminPortal = lazy(() => import('./components/AdminPortal').then((m) => ({ default: m.AdminPortal })));
+const SignUpPage = lazy(() => import('./pages/SignUpPage').then((m) => ({ default: m.SignUpPage })));
 import { PreferencesProvider } from './context/PreferencesContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -46,7 +46,9 @@ export function App() {
 
           {/* Main Content View: pt-0 on Explore so Hero background extends behind glassy navbar, pt-16 on other pages. No bottom padding on planner for full-height single-page view */}
           <main className={`flex-1 ${activeTab === 'planner' ? 'pt-16 pb-0 overflow-hidden' : activeTab === 'explore' ? 'pt-0 pb-16' : 'pt-16 pb-16'}`}>
-            {renderActivePage()}
+            <Suspense fallback={<div className="p-10 text-center text-sm text-slate-400">Loading…</div>}>
+              {renderActivePage()}
+            </Suspense>
           </main>
 
           {/* Global Footer (hidden on single-page Planner view for pure full-screen experience) */}

@@ -21,7 +21,6 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('user'); // 'user' | 'admin'
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -58,20 +57,13 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
       const res = await VoyantraAPI.register({
         name: name.trim(),
         email: email.trim().toLowerCase(),
-        password,
-        role
+        password
       });
 
       login(res.user, res.access_token);
-      setSuccess(`Welcome to Voyantra, ${res.user.name}! Your ${role === 'admin' ? 'Administrator' : 'Traveler'} account is active.`);
+      setSuccess(`Welcome to Voyantra, ${res.user.name}! Your Traveler account is active.`);
 
-      setTimeout(() => {
-        if (role === 'admin') {
-          setActiveTab('admin');
-        } else {
-          setActiveTab('planner');
-        }
-      }, 1500);
+      setTimeout(() => setActiveTab('planner'), 1500);
     } catch (err) {
       setError(err.message || 'Registration failed. An account with this email may already exist.');
     } finally {
@@ -154,38 +146,6 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
             <p className="text-xs text-slate-500 mt-1">
               Sign up as a Traveler or Administrator to access all Voyantra planning tools.
             </p>
-          </div>
-
-          {/* Role Choice */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-slate-700">Select Account Role</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole('user')}
-                className={`flex items-center justify-center gap-2 p-3 rounded-2xl border text-xs font-bold transition-all ${
-                  role === 'user'
-                    ? 'border-brand-600 bg-brand-50/70 text-brand-900 shadow-sm ring-1 ring-brand-600'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <User className="w-4 h-4 text-brand-600" />
-                <span>Traveler</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRole('admin')}
-                className={`flex items-center justify-center gap-2 p-3 rounded-2xl border text-xs font-bold transition-all ${
-                  role === 'admin'
-                    ? 'border-amber-500 bg-amber-50/70 text-amber-900 shadow-sm ring-1 ring-amber-500'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4 text-amber-600" />
-                <span>Administrator</span>
-              </button>
-            </div>
           </div>
 
           {error && (
@@ -276,16 +236,14 @@ export function SignUpPage({ setActiveTab, onOpenLoginModal }) {
               type="submit"
               disabled={loading}
               className={`w-full py-3 rounded-xl text-xs font-bold text-white shadow-md transition-all flex items-center justify-center gap-2 ${
-                role === 'admin'
-                  ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20'
-                  : 'bg-brand-600 hover:bg-brand-700 shadow-brand-600/20'
+                'bg-brand-600 hover:bg-brand-700 shadow-brand-600/20'
               } disabled:opacity-50`}
             >
               {loading ? (
                 <span>Creating Account...</span>
               ) : (
                 <>
-                  <span>Create {role === 'admin' ? 'Administrator' : 'Traveler'} Account</span>
+                  <span>Create Traveler Account</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

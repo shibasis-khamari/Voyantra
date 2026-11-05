@@ -82,7 +82,7 @@ export function InteractiveJourneyTimeline({ setActiveTab }) {
       {/* Full Section Background Image: Sara Dubler Coastal Villa & Pool */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/sara-dubler-Koei_7yYtIo-unsplash.jpg"
+          src="/images/sara-dubler-Koei_7yYtIo-unsplash.webp"
           alt="Coastal Villa and French Courtyard"
           className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />

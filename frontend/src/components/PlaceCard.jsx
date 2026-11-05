@@ -5,12 +5,12 @@ import { AdvisoryBadge } from './AdvisoryBadge';
 import { usePreferences } from '../context/PreferencesContext';
 
 const LOCAL_DESTINATION_IMAGES = [
-  '/images/maniraj-i3FLO6Nthw4-unsplash.jpg',
-  '/images/rohit-durbha-3GpBMD609o4-unsplash.jpg',
-  '/images/llxvisuals--E7dpukTajA-unsplash.jpg',
-  '/images/sara-dubler-Koei_7yYtIo-unsplash.jpg',
-  '/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg',
-  '/images/z-TrhLCn1abMU-unsplash.jpg'
+  '/images/maniraj-i3FLO6Nthw4-unsplash.webp',
+  '/images/rohit-durbha-3GpBMD609o4-unsplash.webp',
+  '/images/llxvisuals--E7dpukTajA-unsplash.webp',
+  '/images/sara-dubler-Koei_7yYtIo-unsplash.webp',
+  '/images/luisa-linkous-L03SoHMhbz8-unsplash.webp',
+  '/images/z-TrhLCn1abMU-unsplash.webp'
 ];
 
 export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
@@ -19,7 +19,7 @@ export function PlaceCard({ place, matchScore, matchReasons, onSelect }) {
   const isPlanned = tripPlan.some(p => p.id === place.id);
   const isFav = favorites.includes(place.id);
   const imageIndex = place.id ? [...place.id].reduce((sum, char) => sum + char.charCodeAt(0), 0) % LOCAL_DESTINATION_IMAGES.length : 0;
-  const imageSrc = place.image_url || '/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg';
+  const imageSrc = place.image_url || '/images/luisa-linkous-L03SoHMhbz8-unsplash.webp';
 
   return (
     <article className="group bg-white rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden">

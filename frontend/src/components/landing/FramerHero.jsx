@@ -71,7 +71,7 @@ export function FramerHero({ setActiveTab, selectedCity = 'pondicherry' }) {
       {/* Full Section Background Image: Luisa Linkous Coastal Horizon */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg"
+          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.webp"
           alt="Scenic Coastal Horizon of the Bay of Bengal"
           className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />

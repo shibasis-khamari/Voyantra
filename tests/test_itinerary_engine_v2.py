@@ -26,7 +26,10 @@ from backend.app.services.conversation.geo_clusterer import geo_clusterer
 from backend.app.services.conversation.itinerary_service import itinerary_service
 from backend.app.services.conversation.orchestrator import orchestrator
 
-client = TestClient(app)
+from helpers import auth_headers
+
+# /chat/* now requires a signed-in user
+client = TestClient(app, headers=auth_headers())
 
 # ==============================================================================
 # Helper to construct minimal valid Place instance

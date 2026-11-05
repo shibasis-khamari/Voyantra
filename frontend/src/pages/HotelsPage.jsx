@@ -57,7 +57,7 @@ export function HotelsPage() {
         eyebrow="Handpicked stays"
         title="Find a stay that fits your journey"
         description="Compare coastal hotels and heritage stays by budget, location, and comfort."
-        image="/images/rohit-durbha-3GpBMD609o4-unsplash.jpg"
+        image="/images/rohit-durbha-3GpBMD609o4-unsplash.webp"
       />
 
       {/* Filter Controls */}

@@ -27,15 +27,32 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
         )
     
     email = payload.get("email")
-    user = db_manager.find_user_by_email(email)
+    user = db_manager.find_user_by_email(email) if email else None
     if not user:
-        # Fallback to payload data if user exists in token
-        return {
-            "id": payload.get("sub"),
-            "email": email,
-            "role": payload.get("role", "user")
-        }
+        # Role/identity always come from the database, never from token claims.
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account no longer exists. Please sign in again.",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
     return user
+
+
+def get_user_id(user: Dict[str, Any]) -> str:
+    """Stable string id for a user document (works for Mongo and in-memory users)."""
+    return str(user.get("id") or user.get("_id"))
+
+
+def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+) -> Optional[Dict[str, Any]]:
+    """Returns the authenticated user, or None for anonymous / invalid tokens."""
+    if not credentials or not credentials.credentials:
+        return None
+    payload = auth_service.decode_access_token(credentials.credentials)
+    if not payload or not payload.get("email"):
+        return None
+    return db_manager.find_user_by_email(payload["email"])
 
 def require_admin(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
     """Ensures caller holds administrator privilege."""

@@ -570,7 +570,7 @@ export function PlannerPage({ setActiveTab }) {
         aria-hidden="true"
       >
         <img
-          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.jpg"
+          src="/images/luisa-linkous-L03SoHMhbz8-unsplash.webp"
           alt="Scenic Coastal View"
           className="w-full h-full object-cover object-center fixed scale-105 filter brightness-[0.96] contrast-[1.04] saturate-[1.1]"
         />

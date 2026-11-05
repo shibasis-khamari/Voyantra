@@ -33,12 +33,16 @@ class Settings(BaseModel):
     JWT_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
     # CORS
+    # Comma-separated list, e.g. CORS_ORIGINS="https://app.example.com,https://www.example.com"
     CORS_ORIGINS: list[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000"
+        o.strip() for o in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000"
+        ).split(",") if o.strip()
     ]
+
+    # Set true only when running behind a trusted reverse proxy (uses X-Forwarded-For for rate limiting)
+    TRUST_PROXY_HEADERS: bool = os.getenv("TRUST_PROXY_HEADERS", "False").lower() == "true"
     
     # OSRM Routing Engines
     OSRM_LOCAL_DRIVING_URL: str = os.getenv("OSRM_LOCAL_DRIVING_URL", "http://localhost:5000")

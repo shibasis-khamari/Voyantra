@@ -1,6 +1,6 @@
 # VOYANTRA: Agent Rules
 
-Read this file and `Voyantra_Full_Specification.md` before every task. These rules override any default behavior.
+Read this file and `docs/Voyantra_Full_Specification.md` before every task. These rules override any default behavior.
 
 ## 1. Project Constraints (never violate)
 - **Cities:** Pondicherry and Chennai, India ONLY. Reject or redirect anything else.

@@ -63,8 +63,7 @@ export function LoginModal({ isOpen, onClose, initialMode = 'login' }) {
         const res = await VoyantraAPI.register({
           name: name.trim(),
           email: email.trim().toLowerCase(),
-          password,
-          role: activeTab
+          password
         });
 
         login(res.user, res.access_token);

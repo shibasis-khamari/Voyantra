@@ -37,7 +37,7 @@ export function AccordionFaq() {
       {/* Full Section Background Image: Destination Map with Pins */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/z-TrhLCn1abMU-unsplash.jpg"
+          src="/images/z-TrhLCn1abMU-unsplash.webp"
           alt="Verified Destination Map with Location Pins"
           className="w-full h-full object-cover object-center opacity-85 scale-105 contrast-105 saturate-110"
         />

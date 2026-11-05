@@ -1,6 +1,7 @@
 import time
 from collections import defaultdict
 from fastapi import APIRouter, HTTPException, status, Request
+from ...core.http import get_client_ip
 from ...schemas.route import (
     RouteRequest, RouteResponse, RouteMatrixRequest, RouteMatrixResponse,
     DayOptimizationRequest, DayOptimizationResponse
@@ -44,7 +45,7 @@ def calculate_route(request: RouteRequest, req: Request):
     Employs 3-tier cascade: Local OSRM -> Public Demo (with walking speed correction) -> Haversine Detour.
     Returns polyline GeoJSON, turn-by-turn maneuvers, travel duration, distance, and `tier_used` stamp.
     """
-    client_ip = req.client.host if req.client else "127.0.0.1"
+    client_ip = get_client_ip(req)
     apply_route_rate_limit(client_ip)
 
     # 1. Coordinate Bounds Validation (Global geographic range)
@@ -83,7 +84,7 @@ def calculate_matrix(request: RouteMatrixRequest, req: Request):
     Compute NxN distance and duration matrix for a set of coordinates.
     Maximum of 10 waypoints allowed.
     """
-    client_ip = req.client.host if req.client else "127.0.0.1"
+    client_ip = get_client_ip(req)
     apply_route_rate_limit(client_ip)
 
     # 1. Waypoint Count Validation
@@ -126,7 +127,7 @@ def optimize_day_schedule(request: DayOptimizationRequest, req: Request):
     Fixes time-anchored slots (sunset, meals, pooja, user-locked) in their windows,
     optimizes flexible floating stops to minimize travel time, and produces transit legs.
     """
-    client_ip = req.client.host if req.client else "127.0.0.1"
+    client_ip = get_client_ip(req)
     apply_route_rate_limit(client_ip)
 
     # Validate coordinate bounds for all slots

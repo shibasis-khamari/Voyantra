@@ -1,0 +1,4 @@
+# Optional: local semantic search in vector_store_service.py.
+# The app falls back to a lightweight matcher if this is not installed.
+# NOTE: pulls in PyTorch (~1-2 GB). Skip it unless you need it.
+sentence-transformers>=2.7.0

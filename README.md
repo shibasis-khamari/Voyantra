@@ -10,7 +10,7 @@ Voyantra is an intelligent, full-stack travel platform designed to help traveler
 ### 🌍 Worldwide Travel Assistance & Concierge
 - **Global Destination Support**: Plan trips and ask questions about any city, state, country, or landmark worldwide (e.g., Pondicherry, Chennai, Mumbai, Jaipur, Himachal Pradesh, Tokyo, Paris, Bali, Dubai, Kyoto).
 - **Dynamic Conversational AI**: Natural multi-turn chat covering attractions, hotels, food scenes, cultural etiquette, and side-by-side destination comparisons.
-- **Powered by Google Gemini 3.5 Flash**: Configured with Google's balanced `gemini-3.5-flash` model, operating comfortably within free-tier limits (15 RPM / 1,500 RPD) with fallback to local heuristic synthesis.
+- **Powered by Google Gemini**: The model is set with `GEMINI_MODEL` (default `gemini-3.5-flash`; check Google's current model list and pick a newer Flash model if you prefer). Free-tier quotas change, so check your key's limits in Google AI Studio. If the API is unavailable or no key is set, the app falls back to local heuristic synthesis.
 
 ### 📅 Intelligent Multi-Day Itinerary Synthesis
 - **Personalized Itineraries (1 to 7 Days)**: Synthesizes structured schedules with morning, afternoon, and evening slots clustered by logical geographical proximity.
@@ -22,7 +22,7 @@ Voyantra is an intelligent, full-stack travel platform designed to help traveler
 
 ### 🗺️ Dual Map & Navigation Engine
 - **Google Maps Integration**:
-  - Pre-configured with permanent API key for live JavaScript Maps, Google DirectionsService, and traffic layer.
+  - Live JavaScript Maps, Google DirectionsService, and traffic layer (requires your own Google Maps API key, restricted by HTTP referrer).
   - Authentic road routing between stops with maneuver instructions and road distances.
   - **User GPS Navigation**: Bottom-right one-click routing from traveler's live GPS position to any selected itinerary stop with external Google Maps navigation links.
   - **Adjustable Splitter**: Drag-and-drop sliding divider to flexibly adjust the ratio between itinerary cards and map display.
@@ -65,29 +65,34 @@ Voyantra is an intelligent, full-stack travel platform designed to help traveler
 Voyantra/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/          # Endpoints (auth, recommendations, routes, places, hotels, crowd, festivals)
-│   │   ├── core/            # Config, MongoDB Atlas connector, geo utilities, auth dependencies
-│   │   ├── data/            # Static high-density city catalog datasets (*_places.json, *_hotels.json)
-│   │   ├── models/          # Entity models
-│   │   ├── schemas/         # Pydantic schemas (auth, route, itinerary, place, crowd)
-│   │   ├── services/        # Gemini LLM, routing engine, places, crowd heuristics, weather service
-│   │   └── main.py          # FastAPI application entrypoint with CORS & rate limiting
-│   ├── requirements.txt
-│   ├── run.py               # Uvicorn dev runner (port 8000)
-│   └── .env                 # Backend environment configuration
+│   │   ├── api/v1/          # Endpoints (auth, chat, recommendations, routes, places, hotels, crowd, festivals, knowledge, preferences)
+│   │   ├── core/            # Config, MongoDB connector, geo utilities, auth dependencies, HTTP helpers (client IP)
+│   │   ├── data/            # Static city catalog datasets (*_places.json, *_hotels.json, *_festivals.json)
+│   │   ├── schemas/         # Pydantic schemas
+│   │   ├── services/        # Gemini LLM, routing, TSP, places, crowd, weather, conversation + knowledge (VTKE) engines
+│   │   └── main.py          # FastAPI entrypoint (CORS + router registration)
+│   ├── requirements.txt          # Runtime dependencies
+│   ├── requirements-optional.txt # Optional: sentence-transformers (pulls in PyTorch)
+│   ├── requirements-dev.txt      # Runtime + pytest/httpx
+│   ├── run.py                    # Uvicorn dev runner (port 8000)
+│   └── .env                      # Backend environment configuration (not committed)
 │
 ├── frontend/
+│   ├── public/images/       # Optimised images (WebP photos, resized PNG logos)
 │   ├── src/
-│   │   ├── components/      # UI components (GoogleMapsRouteView, Navbar, PlaceCard, HotelCard, Modals)
-│   │   ├── context/         # AuthContext & PreferencesContext (global state & live GPS)
-│   │   ├── pages/           # Landing, Planner, Explore, Hotels, MapPage, AdminUsers, SignUpPage
-│   │   ├── services/        # VoyantraAPI client (FastAPI integration + offline fallback)
+│   │   ├── components/      # UI components
+│   │   ├── context/         # AuthContext & PreferencesContext
+│   │   ├── pages/           # Planner, Explore, Hotels, Map, Profile, SignUp, Saved basket (lazy-loaded)
+│   │   ├── services/        # VoyantraAPI client
 │   │   └── types/           # Taxonomy constants, icons, colors
 │   ├── package.json
-│   ├── tailwind.config.js   # Custom font families & color themes
+│   ├── tailwind.config.js
 │   ├── vite.config.js
-│   └── .env                 # Frontend environment configuration
+│   └── .env                 # Frontend environment configuration (not committed)
 │
+├── mobile/                  # React Native client
+├── tests/                   # pytest suite (run from the repo root)
+├── docs/                    # Specifications and design plans
 └── README.md
 ```
 
@@ -110,6 +115,16 @@ GEMINI_MODEL="gemini-3.5-flash"
 # MongoDB Atlas Cloud Database
 MONGODB_URL="mongodb+srv://<username>:<password>@cluster0.hqayaiu.mongodb.net/?retryWrites=true&w=majority"
 MONGODB_DB_NAME="voyantra_db"
+
+# Auth: REQUIRED in production. Generate with: python -c "import secrets; print(secrets.token_urlsafe(48))"
+JWT_SECRET_KEY="change-me"
+
+# Comma-separated list of allowed browser origins (defaults to localhost dev ports)
+CORS_ORIGINS="https://app.example.com,https://www.example.com"
+
+# Set to True ONLY when running behind a trusted reverse proxy / load balancer.
+# Rate limiting then keys on X-Forwarded-For instead of the proxy's address.
+TRUST_PROXY_HEADERS=False
 ```
 
 ### Frontend (`frontend/.env`)
@@ -157,14 +172,40 @@ For instant testing of authentication, profile management, and admin controls:
 | **Traveler** | `user@voyantra.com` | `user123` | Plan itineraries, chat with AI concierge, save favorites, route navigation |
 | **Admin** | `admin@voyantra.com` | `admin123` | Full access, user management dashboard (`/admin/users`), role promotion/deletion |
 
-*New traveler registrations are dynamically saved to MongoDB Atlas in the cloud with bcrypt password hashing.*
+*Demo accounts are for local development only: disable or change them before deploying.*
+
+**Registration & roles:** `POST /auth/register` always creates a **Traveler** account. The `role` field is ignored, so nobody can self-register as an admin. Admins promote users via `PATCH /auth/users/{id}/role`. Passwords are stored with bcrypt.
+
+**Chat & memory are per-user:** every `/chat/*` endpoint requires a `Bearer` token and is scoped to the signed-in user. Conversations belonging to other users return `404`.
+
+**Rate limiting:** simple in-memory sliding-window limiters live in `recommendations.py` (10 req/min per IP) and `routes.py` (30 req/min per IP). They are per-process, so use a shared store (e.g. Redis) if you run multiple workers.
+
+**Tests:** from the repo root, `pip install -r backend/requirements-dev.txt && pytest tests`.
 
 ---
 
 ## 📡 API Overview (`/api/v1`)
 
-| Endpoint | Method | Description |
-| :--- | :--- | :--- |
+| Endpoint | Method | Auth | Description |
+| :--- | :--- | :--- | :--- |
+| `/auth/login` | `POST` | Public | Authenticate and issue a JWT bearer token. |
+| `/auth/register` | `POST` | Public | Create a Traveler account (role cannot be chosen). |
+| `/auth/users` | `GET` | Admin | List registered users. |
+| `/auth/users/{id}/role` | `PATCH` | Admin | Promote/demote a user. |
+| `/auth/users/{id}` | `DELETE` | Admin | Delete a user. |
+| `/chat/message` | `POST` | User | Conversational concierge turn (English / Hindi / Tamil). |
+| `/chat/conversations` | `GET` | User | List your saved conversations. |
+| `/chat/memory` | `GET/PUT/DELETE` | User | Read, update or clear your consented memory profile. |
+| `/recommendations/chat` | `POST` | Public (rate-limited) | Conversational travel concierge covering destinations worldwide. |
+| `/recommendations/generate-itinerary` | `POST` | Public (rate-limited) | Synthesize 1-7 day feasible travel plans with dietary and age constraints. |
+| `/routes/plan` | `POST` | Public (rate-limited) | Real road routing between coordinates with maneuver instructions. |
+| `/routes/matrix` | `POST` | Public (rate-limited) | NxN distance and duration matrix for multi-stop journeys. |
+| `/routes/optimize-day` | `POST` | Public (rate-limited) | Time-constrained TSP optimizer for optimal daily route sequence. |
+| `/crowd/city/{city_id}` | `GET` | Public | Seasonal crowd congestion heuristics. |
+| `/crowd/report` | `POST` | Optional | Geofenced crowd report (attributed to you if signed in). |
+| `/festivals`, `/festivals/active` | `GET` | Public | Festival calendar and currently active festivals. |
+
+--- | :--- | :--- |
 | `/recommendations/chat` | `POST` | Conversational travel concierge covering destinations worldwide. |
 | `/recommendations/generate-itinerary` | `POST` | Synthesize 1–7 day feasible travel plans with dietary and age constraints. |
 | `/routes/plan` | `POST` | Real road routing between coordinates with maneuver instructions. |

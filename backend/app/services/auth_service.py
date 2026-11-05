@@ -79,7 +79,7 @@ class AuthService:
             "name": req.name,
             "email": req.email.lower(),
             "password": hashed,
-            "role": req.role.value,
+            "role": UserRoleEnum.USER.value,  # never trust client-supplied role
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         

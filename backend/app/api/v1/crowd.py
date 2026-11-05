@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Query, HTTPException, status, Request, Header
+from fastapi import APIRouter, Query, HTTPException, status, Request, Depends
 from typing import Optional, Dict, Any
 from ...services.crowd_service import crowd_service
+from ...core.dependencies import get_optional_user, get_user_id
+from ...core.http import get_client_ip
 from ...schemas.crowd import (
     CrowdReportRequest,
     CrowdReportResponse,
@@ -60,7 +62,7 @@ def get_live_crowd_status(
 def submit_crowd_report(
     report: CrowdReportRequest,
     req: Request,
-    authorization: Optional[str] = Header(None)
+    current_user: Optional[dict] = Depends(get_optional_user)
 ):
     """
     Phase 5: 1-Tap Geofenced Crowdsourced Footfall Submission.
@@ -69,19 +71,10 @@ def submit_crowd_report(
     - Logs anonymized feature snapshots without rule leakage.
     - Blends reported level using 30-minute exponential decay.
     """
-    client_ip = req.client.host if req.client else "127.0.0.1"
+    client_ip = get_client_ip(req)
 
-    # Extract user_id from token if logged in
-    user_id = None
-    if authorization and authorization.startswith("Bearer "):
-        try:
-            from ...core.security import verify_token
-            token = authorization.split(" ")[1]
-            payload = verify_token(token)
-            if payload:
-                user_id = payload.get("sub") or payload.get("email")
-        except Exception:
-            pass
+    # Authenticated users are attributed; anonymous reports are still allowed.
+    user_id = get_user_id(current_user) if current_user else None
 
     try:
         return crowd_service.submit_crowd_report(

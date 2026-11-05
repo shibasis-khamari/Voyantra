@@ -5,6 +5,7 @@ from fastapi import APIRouter, Query, Body, HTTPException, Request, status
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator
 
+from ...core.http import get_client_ip
 from ...schemas.recommendation import RecommendationRequest, RecommendationResponse, ConversationalChatRequest, ConversationalChatResponse
 from ...schemas.place import AgeGroupEnum, DietaryOptionEnum, BudgetTierEnum, Place
 from ...services.ranking_service import ranking_service
@@ -236,7 +237,7 @@ def chat_with_concierge(req: ConversationalChatRequest, request: Request):
     Conversational AI Concierge for worldwide rational dialogue, hotel/dining advice,
     and flexible itinerary planning for destinations across India and globally.
     """
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    client_ip = get_client_ip(request)
     apply_rate_limit(client_ip)
 
     history_dicts = [{"role": m.role, "content": m.content} for m in req.conversation_history]
@@ -270,7 +271,7 @@ def chat_with_concierge(req: ConversationalChatRequest, request: Request):
 
 @router.post("/generate-itinerary")
 def generate_ai_itinerary(req: ItineraryRequest, request: Request):
-    client_ip = request.client.host if request.client else "127.0.0.1"
+    client_ip = get_client_ip(request)
     apply_rate_limit(client_ip)
 
     # Dynamically detect destination from natural language query or request

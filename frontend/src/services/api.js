@@ -2,6 +2,13 @@ const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v
 
 const BACKEND_OFFLINE_MSG = 'Backend Server Disconnected: Could not connect to FastAPI server at http://localhost:8000. Please start the backend by running "cd backend && python run.py".';
 
+const authHeaders = (extra = {}) => {
+  const token = localStorage.getItem('voyantra_token');
+  return token ? { ...extra, Authorization: `Bearer ${token}` } : { ...extra };
+};
+
+const AUTH_REQUIRED_MSG = 'Please sign in to use the AI assistant.';
+
 /**
  * Strict Connected API Client (No offline seed fallbacks)
  */
@@ -117,7 +124,7 @@ export const VoyantraAPI = {
     try {
       const res = await fetch(`${BACKEND_URL}/chat/message`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           message,
           conversation_id,
@@ -132,6 +139,7 @@ export const VoyantraAPI = {
       if (res.ok) {
         return await res.json();
       }
+      if (res.status === 401) throw new Error(AUTH_REQUIRED_MSG);
       const errData = await res.json().catch(() => ({}));
       throw new Error(errData.detail || `Server status ${res.status}`);
     } catch (e) {
@@ -143,9 +151,10 @@ export const VoyantraAPI = {
   },
 
   // List saved conversations for user
-  async getConversations(userId = 'demo_user') {
+  async getConversations() {
     try {
-      const res = await fetch(`${BACKEND_URL}/chat/conversations?user_id=${encodeURIComponent(userId)}`, {
+      const res = await fetch(`${BACKEND_URL}/chat/conversations`, {
+        headers: authHeaders(),
         signal: AbortSignal.timeout(5000)
       });
       if (res.ok) return await res.json();
@@ -160,6 +169,7 @@ export const VoyantraAPI = {
   async getConversation(conversationId) {
     try {
       const res = await fetch(`${BACKEND_URL}/chat/conversations/${encodeURIComponent(conversationId)}`, {
+        headers: authHeaders(),
         signal: AbortSignal.timeout(6000)
       });
       if (res.ok) return await res.json();
@@ -175,6 +185,7 @@ export const VoyantraAPI = {
     try {
       const res = await fetch(`${BACKEND_URL}/chat/conversations/${encodeURIComponent(conversationId)}`, {
         method: 'DELETE',
+        headers: authHeaders(),
         signal: AbortSignal.timeout(6000)
       });
       if (res.ok) return await res.json();
@@ -186,9 +197,10 @@ export const VoyantraAPI = {
   },
 
   // Get user memory profile
-  async getMemoryProfile(userId = 'demo_user') {
+  async getMemoryProfile() {
     try {
-      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+      const res = await fetch(`${BACKEND_URL}/chat/memory`, {
+        headers: authHeaders(),
         signal: AbortSignal.timeout(5000)
       });
       if (res.ok) return await res.json();
@@ -200,11 +212,11 @@ export const VoyantraAPI = {
   },
 
   // Update memory profile
-  async updateMemoryProfile(updates, userId = 'demo_user') {
+  async updateMemoryProfile(updates) {
     try {
-      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+      const res = await fetch(`${BACKEND_URL}/chat/memory`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(updates),
         signal: AbortSignal.timeout(6000)
       });
@@ -218,10 +230,11 @@ export const VoyantraAPI = {
   },
 
   // Clear memory profile
-  async clearMemoryProfile(userId = 'demo_user') {
+  async clearMemoryProfile() {
     try {
-      const res = await fetch(`${BACKEND_URL}/chat/memory?user_id=${encodeURIComponent(userId)}`, {
+      const res = await fetch(`${BACKEND_URL}/chat/memory`, {
         method: 'DELETE',
+        headers: authHeaders(),
         signal: AbortSignal.timeout(6000)
       });
       if (res.ok) return await res.json();
@@ -237,6 +250,7 @@ export const VoyantraAPI = {
     try {
       const res = await fetch(`${BACKEND_URL}/chat/transcribe`, {
         method: 'POST',
+        headers: authHeaders(), // no Content-Type: browser sets the multipart boundary
         body: formData,
         signal: AbortSignal.timeout(15000)
       });
@@ -251,10 +265,11 @@ export const VoyantraAPI = {
   // Audio synthesis metadata fallback
   async synthesizeSpeech({ text, language = 'en', speed = 1.0 }) {
     try {
-      const res = await fetch(`${BACKEND_URL}/chat/synthesize`, {
+      // Server reads text/language as query parameters (not a JSON body)
+      const qs = new URLSearchParams({ text, language });
+      const res = await fetch(`${BACKEND_URL}/chat/synthesize?${qs}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, language, speed }),
+        headers: authHeaders(),
         signal: AbortSignal.timeout(6000)
       });
       if (res.ok) return await res.json();
@@ -351,12 +366,12 @@ export const VoyantraAPI = {
   },
 
   // 7. Auth - Register
-  async register({ name, email, password, role = 'user' }) {
+  async register({ name, email, password }) {
     try {
       const res = await fetch(`${BACKEND_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password }),
         signal: AbortSignal.timeout(5000)
       });
       if (res.ok) {

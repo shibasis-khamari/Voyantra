@@ -12,10 +12,11 @@ class UserLoginRequest(BaseModel):
     role: UserRoleEnum = UserRoleEnum.USER
 
 class UserRegisterRequest(BaseModel):
+    # NOTE: no `role` field. Public registration always creates a traveler.
+    # Extra fields sent by old clients (e.g. "role": "admin") are ignored.
     name: str
     email: str
     password: str
-    role: UserRoleEnum = UserRoleEnum.USER
 
 class UserProfile(BaseModel):
     id: str
