@@ -46,17 +46,56 @@ class GeminiService:
     def __init__(self):
         self.api_key = os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or ""
 
+    @property
+    def current_api_key(self) -> str:
+        return os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY or self.api_key or ""
+
+    def _post_generate_content(self, payload: Dict[str, Any], timeout: float = 15.0) -> Optional[requests.Response]:
+        """
+        Executes Gemini generateContent with automatic model fallback on 429 rate limit or 503 unavailable.
+        Primary: settings.GEMINI_MODEL (e.g. gemini-3.5-flash)
+        Fallbacks: gemini-3.5-flash-lite, gemini-flash-latest
+        """
+        api_k = self.current_api_key
+        if not api_k or len(api_k) <= 5:
+            return None
+
+        primary_model = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
+        candidate_models = [primary_model]
+        for fallback in ["gemini-3.5-flash-lite", "gemini-flash-latest"]:
+            if fallback not in candidate_models:
+                candidate_models.append(fallback)
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_k
+        }
+
+        last_response = None
+        for model in candidate_models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            try:
+                res = requests.post(url, json=payload, headers=headers, timeout=timeout)
+                if res.ok:
+                    return res
+                last_response = res
+                if res.status_code in (429, 503, 404):
+                    logger.warning(f"[GeminiService] Model {model} returned HTTP {res.status_code}. Attempting fallback...")
+                    continue
+                else:
+                    return res
+            except Exception as e:
+                logger.warning(f"[GeminiService] Model {model} request failed: {e}. Attempting fallback...")
+                continue
+
+        return last_response
+
     def parse_natural_language_query(self, query_text: str) -> Dict[str, Any]:
         """
         Uses Gemini API to parse free-text input into structured JSON filters.
         """
-        if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-            headers = {
-                "Content-Type": "application/json",
-                "x-goog-api-key": self.api_key
-            }
+        api_k = self.current_api_key
+        if api_k and len(api_k) > 5:
             prompt = f"""
             You are an AI travel query parser for the Voyantra tourist platform.
             Parse the following user travel request into structured JSON filters:
@@ -83,8 +122,8 @@ class GeminiService:
                     "contents": [{"parts": [{"text": prompt}]}],
                     "generationConfig": {"responseMimeType": "application/json", "temperature": 0.2}
                 }
-                res = requests.post(url, json=payload, headers=headers, timeout=8)
-                if res.ok:
+                res = self._post_generate_content(payload, timeout=8.0)
+                if res and res.ok:
                     data = res.json()
                     candidates = data.get("candidates", [])
                     if candidates:
@@ -185,14 +224,8 @@ class GeminiService:
 
         fallback_reason = "no_api_key"
 
-        if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-            headers = {
-                "Content-Type": "application/json",
-                "x-goog-api-key": self.api_key
-            }
-            
+        api_k = self.current_api_key
+        if api_k and len(api_k) > 5:
             existing_days_context = ""
             if existing_days and is_day2_refinement:
                 existing_days_context = f"""
@@ -274,9 +307,11 @@ class GeminiService:
                         "maxOutputTokens": 4096
                     }
                 }
-                res = requests.post(url, json=payload, headers=headers, timeout=30)
+                res = self._post_generate_content(payload, timeout=30.0)
                 
-                if res.status_code == 429:
+                if res is None:
+                    fallback_reason = "api_error"
+                elif res.status_code == 429:
                     logger.warning("[GeminiService] HTTP 429 rate limit exceeded. Falling back to offline planner.")
                     fallback_reason = "http_429"
                 elif not res.ok:
@@ -674,14 +709,8 @@ class GeminiService:
 
         fallback_reason = "no_api_key"
 
-        if self.api_key and len(self.api_key) > 5:
-            model_name = getattr(settings, "GEMINI_MODEL", "gemini-3.5-flash")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
-            headers = {
-                "Content-Type": "application/json",
-                "x-goog-api-key": self.api_key
-            }
-
+        api_k = self.current_api_key
+        if api_k and len(api_k) > 5:
             dest_context = f"""
             VERIFIED LOCAL DATABASE DESTINATIONS IN {city_name.upper()} (Ground Truth Catalog):
             {json.dumps(places_summary, indent=2)}
@@ -776,8 +805,8 @@ class GeminiService:
                         "temperature": 0.4
                     }
                 }
-                res = requests.post(url, headers=headers, json=payload, timeout=25)
-                if res.ok:
+                res = self._post_generate_content(payload, timeout=25.0)
+                if res and res.ok:
                     data = res.json()
                     candidates = data.get("candidates", [])
                     if candidates:

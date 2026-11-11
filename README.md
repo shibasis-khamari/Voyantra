@@ -8,9 +8,11 @@ Voyantra is an intelligent, full-stack travel platform designed to help traveler
 ## ✨ Key Features & Capabilities
 
 ### 🌍 Worldwide Travel Assistance & Concierge
-- **Global Destination Support**: Plan trips and ask questions about any city, state, country, or landmark worldwide (e.g., Pondicherry, Chennai, Mumbai, Jaipur, Himachal Pradesh, Tokyo, Paris, Bali, Dubai, Kyoto).
-- **Dynamic Conversational AI**: Natural multi-turn chat covering attractions, hotels, food scenes, cultural etiquette, and side-by-side destination comparisons.
-- **Powered by Google Gemini**: The model is set with `GEMINI_MODEL` (default `gemini-3.5-flash`; check Google's current model list and pick a newer Flash model if you prefer). Free-tier quotas change, so check your key's limits in Google AI Studio. If the API is unavailable or no key is set, the app falls back to local heuristic synthesis.
+- **Global Destination Support**: Plan trips and ask questions about any city, state, country, or landmark worldwide, with deep ground-truth catalog support for pilot corridors in **Pondicherry** and **Chennai**.
+- **Dynamic Conversational AI**: Natural multi-turn chat covering attractions, hotels, food scenes, cultural etiquette, and side-by-side destination comparisons in **English, Hindi, and Tamil**.
+- **Instant Multilingual Greetings & Fast-Path**: Welcomes travelers warmly in English, Hindi (`नमस्ते!`), and Tamil (`வணக்கம்!`) with actionable starter chips (*"Plan a 2-day trip to Pondicherry"*, *"Top places in Chennai"*, etc.) bypassing unnecessary database scans.
+- **In-App Knowledge & Capabilities Engine**: Instant answers to questions about Voyantra's identity, features, and supported travel corridors.
+- **Powered by Google Gemini with Auto-Failover**: Uses `GEMINI_MODEL` (default `gemini-3.5-flash`) with automatic fallback to `gemini-3.5-flash-lite` on HTTP 429 rate limits or quota spikes, ensuring uninterrupted concierge interactions. If offline or no key is configured, the system gracefully uses local deterministic fallbacks.
 
 ### 📅 Intelligent Multi-Day Itinerary Synthesis
 - **Personalized Itineraries (1 to 7 Days)**: Synthesizes structured schedules with morning, afternoon, and evening slots clustered by logical geographical proximity.
@@ -113,24 +115,31 @@ GEMINI_API_KEY="your_gemini_api_key_here"
 GEMINI_MODEL="gemini-3.5-flash"
 
 # MongoDB Atlas Cloud Database
-MONGODB_URL="mongodb+srv://<username>:<password>@cluster0.hqayaiu.mongodb.net/?retryWrites=true&w=majority"
+MONGODB_URL="mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority"
 MONGODB_DB_NAME="voyantra_db"
 
 # Auth: REQUIRED in production. Generate with: python -c "import secrets; print(secrets.token_urlsafe(48))"
-JWT_SECRET_KEY="change-me"
+JWT_SECRET_KEY="voyantra_jwt_secret_key_prod_2026_pondicherry_chennai"
 
 # Comma-separated list of allowed browser origins (defaults to localhost dev ports)
-CORS_ORIGINS="https://app.example.com,https://www.example.com"
+CORS_ORIGINS="http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000"
 
 # Set to True ONLY when running behind a trusted reverse proxy / load balancer.
 # Rate limiting then keys on X-Forwarded-For instead of the proxy's address.
 TRUST_PROXY_HEADERS=False
+
+# Knowledge Engine (VTKE)
+KNOWLEDGE_RAG_ENABLED=True
+KNOWLEDGE_GEMINI_EMBEDDING_MODEL="models/gemini-embedding-001"
 ```
 
 ### Frontend (`frontend/.env`)
 ```env
 # Google Maps JavaScript API Key (for in-app routing & DirectionsService)
 VITE_GOOGLE_MAPS_API_KEY="your_google_maps_api_key_here"
+
+# Voyantra FastAPI Backend API Endpoint
+VITE_API_URL="http://localhost:8000/api/v1"
 ```
 
 ---
@@ -180,7 +189,10 @@ For instant testing of authentication, profile management, and admin controls:
 
 **Rate limiting:** simple in-memory sliding-window limiters live in `recommendations.py` (10 req/min per IP) and `routes.py` (30 req/min per IP). They are per-process, so use a shared store (e.g. Redis) if you run multiple workers.
 
-**Tests:** from the repo root, `pip install -r backend/requirements-dev.txt && pytest tests`.
+**Tests:** run the automated test suite from the repository root:
+```bash
+backend\.venv\Scripts\python.exe -m pytest tests/test_voyantra2_ai.py tests/test_rag_conversation.py -v
+```
 
 ---
 
@@ -204,18 +216,7 @@ For instant testing of authentication, profile management, and admin controls:
 | `/crowd/city/{city_id}` | `GET` | Public | Seasonal crowd congestion heuristics. |
 | `/crowd/report` | `POST` | Optional | Geofenced crowd report (attributed to you if signed in). |
 | `/festivals`, `/festivals/active` | `GET` | Public | Festival calendar and currently active festivals. |
-
---- | :--- | :--- |
-| `/recommendations/chat` | `POST` | Conversational travel concierge covering destinations worldwide. |
-| `/recommendations/generate-itinerary` | `POST` | Synthesize 1–7 day feasible travel plans with dietary and age constraints. |
-| `/routes/plan` | `POST` | Real road routing between coordinates with maneuver instructions. |
-| `/routes/matrix` | `POST` | NxN distance and duration matrix for multi-stop journeys. |
-| `/routes/optimize-day` | `POST` | Time-constrained TSP optimizer for optimal daily route sequence. |
-| `/crowd/city/{city_id}` | `GET` | Real-time and seasonal crowd congestion heuristics. |
-| `/festivals/impact` | `GET` | Festival date matching with temple/road closure alerts. |
-| `/auth/login` | `POST` | Authenticate user and issue JWT bearer token. |
-| `/auth/register` | `POST` | Register a new user in MongoDB Atlas. |
-| `/auth/admin/users` | `GET` | Retrieve list of registered users (Admin only). |
+| `/festivals/impact` | `GET` | Public | Festival date matching with temple and road closure alerts. |
 
 ---
 

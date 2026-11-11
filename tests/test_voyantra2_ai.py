@@ -250,6 +250,32 @@ def test_conversations_listing_and_deletion():
     del_res = client.delete(f"/api/v1/chat/conversations/{conv_id}")
     assert del_res.status_code == 200
 
+def test_greeting_intent_and_response():
+    # English Greeting
+    res_en = orchestrator.process_turn(ChatTurnRequest(message="Hello!"))
+    assert res_en.intent == "general_qa"
+    assert res_en.itinerary is None
+    assert "Voyantra" in res_en.reply_message
+    assert len(res_en.suggested_followups) > 0
+
+    # Hindi Greeting
+    res_hi = orchestrator.process_turn(ChatTurnRequest(message="नमस्ते!"))
+    assert res_hi.intent == "general_qa"
+    assert "वोयांत्रा" in res_hi.reply_message
+
+    # Tamil Greeting
+    res_ta = orchestrator.process_turn(ChatTurnRequest(message="வணக்கம்!"))
+    assert res_ta.intent == "general_qa"
+    assert "வோயான்ட்ரா" in res_ta.reply_message
+
+def test_app_knowledge_query():
+    # App Identity & Capabilities
+    res = orchestrator.process_turn(ChatTurnRequest(message="What is Voyantra and what can you do?"))
+    assert res.intent == "general_qa"
+    assert res.itinerary is None
+    assert "Voyantra" in res.reply_message
+    assert any(w in res.reply_message.lower() for w in ["itinerary", "pondicherry", "chennai", "crowd"])
+
 def test_memory_endpoints():
     get_res = client.get("/api/v1/chat/memory")
     assert get_res.status_code == 200
